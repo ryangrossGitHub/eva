@@ -34,7 +34,7 @@ end_dt = {
   {"", "to be continued... "}
 }
 
-function say(x, y, msg, border, wide, bounded, color, background, tail)    
+function print_dialog(x, y, msg, border, wide, bounded, color, background, tail)    
   if not color then
     color = 0
   end
@@ -98,34 +98,5 @@ function say(x, y, msg, border, wide, bounded, color, background, tail)
   -- 5. print each line with \v (puny font)
   for i=1,#lines do
     print(lines[i], bx+2, by+2 + (i-1)*line_h, color)
-  end
-end
-
-function ending_dialog()
-	end_dialog_cnt += 1
-	
-  if end_dt_cnt > #end_dt then
-    return -- end of dialog
-  end
-
-	if end_dialog_cnt <  end_dialog_delay then
-    local speaker = end_dt[end_dt_cnt][1]
-    local msg = end_dt[end_dt_cnt][2]
-    if speaker == "jenn" then
-	 	  say(j.x, j.y, msg, 1, false, true)
-	  elseif speaker == "chad" then
-	    say(c.x, c.y, msg, 1, false, true)
-    else
-      say(camera_x + screen_size/2, camera_y + screen_size/4, msg, 0, true, false)
-    end
-	else
-	  end_dialog_cnt = 0
-	  end_dt_cnt += 1
-	end
-end
-
-function draw_trans_dialog()
-  if stage == 2 then --CLUB
-    say(j.x, j.y, "I HATE HOLLOWEEN, BUNCH OF FREAKS", 1, false, true)
   end
 end

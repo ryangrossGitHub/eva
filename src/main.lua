@@ -11,11 +11,15 @@ function _init()
 	palt(13, true) -- Transparent Color Is Purple (13)
 	palt(0, false)
 	load_stage(0)
-	-- music(56)
-	init_rain()
+	-- music(0)
+	init_snow()
+	spk8_pitch,spk8_rate,spk8_volume,spk8_quality,spk8_intonation,spk8_if0,spk8_shift,spk8_bandwidth,spk8_whisper=
+	100,0.7,1.5,.5,10,10,1,1,1
 end
 
 function _update()
+	speako8()  -- must appear once unconditionally in _update.
+
  	if stage == 0 then
   		update_start()
 	elseif stage_trans then
@@ -96,23 +100,9 @@ function _draw()
 		map(0,0)
 		if stage == 0 then
 			draw_start()
-		else
-			say(113 * 8, 6 * 8, "police", 0, false, false, 0, 7)
-
-			if not stage_trans and stage > 1 then
-				draw_floor()
-				if displaying_weapons then
-					draw_gun_shelf()
-
-					if displaying_weapons_delay > displaying_weapons_count then
-						displaying_weapons_count += 1
-					else
-						displaying_weapons = false
-						displaying_weapons_count = 0
-					end
-				end
-			end
 		end
+
+		print_dialog(20 * 8, 5 * 8, "santa's workshop", 1, false, false, 8, 3)
 
 		local s = stages[stage]
 		if not s then
@@ -147,11 +137,7 @@ function _draw()
 		draw_player(p1)
 		print("p1", p1.x - 3, p1.y - 7, 8)
 
-		-- draw_rain()
-
-		if stage_trans then
-			draw_trans_dialog() 
-		end
+		draw_snow()
 
 		if not stage_trans and stage > 1 then
 			local count = c.kill_count + j.kill_count
@@ -179,7 +165,6 @@ function _draw()
 				stages[2].enemy_spawn_delay = 13
 				stages[2].enemy_speed = 0.5
 			end
-			draw_info_bar(count)
 		end
 
 		if stage == 3 then

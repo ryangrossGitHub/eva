@@ -10,7 +10,7 @@ enemy_dead_frame = 1000 -- how long before removing from table to avoid out of m
 function spawn_enemy(speed)
 	enemy = {
 		sprite_number = 144,
-		sprite_number_face = rnd(enemy_head_sprite_list),
+		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
 		speed = speed, -- movement speed
 		sprite_flip = true,
 		x = rnd({ camera_x-16, camera_x + screen_size + 16 }),
@@ -151,40 +151,22 @@ function draw_enemies()
 end
 
 function enemy_coll_detect(player) 
-	local hbox = 8 -- hit box
- 
-	if player.weapon == 1 or player.weapon == 7 then
-		hbox = 16
-	end
+	local hbox = 16 -- hit box
  
 	for enemy in all(enemies) do
 		if not enemy.dead and not enemy.yeeted
 		and ((enemy.x - 2 < player.x and player.flip_sprite) or (enemy.x + 2 > player.x and not player.flip_sprite)) 
 		and (enemy.y - 4 > player.y - hbox + 12 and enemy.y - 4 < player.y + hbox + 8) then
 			
-			if player.weapon == 0 then
-				enemy.damage += pistol.damage
-			elseif player.weapon == 1 then
-				enemy.damage += shotgun.damage
-			elseif player.weapon == 2 then
-				enemy.damage += oozie.damage
-			elseif player.weapon == 3 then
-				enemy.damage += burst_rifle.damage
-			elseif player.weapon == 4 then
-				enemy.damage += auto_rifle.damage
-			elseif player.weapon == 5 then
-				enemy.damage += hunting_rifle.damage
-			elseif player.weapon == 6 then
-				enemy.damage += revolver.damage
-			elseif player.weapon == 7 then
-				enemy.damage += long_shotgun.damage
+			local weapon_force = 5
+			if player.weapon == 1 then
+				weapon_force = 2
 			end
-			
-			if enemy.damage >= enemy_health then
-				enemy_die(enemy, player.weapon, player.flip_sprite, false)
-				player.kill_count += 1
+
+			if player.flip_sprite then
+				enemy.x -= weapon_force	
 			else
-				generate_enemy_hit_particles(enemy, player.flip_sprite, 1)
+				enemy.x += weapon_force
 			end
 		end
 	end
@@ -208,31 +190,6 @@ function enemy_die(enemy, weapon, flip, rotate)
 
 	if weapon == 1 or weapon == 7 then
 		particle_count = 30
-	end
-
-	generate_enemy_hit_particles(enemy, flip, particle_count)
-end
-
-function generate_enemy_hit_particles(enemy, flip, particle_count) 
-	for i=1,particle_count do
-		local xs = rnd(6)
-		if flip then
-			xs = -xs
-		end
-		local ys = rnd(4 - -4) + -4
-		local color = 0
-
-		if enemy.sprite_number_face == 132 then
-			color = rnd({3, 9, 11})
-		else
-			color = rnd({3, 11})
-		end
-
-		if flip then
-			add(particles, particle(enemy.x+20, enemy.y - 4, xs, ys, color, 7, 200))
-		else
-			add(particles, particle(enemy.x+4, enemy.y - 4, xs, ys, color, 7, 200))
-		end
 	end
 end
 

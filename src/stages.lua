@@ -7,15 +7,10 @@ camera_y = 0
 intro_count = 0
 intro_time = 60 * 5 -- 7 seconds
 intro = false
-floor_color_transition = 100
-floor_color_delay = 300
-floor_color_count = 0
-floor_color = 9
 wall_height = 56
 map_width = 8
 
-rain_front = {}
-rain_back = {}
+snow = {}
 
 stages = {
   { 
@@ -54,7 +49,6 @@ function load_stage(n)
     player_move = true
   else
     enemey_spawn_stage_count = 0
-    floor_color_count = 0
     
     -- 8 to 9 is transition inside
     if n == 9 then
@@ -139,11 +133,11 @@ function draw_start()
 	  rect(p2.x - 3, p2.y - 1, p2.x + 16, p2.y + 32, 12)
   end
   
-  say(54,22,"cOPS yEET zOMBIES ii ", 1, true, false, 11, 3)
-  say(54,43, "⬆️    ONE PLAYER", 1, true, false, 12, 1)
-  say(54,53, "⬇️    TWO PLAYERS", 1, true, false, 12, 1)  
-  say(54,110, "⬅️   JENN CHAD    ➡️", 1, true, false, 12, 1)
-  say(54,128, "PRESS ❎/🅾️ TO START", 0, true, false, 8, 0)
+  print_dialog(54,22,"cOPS yEET zOMBIES ii ", 1, true, false, 11, 3)
+  print_dialog(54,43, "⬆️    ONE PLAYER", 1, true, false, 12, 1)
+  print_dialog(54,53, "⬇️    TWO PLAYERS", 1, true, false, 12, 1)  
+  print_dialog(54,110, "⬅️   JENN CHAD    ➡️", 1, true, false, 12, 1)
+  print_dialog(54,128, "PRESS ❎/🅾️ TO START", 0, true, false, 8, 0)
 end
 
 function run_intro()
@@ -160,128 +154,46 @@ function run_intro()
   end
 end
 
-function draw_floor()
-  if floor_color_count >= floor_color_delay then
-    floor_color_count = 0
-    if floor_color == 9 then
-      floor_color = 2
-    elseif floor_color == 2 then
-      floor_color = 9
-    end
-  else
-    floor_color_count += 1
-
-    local color = 0
-    if floor_color_count < floor_color_delay - floor_color_transition then
-      color = floor_color
-    end
-
-    rectfill(screen_size, wall_height, 104 * 8, screen_size, color)
-  end
-end
-
-function draw_gun_shelf(tier)
-  local upper_left = 45 * 8
-  rectfill(upper_left, 0, 55 * 8, 5 * 8, 7)
-
-  if long_shotgun.found then
-    spr(long_shotgun.sprite, upper_left + 6, 3, long_shotgun.length, 1)
-  end
-
-  if hunting_rifle.found then
-    spr(hunting_rifle.sprite, upper_left + 58, 3, hunting_rifle.length, 1)
-  end
-
-  if burst_rifle.found then
-    spr(burst_rifle.sprite, upper_left + 34, 3, burst_rifle.length, 1)
-  end
-
-  if oozie.found then
-    spr(oozie.sprite, upper_left + 50, 15)
-  end
-
-  if revolver.found then
-    spr(revolver.sprite, upper_left + 16, 15)
-  end
-
-  if auto_rifle.found then
-    spr(auto_rifle.sprite, upper_left + 66, 15)
-  end
-
-  if shotgun.found then
-    spr(shotgun.sprite, upper_left + 3, 15)
-  end
-end
-
 function draw_weapons()
-  if not long_shotgun.found then
-    spr(long_shotgun.sprite, long_shotgun.x, long_shotgun.y, long_shotgun.length, 1)
-  end
-
-  if not hunting_rifle.found then
-    spr(hunting_rifle.sprite, hunting_rifle.x, hunting_rifle.y, hunting_rifle.length, 1)
-  end
-
-  if not burst_rifle.found then
-    spr(burst_rifle.sprite, burst_rifle.x, burst_rifle.y, burst_rifle.length, 1)
-  end
-
-  if not oozie.found then
-    spr(oozie.sprite, oozie.x, oozie.y)
-  end
-
-  if not revolver.found then
-    spr(revolver.sprite, revolver.x, revolver.y)
-  end
-
-  if not auto_rifle.found then
-    spr(auto_rifle.sprite, auto_rifle.x, auto_rifle.y)
-  end
-
-  if not shotgun.found then
-    spr(shotgun.sprite, shotgun.x, shotgun.y)
+  if not rifle.found then
+    spr(rifle.sprite, rifle.x, rifle.y, rifle.length, 1)
   end
 end
 
-function init_rain()
-  for i = 1, 200 do
-    add(rain_front, {
-      x = flr(rnd(screen_size*2)) - screen_size,
-      y = flr(rnd(screen_size)),
-      spd = 2 + rnd(3)
-    })
-  end
-
-  local back_x_start = 104 * 8
-  for i = 1, 200 do
-    add(rain_back, {
-      x = flr(rnd(back_x_start) + screen_size * 2 + back_x_start),
-      y = flr(rnd(screen_size)),
-      spd = 2 + rnd(3)
+function init_snow()
+  for i = 1, 120 do -- slightly fewer particles for a cleaner snow look
+    add(snow, {
+      x = rnd(128),
+      y = rnd(128),
+      spd = 0.3 + rnd(0.5), -- significantly slower falling speed
+      sine_offset = rnd(100), -- unique offset for the swaying pattern
+      sine_spd = 0.02 + rnd(0.03) -- how fast each flake sways left and right
     })
   end
 end
 
-function draw_rain()
-  for drop in all(rain_front) do
-    drop.y += drop.spd
-    drop.x -= 1 -- slight wind angle
+function draw_snow()
+  for flake in all(snow) do
+    -- fall down slowly
+    flake.y += flake.spd
     
-    if (drop.y > screen_size - 1) drop.y = -4
-    if (drop.x < -screen_size) drop.x = screen_size - 1
-
-    line(drop.x, drop.y, drop.x - 1, drop.y + 3, 1)
-  end
-
-  local back_x_start = 104 * 8
-  for drop in all(rain_back) do
-    drop.y += drop.spd
-    drop.x -= 1 -- slight wind angle
+    -- update the swaying angle
+    flake.sine_offset += flake.sine_spd
     
-    if (drop.y > screen_size - 1) drop.y = -4
-    if (drop.x < back_x_start) drop.x = back_x_start + screen_size * 2 - 1
+    -- calculate final horizontal position with a wind bias + wave motion
+    -- pset requires integers, so we use flr() when drawing
+    local drift_x = flake.x + sin(flake.sine_offset) * 4 - 2 -- 4 is the sway width, -2 shifts it slightly left for wind
+    
+    -- screen wrap thresholds
+    if (flake.y > 128) then
+      flake.y = -2
+      flake.x = rnd(128)
+    end
+    if (flake.x < -4) flake.x = 132
+    if (flake.x > 132) flake.x = -4
 
-    line(drop.x, drop.y, drop.x - 1, drop.y + 3, 1)
+    -- draw flake as a single pixel (color 7 is white, color 6 is light gray for variety if desired)
+    pset(flr(drift_x), flr(flake.y), 7)
   end
 end
 
@@ -313,6 +225,4 @@ function run_ending()
     j.x += 1
     c.x += 1
   end
-
-  ending_dialog()
 end

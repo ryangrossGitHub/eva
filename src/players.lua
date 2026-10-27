@@ -36,7 +36,7 @@ j = {
 	last_animation_frame_x = init_jenn_x, 
 	last_animation_frame_y = init_player_y, 
 	animation_frame_delay = 5, 
-	weapon = 0, -- weapon: 0 pistol, 1 shotgun, 2 oozie, 3 burst rifle, 4 auto rifle, 5 hunting rifle, 6 revolver, 7 long shotgun
+	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
 	trigger = false, -- trigger pressed,
 	kill_count = 0,
@@ -68,7 +68,7 @@ c = {
 	last_animation_frame_x = init_chad_x, 
 	last_animation_frame_y = init_player_y, 
 	animation_frame_delay = 5, 
-	weapon = 0, -- weapon: 0 pistol, 1 shotgun, 2 oozie, 3 burst rifle, 4 auto rifle, 5 hunting rifle, 6 revolver, 7 long shotgun
+	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
 	trigger = false, -- trigger pressed
 	kill_count = 0,
@@ -85,28 +85,6 @@ p1 = j
 p2 = c
 coop = false
 
-shotgun = {
-	id = 1,
-	delay = 10,
-	damage = 20,
-	sprite = 20,
-	length = 1,
-	found = false,
-	x = 94 * 8,
-	y = 4 * 8
-}
-
-long_shotgun = {
-	id = 7,
-	delay = 20,
-	damage = 20,
-	sprite = 20,
-	length = 2,
-	found = false,
-	x = 30 * 8,
-	y = 11 * 8
-}
-
 pistol = {
 	id = 0,
 	delay = 4,
@@ -116,63 +94,18 @@ pistol = {
 	found = true
 }
 
-oozie = {
-	id = 2,
-	delay = 0,
-	damage = 2,
-	sprite = 5,
-	length = 1,
-	found = false,
-	x = 120 * 8,
-	y = 9 * 8
-}
-
-burst_rifle = {
-	id = 3,
+rifle = {
+	id = 1,
 	delay = 3,
 	damage = 2,
 	sprite = 36,
 	length = 2,
 	found = false,
-	x = 78 * 8,
-	y = 4 * 8
+	x = 30 * 8,
+	y = 11 * 8
 }
 
-auto_rifle = {
-	id = 4,
-	delay = 0,
-	damage = 3,
-	sprite = 7,
-	length = 1,
-	found = false,
-	x = 106 * 8,
-	y = 4 * 8
-}
-
-hunting_rifle = {
-	id = 5,
-	delay = 20,
-	damage = 10,
-	sprite = 52,
-	length = 2,
-	found = false,
-	x = 40 * 8,
-	y = 10 * 8
-}
-
-revolver = {
-	id = 6,
-	delay = 10,
-	damage = 10,
-	sprite = 6,
-	length = 1,
-	found = false,
-	x = 84 * 8,
-	y = 4 * 8
-}
-
--- 0 pistol, 1 shotgun, 2 oozie, 3 burst rifle, 4 auto rifle, 5 hunting rifle, 6 revolver, 7 long shotgun
-weapon_list = {pistol, shotgun, oozie, burst_rifle, auto_rifle, hunting_rifle, revolver, long_shotgun}
+weapon_list = {pistol, rifle}
 
 function update_p2()
 	enemy_collision(p2)
@@ -186,11 +119,6 @@ function update_p2()
 		p2.flip_sprite = false
 	else
 		c,y = closest_enemy()
-	end
-
-	-- Ensure player gets first shots
-	if p1.kill_count < 5 then
-		return -- early exit
 	end
 
  	if c then
@@ -230,10 +158,7 @@ function closest_enemy()
 
 	local player_weapon_offset = 12
 
-	local hbox = 4 -- hit box
-	if p2.weapon == 1 or p2.weapon == 2 or p2.weapon == 7 then
-		hbox = 8
-	end
+	local hbox = 8 -- hit box
  
 	for e in all(enemies) do
 		if not e.dead and e.x > camera_x + 5 and e.x < camera_x + screen_size - 5 then
@@ -362,18 +287,19 @@ function update_player_move(p, ctrl)
  	end
 	
 	if btnp(❎, ctrl) then
-		if at_bar1(p) then 
-			for i=1, #weapon_list do
-				p.weapon_list_index += 1
-				if p.weapon_list_index > #weapon_list then
-					p.weapon_list_index = 1
-				end
-				if weapon_list[p.weapon_list_index].found then
-					p.weapon = weapon_list[p.weapon_list_index].id
-					break
-				end
-			end
+		if not speaking() then
+			say("_/-1.67/_/g/-1.27/3/eh/-1.69/_/t/-1.12/dh/-1.33/ae/-1.69/_/t/-1.12/3/eh/-1.20/l/-1.20/f")
 		end
+		-- 	for i=1, #weapon_list do
+		-- 		p.weapon_list_index += 1
+		-- 		if p.weapon_list_index > #weapon_list then
+		-- 			p.weapon_list_index = 1
+		-- 		end
+		-- 		if weapon_list[p.weapon_list_index].found then
+		-- 			p.weapon = weapon_list[p.weapon_list_index].id
+		-- 			break
+		-- 		end
+		-- 	end
 	end
 
 	if btn(❎, ctrl) and not displaying_weapons then
@@ -389,16 +315,6 @@ function update_player_move(p, ctrl)
 			p2.speed = 1
 		end
 	end
-
-	if p.weapon == 3 and p.weapon_delay > 0 then
-		handle_player_fire(p)
-	end
-
-	-- bar proxy detection
-	if at_bar1(p) then
-		displaying_weapons = true
-		displaying_weapons_count = 0
-	end
 end
 
 function center_camera_on_players()
@@ -406,58 +322,6 @@ function center_camera_on_players()
 	local players_center = flr((p1.x + p2.x) / 2)
 
 	camera_x = players_center - screen_size/2
-end
-
-function at_bar1(p)
-	if p.x > 43 * 8 and p.x < 56 * 8 and p.y < 30 then 
-		return true
-	else
-		return false
-	end
-end
-
-function draw_info_bar(count)
-	rectfill(camera_x, screen_size - 12, camera_x + screen_size, screen_size, 0)
-	spr(enemy_head_sprite_list[2], camera_x + 5, screen_size - 10, 1, 1, true, false)
-	
-	local color = 6
-	if count >= 100 then color = 10 end
-	print(100, camera_x + 34, screen_size - 6, color)
-	rectfill(camera_x + 39, screen_size - 9, camera_x + 39.5, screen_size - 8, color)
-
-	color = 6
-	if count >= 250 then color = 9 end
-	print(250, camera_x + 48, screen_size - 6, color)
-	rectfill(camera_x + 53, screen_size - 9, camera_x + 53.5, screen_size - 8, color)
-
-	color = 6
-	if count >= 500 then color = 8 end
-	print(500, camera_x + 70, screen_size - 6, color)
-	rectfill(camera_x + 75, screen_size - 9, camera_x + 75.5, screen_size - 8, color)
-
-	color = 6
-	if count >= 1000 then color = 2 end
-	print(1000, camera_x + 113, screen_size - 6, color)
-	rectfill(camera_x + 120, screen_size - 9, camera_x + 120.5, screen_size - 8, color)
-	
-	-- bar starts at camera_x + 30 and ends at camera_x + 119.5, which is 89.5 in length
-	local bar_start = camera_x + 30
-	local percent_complete = count / 1000
-	local bar_length = flr(percent_complete * 89.5)
-
-	if count >= 1000 then 
-		color = 2
-	elseif count >= 500 then 
-		color = 8
-	elseif count >= 250 then 
-		color = 9
-	elseif count >= 100 then 
-		color = 10
-	else
-		color = 11
-	end
-	print(count, camera_x + 14, screen_size - 10, color)
-	rectfill(bar_start, screen_size - 10, bar_start + bar_length, screen_size - 9.5, color)
 end
 
 function handle_player_fire(p)
@@ -468,79 +332,15 @@ function handle_player_fire(p)
 		p.recoil = false
 		p.recoil_count = 0
 	end
-	if p.weapon == 0 or p.weapon == 3 or p.weapon == 5 or p.weapon == 6 then
-		if p.weapon == 0 then
-			sfx(0)
-		elseif p.weapon == 3 then
-			sfx(4)
-		elseif p.weapon == 5 or p.weapon == 6 then
-			sfx(5)
+	
+	sfx(0)
 
-			if p.flip_sprite then
-				p.x += 3
-				camera_x += 3
-			else
-				p.x -= 3
-				camera_x -= 3
-			end
-
-			if p.flip_sprite then
-				camera_x -= camera_shake_offset_amount
-				camera_shake_offset -= camera_shake_offset_amount
-			else
-				camera_x += camera_shake_offset_amount
-				camera_shake_offset += camera_shake_offset_amount
-			end
-		end
-
-		enemy_coll_detect(p)
-
-		local xs = 15
-		if p.flip_sprite then
-			xs = -xs
-		end
-		add(particles, particle(p.x+4, p.y + 15, xs, 0, 0, 7))
-	elseif p.weapon == 1 or p.weapon == 7 then
-		if p.flip_sprite then
-				p.x += 3
-				camera_x += 3
-			else
-				p.x -= 3
-				camera_x -= 3
-			end
-
-		sfx(1)
-
-		for i=1,10 do
-			local ys = rnd(1 - -1) + -1
-			local xs = 12 + rnd(3)
-			if p.flip_sprite then
-				xs = -xs
-			end
-			add(particles, particle(p.x+4, p.y + 15, xs, ys, 0, 14))
-		end
-
-		if p.flip_sprite then
-			camera_x -= camera_shake_offset_amount
-			camera_shake_offset -= camera_shake_offset_amount
-		else
-			camera_x += camera_shake_offset_amount
-			camera_shake_offset += camera_shake_offset_amount
-		end
-	elseif p.weapon == 2 or p.weapon == 4 then
-		if p.weapon == 2 then
-			sfx(0)
-		elseif p.weapon == 4 then
-			sfx(4)
-		end
-		
-		local ys = rnd(0.5 - -0.5) + -0.5
-		local xs = 14 + rnd(1)
-		if p.flip_sprite then
-			xs = -xs
-		end
-		add(particles, particle(p.x+4, p.y + 15, xs, ys, 0, 14))
+	local xs = 15
+	if p.flip_sprite then
+		xs = -xs
 	end
+	add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
+
 	enemy_coll_detect(p)
 end
 
@@ -568,45 +368,9 @@ function draw_player_weapon(p)
 		end
 	elseif p.weapon == 1 then
 		if p.flip_sprite then
-			spr(20, p.x - 2 + recoil_mult, p.y + 11 + bounce_height, 1, 1, true, false)
+			spr(rifle.sprite, p.x - 8 + recoil_mult, p.y + 11 + bounce_height, rifle.length, 1, true, false)
 		else
-			spr(20, p.x + 10 - recoil_mult, p.y + 11 + bounce_height, 1, 1, false, false)
-		end
-	elseif p.weapon == 2 then
-		if p.flip_sprite then
-			spr(5, p.x - 1 + recoil_mult, p.y + 12 + bounce_height, 1, 1, true, false)
-		else
-			spr(5, p.x + 9 - recoil_mult, p.y + 12 + bounce_height, 1, 1, false, false)
-		end
-	elseif p.weapon == 3 then
-		if p.flip_sprite then
-			spr(36, p.x - 8 + recoil_mult, p.y + 11 + bounce_height, 2, 1, true, false)
-		else
-			spr(36, p.x + 8 - recoil_mult, p.y + 11 + bounce_height, 2, 1, false, false)
-		end
-	elseif p.weapon == 4 then
-		if p.flip_sprite then
-			spr(7, p.x + recoil_mult, p.y + 11 + bounce_height, 1, 1, true, false)
-		else
-			spr(7, p.x + 8 - recoil_mult, p.y + 11 + bounce_height, 1, 1, false, false)
-		end
-	elseif p.weapon == 5 then
-		if p.flip_sprite then
-			spr(52, p.x - 8 + recoil_mult, p.y + 12 + bounce_height, 2, 1, true, false)
-		else
-			spr(52, p.x + 8 - recoil_mult, p.y + 12 + bounce_height, 2, 1, false, false)
-		end
-	elseif p.weapon == 6 then
-		if p.flip_sprite then
-			spr(6, p.x - 3 + recoil_mult, p.y + 11 + bounce_height, 1, 1, true, false)
-		else
-			spr(6, p.x + 11 - recoil_mult, p.y + 11 + bounce_height, 1, 1, false, false)
-		end
-	elseif p.weapon == 7 then
-		if p.flip_sprite then
-			spr(20, p.x - 8 + recoil_mult, p.y + 11 + bounce_height, 2, 1, true, false)
-		else
-			spr(20, p.x + 10 - recoil_mult, p.y + 11 + bounce_height, 2, 1, false, false)
+			spr(rifle.sprite, p.x + 8 - recoil_mult, p.y + 11 + bounce_height, rifle.length, 1, false, false)
 		end
 	end
 end
@@ -619,25 +383,10 @@ function handle_player_trigger(p)
 			if p.weapon == 0 and p.weapon_delay == 0 then
 				p.weapon_delay = pistol.delay
 				handle_player_fire(p)
-			elseif p.weapon == 1 and p.weapon_delay == 0 then
-				p.weapon_delay = shotgun.delay
-				handle_player_fire(p)
-			elseif p.weapon == 3 and p.weapon_delay == 0 then
-				p.weapon_delay = burst_rifle.delay
-				handle_player_fire(p)
-			elseif p.weapon == 5 and p.weapon_delay == 0 then
-				p.weapon_delay = hunting_rifle.delay
-				handle_player_fire(p)
-			elseif p.weapon == 6 and p.weapon_delay == 0 then
-				p.weapon_delay = revolver.delay
-				handle_player_fire(p)
-			elseif p.weapon == 7 and p.weapon_delay == 0 then
-				p.weapon_delay = long_shotgun.delay
-				handle_player_fire(p)
 			end
 		end
 
-		if p.weapon == 2 or p.weapon == 4 then
+		if p.weapon == 1 then
 			p.weapon_delay = 0
 			handle_player_fire(p)
 		end
@@ -659,14 +408,16 @@ function draw_player(p)
 	end
 
 	if p.name == "chad" then
+		local c_head_x = p.x - 8
+
+		if p.flip_sprite then
+			c_head_x = p.x + 8
+		end
+
 		if p.trigger or p.yeeting then
-			if p.recoil then
-				spr(p.sprites.head2, p.x-1, p.y + bounce_height, 2, 2, p.flip_sprite, false)
-			else
-				spr(p.sprites.head2, p.x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
-			end
+			spr(p.sprites.head2, c_head_x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
 		else
-			spr(p.sprites.head, p.x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
+			spr(p.sprites.head, c_head_x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
 		end
 	else
 		if p.flip_sprite then
