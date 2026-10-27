@@ -53,6 +53,7 @@ function _update()
 
 	check_weapon_found()
 	center_camera_on_players()
+	update_darts(enemies)
 	update_enemies()
 	update_player_anims(p1)
 	update_player_anims(p2)
@@ -103,7 +104,7 @@ function _draw()
 
 		draw_weapons()
 
-		draw_particles(particles)
+		draw_darts()
 		
 		draw_enemies()
 		

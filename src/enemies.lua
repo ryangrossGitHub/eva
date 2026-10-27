@@ -15,6 +15,8 @@ function spawn_enemy(speed)
 		sprite_flip = true,
 		x = rnd({ camera_x-16, camera_x + screen_size + 16 }),
 		y = rnd(48) + 48,
+		w = 8,
+		h = 24,
 		death_animation_frame_delay = 20,
 		death_animation_frame_count = 0, -- death animation frame count
 		dead = false,

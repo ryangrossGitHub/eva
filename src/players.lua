@@ -287,9 +287,9 @@ function update_player_move(p, ctrl)
  	end
 	
 	if btnp(❎, ctrl) then
-		if not speaking() then
-			say("_/-1.67/_/g/-1.27/3/eh/-1.69/_/t/-1.12/dh/-1.33/ae/-1.69/_/t/-1.12/3/eh/-1.20/l/-1.20/f")
-		end
+		-- if not speaking() then
+		-- 	say("_/-1.67/_/g/-1.27/3/eh/-1.69/_/t/-1.12/dh/-1.33/ae/-1.69/_/t/-1.12/3/eh/-1.20/l/-1.20/f")
+		-- end
 		-- 	for i=1, #weapon_list do
 		-- 		p.weapon_list_index += 1
 		-- 		if p.weapon_list_index > #weapon_list then
@@ -335,11 +335,12 @@ function handle_player_fire(p)
 	
 	sfx(0)
 
-	local xs = 15
+	local xd = 15
 	if p.flip_sprite then
-		xs = -xs
+		xd = -xd
 	end
-	add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
+	-- add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
+	spawn_dart(p.x+4, p.y + 15, xd, 0)
 
 	enemy_coll_detect(p)
 end
