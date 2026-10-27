@@ -1,7 +1,7 @@
 player_move = false
 
-init_jenn_x = 45
-init_chad_x = 67
+init_jenn_x = 43
+init_chad_x = 69
 init_player_y = 64
 
 camera_shake_offset = 0

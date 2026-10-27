@@ -14,9 +14,11 @@ snow = {}
 
 stages = {
   { 
-    enemy_spawn_count = 0,
-    enemy_speed = 0.5,
-    enemy_spawn_delay = 20,
+    enemy_spawn_count = 10, -- unlimited
+    enemy_speed = 0.4,
+    enemy_spawn_delay = 14,
+    enemy_spawn_initial_delay = 0,
+    enemy_spawn_initial_delay_count = 0,
     music_track = 24,
     weapon_unlock = 1
   },
@@ -130,14 +132,15 @@ function draw_start()
   rect(p1.x - 3, p1.y - 1, p1.x + 16, p1.y + 32, 8)
   
   if coop then
-	  rect(p2.x - 3, p2.y - 1, p2.x + 16, p2.y + 32, 12)
+	  rect(p2.x - 3, p2.y - 1, p2.x + 16, p2.y + 32, 3)
   end
   
-  print_dialog(54,22,"cOPS yEET zOMBIES ii ", 1, true, false, 11, 3)
-  print_dialog(54,43, "⬆️    ONE PLAYER", 1, true, false, 12, 1)
-  print_dialog(54,53, "⬇️    TWO PLAYERS", 1, true, false, 12, 1)  
-  print_dialog(54,110, "⬅️   JENN CHAD    ➡️", 1, true, false, 12, 1)
-  print_dialog(54,128, "PRESS ❎/🅾️ TO START", 0, true, false, 8, 0)
+  print_dialog(51,22,"\^w\^telves vs ai", 0, true, false, 7, 0)
+  print_dialog(54,36,"BATTLE FOR THE NORTH", 0, true, false, 8, 0)
+  print_dialog(54,110, "⬆️   ONE PLAYER", 0, true, false, 8, 7)
+  print_dialog(54,117, "⬇️   TWO PLAYERS", 0, true, false, 8, 7)  
+  print_dialog(54,124, "⬅️   CHOOSE ELF   ➡️", 0, true, false, 8, 7)
+  print_dialog(54,131, "PRESS ❎/🅾️ TO START", 0, true, false, 3, 7)
 end
 
 function run_intro()
@@ -212,7 +215,7 @@ function reset()
   c.x = init_chad_x 
 	c.y = init_player_y
   c.kill_count = 0
-  music(24)  
+  music(0)  
 end
 
 

@@ -22,10 +22,6 @@ function _update()
 
  	if stage == 0 then
   		update_start()
-	elseif stage_trans then
-  		update_stage_trans()
- 	elseif stage == 3 then
-		-- do nothing
 	else
 		-- Initial delay before spawning enemies for this stage
 		if stages[stage].enemy_spawn_initial_delay and 
@@ -39,19 +35,6 @@ function _update()
 				spawn_enemy(stages[stage].enemy_speed)
 				enemy_spawn_delay_count = 0
 				enemey_spawn_stage_count += 1
-			end
-		else
-			local all_dead = true
-				
-			for e in all(enemies) do
-				if not e.dead then
-					all_dead = false
-					break
-				end
-			end
-					
-			if all_dead then
-				load_stage(stage+1)
 			end
 		end
 	end
@@ -130,7 +113,7 @@ function _draw()
 		if coop then
 			p2_disp = "p2"
 		end
-		print(p2_disp, p2.x - 3, p2.y - 7, 12)
+		print(p2_disp, p2.x - 3, p2.y - 7, 3)
 
 		-- Draw player 1 after player 2 so that player 1 is in front of player 2
 		draw_player_weapon(p1)
