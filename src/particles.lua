@@ -10,7 +10,6 @@ function spawn_dart(x, y, dx, dy)
         dy = dy,
         life = 90,
         bounces = 3,
-        -- new tumbling properties
         is_tumbling = false,
         spin_angle = 0,
         spin_speed = 0
@@ -45,32 +44,39 @@ function update_darts(enemies)
             del(darts, d) 
         end
 
-        -- 4. chaotic enemy ricochet
+        -- 4. collision and ricochet
         for e in all(enemies) do
-            if d.x >= e.x and d.x <= e.x + e.w and
-               d.y >= e.y and d.y <= e.y + e.h then
-                
-                local return_dir = 1
-                if d.dx > 0 then return_dir = -1 end
+            dart_collision_detection(d, e)
+        end
 
-				d.dx = (1.0 + rnd(2.0)) * return_dir
-				d.dy = -1.5 - rnd(3.0)
-				d.life = d.life + 20 
-				
-				-- activate wild visual spin on chaotic hits!
-				d.is_tumbling = true
-				-- random direction (clockwise/counter-clockwise) and hyper speed
-				d.spin_speed = 0.15 + rnd(0.2)
-				if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
+        dart_collision_detection(d, p1)
+        dart_collision_detection(d, p2)
+    end
+end
 
-                
-                if d.dx > 0 then d.x = e.x + e.w + 1 else d.x = e.x - 1 end
-                
-                d.bounces = d.bounces - 1
-                if d.bounces <= 0 then
-                    del(darts, d)
-                end
-            end
+function dart_collision_detection(d, o)
+    if d.x >= o.x and d.x <= o.x + o.w and
+        d.y >= o.y and d.y <= o.y + o.h then
+        
+        local return_dir = 1
+        if d.dx > 0 then return_dir = -1 end
+
+        d.dx = (1.0 + rnd(2.0)) * return_dir
+        d.dy = -1.5 - rnd(3.0)
+        d.life = d.life + 20 
+        
+        -- activate visual spin on hits
+        d.is_tumbling = true
+        -- random direction (clockwise/counter-clockwise) and faster speed
+        d.spin_speed = 0.15 + rnd(0.2)
+        if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
+
+        
+        if d.dx > 0 then d.x = o.x + o.w + 1 else d.x = o.x - 1 end
+        
+        d.bounces = d.bounces - 1
+        if d.bounces <= 0 then
+            del(darts, d)
         end
     end
 end

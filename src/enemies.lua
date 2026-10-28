@@ -13,7 +13,7 @@ function spawn_enemy(speed)
 		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
 		speed = speed, -- movement speed
 		sprite_flip = true,
-		x = rnd({ camera_x-16, camera_x + screen_size + 16 }),
+		x = camera_x + screen_size + 16,
 		y = rnd(48) + 48,
 		w = 8,
 		h = 24,
@@ -22,14 +22,11 @@ function spawn_enemy(speed)
 		dead = false,
 		animation_frame_delay = 7, -- animation frame delay
 		animation_frame_count = 0,
-		yeeted = false,
-		yeet_sprite = 136,
-		yeet_sprite_flip = false, --flip of yeeting player
-		yeet_animation_frame_delay = 5,
-		yeet_animation_frame_count = 0,
-		destination = flr(rnd(4)), -- 0,4 = opposite side, 1 = player 1, 2 = player 2
+		destination = flr(rnd(2)) + 1, -- 1 = player 1, 2 = player 2
 		damage = 0,
-		dead_frames = 0
+		dead_frames = 0,
+		fire_delay = 10,
+		fire_delay_count = 0
 	}
 
 	if enemy.x > camera_x + screen_size/2 then
@@ -66,30 +63,12 @@ function update_enemies()
 					end
 				end
 			end
-		elseif enemy.yeeted then
-			yeet(enemy)
 		else
 
 			if enemy.destination == 1 then
 				seek_player(enemy, p1)
 			elseif enemy.destination == 2 then
 				seek_player(enemy, p2)
-			else
-				if enemy.sprite_flip then
-					enemy.x += enemy.speed
-
-					-- Die when walk off screen
-					if enemy.x > camera_x + screen_size + 16 then
-						enemy_die(enemy, nil, false, false)
-					end
-				else
-					enemy.x -= enemy.speed
-
-					-- Die when walk off screen
-					if enemy.x < camera_x - 16 then
-						enemy_die(enemy, nil, false, false)
-					end
-				end
 			end
 
 			enemy.animation_frame_count += 1
@@ -109,21 +88,38 @@ function update_enemies()
 end
 
 function seek_player(enemy, p)
-	if p.x < enemy.x - enemy.speed then
-		enemy.x -= enemy.speed
-		enemy.sprite_flip = false
-	elseif p.x > enemy.x + enemy.speed then
-		enemy.x += enemy.speed
-		enemy.sprite_flip = true
+	local distance = abs(p.x - enemy.x)
+
+	if distance > 40 then
+		if p.x < enemy.x - enemy.speed then
+			enemy.x -= enemy.speed
+			enemy.sprite_flip = false
+		elseif p.x > enemy.x + enemy.speed then
+			enemy.x += enemy.speed
+			enemy.sprite_flip = true
+		end
 	end
 
-	-- walk to middle before down
-	if abs(p.x-enemy.x) < 2 then
-		if p.y < enemy.y - 4 - enemy.speed then
-			enemy.y -= enemy.speed
-		elseif p.y > enemy.y + enemy.speed then
-			enemy.y += enemy.speed
+	if enemy.y > 38 and p.y < enemy.y - 4 - enemy.speed then
+		enemy.y -= enemy.speed
+	elseif enemy.y < screen_size and p.y > enemy.y + enemy.speed then
+		enemy.y += enemy.speed
+	else
+		handle_enemy_fire(enemy)
+	end
+end
+
+function handle_enemy_fire(e)
+	if e.fire_delay_count < e.fire_delay then
+		e.fire_delay_count += 1
+	else
+		e.fire_delay_count = 0
+
+		local xd = 15
+		if not e.sprite_flip then
+			xd = -xd
 		end
+		spawn_dart(e.x+4, e.y+6, xd, 0)
 	end
 end
 
@@ -156,13 +152,13 @@ function enemy_coll_detect(player)
 	local hbox = 16 -- hit box
  
 	for enemy in all(enemies) do
-		if not enemy.dead and not enemy.yeeted
+		if not enemy.dead
 		and ((enemy.x - 2 < player.x and player.flip_sprite) or (enemy.x + 2 > player.x and not player.flip_sprite)) 
 		and (enemy.y - 4 > player.y - hbox + 12 and enemy.y - 4 < player.y + hbox + 8) then
 			
-			local weapon_force = 5
+			local weapon_force = 3
 			if player.weapon == 1 then
-				weapon_force = 2
+				weapon_force = 1
 			end
 
 			if player.flip_sprite then
@@ -176,7 +172,6 @@ end
 
 function enemy_die(enemy, weapon, flip, rotate)
  	enemy.dead = true
-	enemy.yeet = false
 
 	if weapon == 1 or weapon == 7 or weapon == nil then
 		enemy.sprite_number = -1
@@ -192,32 +187,5 @@ function enemy_die(enemy, weapon, flip, rotate)
 
 	if weapon == 1 or weapon == 7 then
 		particle_count = 30
-	end
-end
-
-function yeet(enemy)
-	if enemy.x < camera_x or enemy.x > camera_x + screen_size - 32 then
-		enemy_die(enemy, 1, not enemy.sprite_flip, true)
-		sfx(0)
-	else
-		if enemy.yeet_animation_frame_count < enemy.yeet_animation_frame_delay * 0.5 then
-			-- pickup animation
-			enemy.sprite_number = enemy.yeet_sprite
-			if enemy.yeet_sprite_flip then
-				enemy.x += 3
-				enemy.sprite_flip = true
-			else
-				enemy.x -= 3
-				enemy.sprite_flip = false
-			end
-		else
-			if enemy.yeet_sprite_flip then
-				enemy.x -= 15
-			else
-				enemy.x += 15
-			end
-		end
-
-		enemy.yeet_animation_frame_count += 1
 	end
 end

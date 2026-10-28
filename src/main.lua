@@ -1,9 +1,6 @@
 screen_size = 128
 user_data_memory_address = 0x8000
 log_file = "log.txt"
-intro_text_full = "dispatch to all units, respond immediately to a public disturbance at da club."
-intro_text = ""
-intro_count = 0
 progress_stage = 0
 
 function _init()
@@ -69,90 +66,78 @@ end
 
 function _draw()
 	cls()
+
+	map(0,0)
+	if stage == 0 then
+		draw_start()
+	end
+
+	print_dialog(20 * 8, 5 * 8, "santa's workshop", 1, false, false, 8, 3)
+
+	local s = stages[stage]
+	if not s then
+		s = stages[1]
+	end
+
+	camera(camera_x,camera_y)
+	if camera_shake_offset < 0 then
+		camera_shake_offset += 1
+		camera_x += 1
+	elseif camera_shake_offset > 0 then
+		camera_shake_offset -= 1
+		camera_x -= 1
+	end
+
+	draw_weapons()
+
+	draw_darts()
 	
-	if intro then
-		say(60, 50, intro_text, 0, true, false, 7, 0)
-		intro_text = sub(intro_text_full, 1, intro_count) 
-		intro_count += 1
-
-		if intro_count < #intro_text_full then
-			sfx(3)
-		end
-		
-		run_intro()
-	else
-		map(0,0)
-		if stage == 0 then
-			draw_start()
-		end
-
-		print_dialog(20 * 8, 5 * 8, "santa's workshop", 1, false, false, 8, 3)
-
-		local s = stages[stage]
-		if not s then
-			s = stages[1]
-		end
+	draw_enemies()
 	
-		camera(camera_x,camera_y)
-		if camera_shake_offset < 0 then
-			camera_shake_offset += 1
-			camera_x += 1
-		elseif camera_shake_offset > 0 then
-			camera_shake_offset -= 1
-			camera_x -= 1
+	draw_player_weapon(p2)
+	draw_player(p2)
+	local p2_disp = "cp"
+	if coop then
+		p2_disp = "p2"
+	end
+	print(p2_disp, p2.x - 3, p2.y - 7, 3)
+
+	-- Draw player 1 after player 2 so that player 1 is in front of player 2
+	draw_player_weapon(p1)
+	draw_player(p1)
+	print("p1", p1.x - 3, p1.y - 7, 8)
+
+	draw_snow()
+
+	if not stage_trans and stage > 1 then
+		local count = c.kill_count + j.kill_count
+		if progress_stage < 4 and count >= 1000 then 
+			progress_stage = 4
+			stage = 3
+			-- enemies = {} -- clear
+			music(56)
+			c.flip_sprite = false
+			j.flip_sprite = false
+			player_move = false
+		elseif progress_stage < 3 and count >= 500 then 
+			progress_stage = 3
+			music(32)
+			stages[2].enemy_spawn_delay = 7
+			stages[2].enemy_speed = 0.9
+		elseif progress_stage < 2 and count >= 250 then 
+			progress_stage = 2
+			music(8)
+			stages[2].enemy_spawn_delay = 12
+			stages[2].enemy_speed = 0.7
+		elseif progress_stage < 1 and count >= 100 then 
+			progress_stage = 1
+			music(0)
+			stages[2].enemy_spawn_delay = 13
+			stages[2].enemy_speed = 0.5
 		end
+	end
 
-		draw_weapons()
-
-		draw_darts()
-		
-		draw_enemies()
-		
-		draw_player_weapon(p2)
-		draw_player(p2)
-		local p2_disp = "cp"
-		if coop then
-			p2_disp = "p2"
-		end
-		print(p2_disp, p2.x - 3, p2.y - 7, 3)
-
-		-- Draw player 1 after player 2 so that player 1 is in front of player 2
-		draw_player_weapon(p1)
-		draw_player(p1)
-		print("p1", p1.x - 3, p1.y - 7, 8)
-
-		draw_snow()
-
-		if not stage_trans and stage > 1 then
-			local count = c.kill_count + j.kill_count
-			if progress_stage < 4 and count >= 1000 then 
-				progress_stage = 4
-				stage = 3
-				-- enemies = {} -- clear
-				music(56)
-				c.flip_sprite = false
-				j.flip_sprite = false
-				player_move = false
-			elseif progress_stage < 3 and count >= 500 then 
-				progress_stage = 3
-				music(32)
-				stages[2].enemy_spawn_delay = 7
-				stages[2].enemy_speed = 0.9
-			elseif progress_stage < 2 and count >= 250 then 
-				progress_stage = 2
-				music(8)
-				stages[2].enemy_spawn_delay = 12
-				stages[2].enemy_speed = 0.7
-			elseif progress_stage < 1 and count >= 100 then 
-				progress_stage = 1
-				music(0)
-				stages[2].enemy_spawn_delay = 13
-				stages[2].enemy_speed = 0.5
-			end
-		end
-
-		if stage == 3 then
-			run_ending()
-		end
+	if stage == 3 then
+		run_ending()
 	end
 end

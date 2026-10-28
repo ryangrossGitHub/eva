@@ -28,11 +28,11 @@ j = {
 		arm_out = 38,
 		arm_up = 3
 	},
-	yeet_frame_count = 0, 
-	yeet_frame_delay = 5,
 	flip_sprite = true, 
 	x = init_jenn_x, 
 	y = init_player_y, 
+	w = 8,
+	h = 32,
 	last_animation_frame_x = init_jenn_x, 
 	last_animation_frame_y = init_player_y, 
 	animation_frame_delay = 5, 
@@ -41,7 +41,6 @@ j = {
 	trigger = false, -- trigger pressed,
 	kill_count = 0,
 	stepping = true, -- movement sprite
-	yeeting = false,
 	recoil = false, -- arm movement when firing
 	recoil_delay = 1,
 	recoil_count = 0,
@@ -60,11 +59,11 @@ c = {
 		arm_out = 22,
 		arm_up = 33
 	},
-	yeet_frame_count = 0, 
-	yeet_frame_delay = 5, 
 	flip_sprite = false, 
 	x = init_chad_x,
 	y = init_player_y, 
+	w = 8,
+	h = 32,
 	last_animation_frame_x = init_chad_x, 
 	last_animation_frame_y = init_player_y, 
 	animation_frame_delay = 5, 
@@ -73,7 +72,6 @@ c = {
 	trigger = false, -- trigger pressed
 	kill_count = 0,
 	stepping = true, -- movement sprite
-	yeeting = false,
 	recoil = false, -- arm movement when firing
 	recoil_delay = 1,
 	recoil_count = 0,
@@ -108,8 +106,6 @@ rifle = {
 weapon_list = {pistol, rifle}
 
 function update_p2()
-	enemy_collision(p2)
-
 	local c,y = nil
 	if p2.x > p1.x + 32 then
 		p2.flip_sprite = true
@@ -124,14 +120,8 @@ function update_p2()
  	if c then
 		if c < 0 then
 	  		p2.flip_sprite = true	  
-	  		if p2.x > camera_x+32 then
-	   			p2.x -= 1
-	  		end
 	 	else
 	  		p2.flip_sprite = false	  	  
-	  		if p2.x < camera_x+screen_size-32 then
-	   			p2.x += 1
-	  		end
 		end
 
 		handle_player_trigger(p2)
@@ -182,6 +172,7 @@ function closest_enemy()
 	if closest == 99 then -- no enemies in range
 		return nil, e_ydir
 	else
+		if e_ydir == 0 then e_ydir = 1 end -- tie breaker so bot doesn't freeze
 		return c_xdir, e_ydir
 	end
 end
@@ -199,18 +190,6 @@ function update_player_anims(p)
 			p.stepping = true
 		end
  	end
- 
- 	enemy_collision(p)
-
-	-- yeet
-	if p.yeeting then
- 		p.yeet_frame_count += 1
- 	
-		if p.yeet_frame_count >= p.yeet_frame_delay then
-			p.yeet_frame_count = 0
-			p.yeeting = false
-		end
- 	end
 end
 
 function draw_boss(armed)
@@ -219,21 +198,6 @@ function draw_boss(armed)
  	else
   		spr(38,boss.x,boss.y,2,2,false,false)
  	end
-end
-
-function enemy_collision(p)
-	if p.yeeting then
-		return -- early exit
-	end
-	
-	for e in all(enemies) do
-		if not e.dead and not e.yeeted and e.x > p.x-8 and  e.x < p.x+8 and e.y-4 > p.y-8 and e.y-4 < p.y+8 then
-			p.yeeting = true
-			e.yeeted = true
-			e.yeet_sprite_flip = p.flip_sprite
-			p.kill_count += 1
-		end
-	end 
 end
 
 function check_weapon_found()
@@ -249,10 +213,6 @@ function check_weapon_found()
 end
 
 function update_player_move(p, ctrl)
-	if p.yeeting then
-		return -- early exit
-	end
-
 	-- ctrl is the controller maping
 	if btn(0, ctrl) 
 		and p.x > 0 -- not out of bounds
@@ -276,7 +236,7 @@ function update_player_move(p, ctrl)
  
 	if btn(2, ctrl) and p.y > 24 then
 		p.y -= p.speed
-	elseif btn(3, ctrl) and p.y < screen_size - 43 then
+	elseif btn(3, ctrl) and p.y < screen_size - 33 then
 		p.y += p.speed
 	end
  
@@ -346,10 +306,6 @@ function handle_player_fire(p)
 end
 
 function draw_player_weapon(p)
-	if p.yeeting then
-		return -- early exit
-	end
-
 	local recoil_mult = 0
 
 	if p.recoil then
@@ -377,20 +333,18 @@ function draw_player_weapon(p)
 end
 
 function handle_player_trigger(p)
-	if not p.yeeting then
-		if not p.trigger then
-			p.trigger = true
+	if not p.trigger then
+		p.trigger = true
 
-			if p.weapon == 0 and p.weapon_delay == 0 then
-				p.weapon_delay = pistol.delay
-				handle_player_fire(p)
-			end
-		end
-
-		if p.weapon == 1 then
-			p.weapon_delay = 0
+		if p.weapon == 0 and p.weapon_delay == 0 then
+			p.weapon_delay = pistol.delay
 			handle_player_fire(p)
 		end
+	end
+
+	if p.weapon == 1 then
+		p.weapon_delay = 0
+		handle_player_fire(p)
 	end
 end
 
@@ -415,20 +369,20 @@ function draw_player(p)
 			c_head_x = p.x + 8
 		end
 
-		if p.trigger or p.yeeting then
+		if p.trigger then
 			spr(p.sprites.head2, c_head_x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
 		else
 			spr(p.sprites.head, c_head_x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
 		end
 	else
 		if p.flip_sprite then
-			if p.recoil or p.yeeting then
+			if p.recoil then
 				spr(p.sprites.head2, p.x + 8, p.y + bounce_height, 1, 2, p.flip_sprite, false)
 			else
 				spr(p.sprites.head, p.x + 8, p.y + bounce_height, 1, 2, p.flip_sprite, false)
 			end
 		else
-			if p.recoil or p.yeeting then
+			if p.recoil then
 				spr(p.sprites.head2, p.x, p.y + bounce_height, 1, 2, p.flip_sprite, false)
 			else
 				spr(p.sprites.head, p.x, p.y + bounce_height, 1, 2, p.flip_sprite, false)
@@ -453,19 +407,9 @@ function draw_player(p)
 
 	-- arm
 	if p.flip_sprite then
-		if p.yeeting then
-			spr(p.sprites.arm_up, p.x + 5, p.y + 5 + bounce_height, 1, 2, p.flip_sprite, false)
-			say(p.x, p.y, "YEEEEEET!", 1, false, false)
-		else
-			spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
-		end
+		spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
 	else
-		if p.yeeting then
-			spr(p.sprites.arm_up, p.x + 3, p.y + 5 + bounce_height, 1, 2, p.flip_sprite, false)
-			say(p.x, p.y, "YEEEEEET!", false, false, false)
-		else
-			spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
-		end
+		spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
 	end
 
 	if p.stepping then

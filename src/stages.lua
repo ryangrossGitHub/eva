@@ -4,9 +4,6 @@ stage_transfer_count = 0
 stage_transfer_total = 161 -- stage trans total 
 camera_x = 0
 camera_y = 0
-intro_count = 0
-intro_time = 60 * 5 -- 7 seconds
-intro = false
 wall_height = 56
 map_width = 8
 
@@ -112,19 +109,18 @@ function update_start()
     end
   end
  
- if btnp(2) or btnp(3) then
-    if coop then
-      coop = false
-    else 
-      coop = true
-    end
- end
+  if btnp(2) or btnp(3) then
+      if coop then
+        coop = false
+      else 
+        coop = true
+      end
+  end
  
   if btnp(4) or btnp(5) then
-    intro = true
     music(-1)
-    run_intro()
     printh("GAME START", log_file)
+    load_stage(1)
   end
 end
 
@@ -141,20 +137,6 @@ function draw_start()
   print_dialog(54,117, "⬇️   TWO PLAYERS", 0, true, false, 8, 7)  
   print_dialog(54,124, "⬅️   CHOOSE ELF   ➡️", 0, true, false, 8, 7)
   print_dialog(54,131, "PRESS ❎/🅾️ TO START", 0, true, false, 3, 7)
-end
-
-function run_intro()
-  if intro_count > 10 and (btnp(🅾️) or btnp(❎)) then
-    intro = false
-    load_stage(1)
-  end
-
-  if intro_count < intro_time then
-    intro_count += 1
-  else
-    intro = false
-    load_stage(1)
-  end
 end
 
 function draw_weapons()
