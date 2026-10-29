@@ -16,7 +16,7 @@ function spawn_enemy(speed)
 		x = camera_x + screen_size + 16,
 		y = rnd(48) + 48,
 		w = 8,
-		h = 24,
+		h = 32,
 		death_animation_frame_delay = 20,
 		death_animation_frame_count = 0, -- death animation frame count
 		dead = false,
@@ -90,7 +90,7 @@ end
 function seek_player(enemy, p)
 	local distance = abs(p.x - enemy.x)
 
-	if distance > 40 then
+	if distance > 25 then
 		if p.x < enemy.x - enemy.speed then
 			enemy.x -= enemy.speed
 			enemy.sprite_flip = false
@@ -100,13 +100,7 @@ function seek_player(enemy, p)
 		end
 	end
 
-	if enemy.y > 38 and p.y < enemy.y - 4 - enemy.speed then
-		enemy.y -= enemy.speed
-	elseif enemy.y < screen_size and p.y > enemy.y + enemy.speed then
-		enemy.y += enemy.speed
-	else
-		handle_enemy_fire(enemy)
-	end
+	handle_enemy_fire(enemy)
 end
 
 function handle_enemy_fire(e)
@@ -119,6 +113,7 @@ function handle_enemy_fire(e)
 		if not e.sprite_flip then
 			xd = -xd
 		end
+		sfx(0)
 		spawn_dart(e.x+4, e.y+6, xd, 0)
 	end
 end
@@ -143,28 +138,6 @@ function draw_enemies()
 				spr(enemy.sprite_number_face, enemy.x, enemy.y - 4, 1, 1, enemy.sprite_flip, false)
 			else
 				spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, enemy.sprite_flip, false)
-			end
-		end
-	end
-end
-
-function enemy_coll_detect(player) 
-	local hbox = 16 -- hit box
- 
-	for enemy in all(enemies) do
-		if not enemy.dead
-		and ((enemy.x - 2 < player.x and player.flip_sprite) or (enemy.x + 2 > player.x and not player.flip_sprite)) 
-		and (enemy.y - 4 > player.y - hbox + 12 and enemy.y - 4 < player.y + hbox + 8) then
-			
-			local weapon_force = 3
-			if player.weapon == 1 then
-				weapon_force = 1
-			end
-
-			if player.flip_sprite then
-				enemy.x -= weapon_force	
-			else
-				enemy.x += weapon_force
 			end
 		end
 	end

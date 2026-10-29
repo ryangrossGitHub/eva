@@ -51,6 +51,8 @@ function update_darts(enemies)
 
         dart_collision_detection(d, p1)
         dart_collision_detection(d, p2)
+        dart_map_collision_detection(d)
+
     end
 end
 
@@ -61,18 +63,69 @@ function dart_collision_detection(d, o)
         local return_dir = 1
         if d.dx > 0 then return_dir = -1 end
 
-        d.dx = (1.0 + rnd(2.0)) * return_dir
-        d.dy = -1.5 - rnd(3.0)
-        d.life = d.life + 20 
+        -- if return_dir == 1 then
+        --     o.x -= 1
+        -- else
+        --     o.x += 1
+        -- end
+    
+        d.life += 40 
         
         -- activate visual spin on hits
-        d.is_tumbling = true
-        -- random direction (clockwise/counter-clockwise) and faster speed
-        d.spin_speed = 0.15 + rnd(0.2)
-        if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
-
+        if not d.is_tumbling then -- first hit
+            d.dx = (1.0 + rnd(2.0)) * return_dir
+            d.dy = -1.5 - rnd(3.0)
+            d.is_tumbling = true
+            -- random direction (clockwise/counter-clockwise) and faster speed
+            d.spin_speed = 0.15 + rnd(0.2)
+            if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
+            if d.dx > 0 then d.x = o.x + o.w + 1 else d.x = o.x - 1 end
+        else
+            d.dx = (0.2 + rnd(1)) * return_dir
+            d.dy = -0 - rnd(1)
+        end
         
-        if d.dx > 0 then d.x = o.x + o.w + 1 else d.x = o.x - 1 end
+        d.bounces = d.bounces - 1
+        if d.bounces <= 0 then
+            del(darts, d)
+        end
+    end
+end
+
+function dart_map_collision_detection(d)
+    -- Convert dart pixel coordinates to map tile coordinates
+    local tile_x = flr(d.x / 8)
+    local tile_y = flr(d.y / 8)
+    
+    -- Get the sprite ID at this tile and check for Flag 0
+    local sprite = mget(tile_x, tile_y)
+    
+    if fget(sprite, 0) then
+        local return_dir = 1
+        if d.dx > 0 then return_dir = -1 end
+
+        d.life += 40 
+        
+        -- activate visual spin on hits
+        if not d.is_tumbling then -- first hit
+            d.dx = (1.0 + rnd(2.0)) * return_dir
+            d.dy = -1.5 - rnd(3.0)
+            d.is_tumbling = true
+            -- random direction (clockwise/counter-clockwise) and faster speed
+            d.spin_speed = 0.15 + rnd(0.2)
+            if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
+        else
+            d.dx = (0.2 + rnd(1)) * return_dir
+            d.dy = -0 - rnd(1)
+        end
+        
+        -- Reset pixel positions using the 8x8 tile boundaries
+        -- (tile_x * 8) is the left edge, (+ 8) is the right edge
+        if d.dx > 0 then 
+            d.x = (tile_x * 8) + 8 + 1 
+        else 
+            d.x = (tile_x * 8) - 1 
+        end
         
         d.bounces = d.bounces - 1
         if d.bounces <= 0 then

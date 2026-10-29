@@ -11,7 +11,7 @@ snow = {}
 
 stages = {
   { 
-    enemy_spawn_count = 10, -- unlimited
+    enemy_spawn_count = 2, -- unlimited
     enemy_speed = 0.4,
     enemy_spawn_delay = 14,
     enemy_spawn_initial_delay = 0,

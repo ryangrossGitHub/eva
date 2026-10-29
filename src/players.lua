@@ -214,9 +214,11 @@ end
 
 function update_player_move(p, ctrl)
 	-- ctrl is the controller maping
+
 	if btn(0, ctrl) 
 		and p.x > 0 -- not out of bounds
-		and p.x > camera_x + 16 then -- in camera frame
+		and p.x > camera_x + 16 -- in camera frame
+		and not fget(mget(flr((p.x + 16 - p.speed) / 8), flr((p.y + 24) / 8)), 0) then -- not running into object
 		p.flip_sprite = true 
 		p.x -= p.speed
 
@@ -225,7 +227,8 @@ function update_player_move(p, ctrl)
 		end
 	elseif btn(1, ctrl) 
 		and p.x < screen_size * map_width - 16 -- not past the end of the map
-		and p.x < camera_x + screen_size - 16 then -- both players in camera frame
+		and p.x < camera_x + screen_size - 16 -- both players in camera frame
+		and not fget(mget(flr((p.x + 8 + p.speed)/ 8), flr((p.y + 24) / 8)), 0) then -- not running into object
 		p.flip_sprite = false
 		p.x += p.speed
 		
@@ -234,9 +237,11 @@ function update_player_move(p, ctrl)
 		end
 	end
  
-	if btn(2, ctrl) and p.y > 24 then
+	if btn(2, ctrl) and p.y > 24 
+		and not fget(mget(flr((p.x + 8) / 8), flr((p.y - p.speed + 24) / 8)), 0) then -- not running into object
 		p.y -= p.speed
-	elseif btn(3, ctrl) and p.y < screen_size - 33 then
+	elseif btn(3, ctrl) and p.y < screen_size - 33 
+		and not fget(mget(flr((p.x + 8) / 8), flr((p.y + p.speed + 24) / 8)), 0) then -- not running into object
 		p.y += p.speed
 	end
  
@@ -301,8 +306,6 @@ function handle_player_fire(p)
 	end
 	-- add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
 	spawn_dart(p.x+4, p.y + 15, xd, 0)
-
-	enemy_coll_detect(p)
 end
 
 function draw_player_weapon(p)
