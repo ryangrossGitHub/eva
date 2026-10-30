@@ -13,7 +13,7 @@ stages = {
   { 
     enemy_spawn_count = 999, -- unlimited
     enemy_speed = 0.4,
-    enemy_spawn_delay = 30,
+    enemy_spawn_delay = 18,
     enemy_spawn_initial_delay = 0,
     enemy_spawn_initial_delay_count = 0,
     music_track = 0,

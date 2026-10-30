@@ -20,6 +20,9 @@ function spawn_enemy(speed)
 		death_animation_frame_delay = 7,
 		death_animation_frame_count = 0, -- death animation frame count
 		dead = false,
+		hit = false,
+		hit_anim_delay = 30,
+		hit_anim_count = 0,
 		animation_frame_delay = 7, -- animation frame delay
 		animation_frame_count = 0,
 		destination = flr(rnd(2)) + 1, -- 1 = player 1, 2 = player 2
@@ -67,21 +70,37 @@ function update_enemies()
 				end
 			end
 		else
-
-			seek_players(enemy)
-
 			enemy.animation_frame_count += 1
-		
-			if enemy.animation_frame_count >= enemy.animation_frame_delay then
-				enemy.animation_frame_count = 0
-				
-				-- enemy animation
-				if enemy.sprite_number == 144 then
-					enemy.sprite_number = 146
-				elseif enemy.sprite_number == 146 then
-					enemy.sprite_number = 144
+			
+			if enemy.hit then
+				if enemy.hit_anim_count < enemy.hit_anim_delay then
+					enemy.hit_anim_count += 1
+					enemy.sprite_number_face = 148
+				else
+					enemy.sprite_number_face = 132
+					enemy.hit_anim_count = 0
+					enemy.hit = false
 				end
-			end 
+
+				if enemy.damage >= enemy.max_damage then
+					enemy.dead = true
+                	enemy.sprite_number = 134
+				end
+			else
+				-- walk and fire	
+				seek_players(enemy)
+
+				if enemy.animation_frame_count >= enemy.animation_frame_delay then
+					enemy.animation_frame_count = 0
+					
+					-- enemy animation
+					if enemy.sprite_number == 144 then
+						enemy.sprite_number = 146
+					elseif enemy.sprite_number == 146 then
+						enemy.sprite_number = 144
+					end
+				end 
+			end
 		end
 	end
 end
@@ -120,12 +139,12 @@ function handle_enemy_fire(e)
 	else
 		e.fire_delay_count = 0
 
-		local xd = 15
+		local xd = 8
 		if not e.flip_sprite then
 			xd = -xd
 		end
 		sfx(0)
-		spawn_dart(e.x+4, e.y+6, xd, 0, true)
+		spawn_dart(e.x+4, e.y+6, xd, -1, true)
 	end
 end
 

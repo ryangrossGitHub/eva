@@ -48,42 +48,40 @@ function update_darts(enemies)
         -- 4. collision and ricochet
         -- avoid friendly fire
         if d.enemy_fire then
-            dart_collision_detection(d, p1, 1)
-            dart_collision_detection(d, p2, 1)
+            dart_collision_detection(d, p1, 1, 1)
+            dart_collision_detection(d, p2, 1, 1)
         else
             local damage = 1
-            if p1.weapon == 1 then
+            local force = 4
+            if p1.weapon == 1 then -- rifle
                 damage = 0.5
+                force = 2
             end
             for e in all(enemies) do
                 if not e.dead then
-                    dart_collision_detection(d, e, damage)
+                    dart_collision_detection(d, e, damage, force)
                 end
             end
         end
     end
 end
 
-function dart_collision_detection(d, o, damage)
+function dart_collision_detection(d, o, damage, force)
     if d.x >= o.x and d.x <= o.x + o.w and
         d.y >= o.y and d.y <= o.y + o.h then
         
         local return_dir = 1
         if d.dx > 0 then return_dir = -1 end
 
-        if return_dir == 1 then
-            o.x -= 1
-        else
-            o.x += 1
+        if o.damage then -- enemy
+            o.hit = true
+            o.damage += damage
         end
 
-        if o.max_damage then
-            o.damage += damage
-
-            if o.damage >= o.max_damage then
-                o.dead = true
-                o.sprite_number = 134
-            end
+        if return_dir == 1 then
+            o.x -= force
+        else
+            o.x += force
         end
     
         d.life += 40 

@@ -282,12 +282,12 @@ function handle_player_fire(p)
 	
 	sfx(0)
 
-	local xd = 15
+	local xd = 8
 	if p.flip_sprite then
 		xd = -xd
 	end
 	-- add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
-	spawn_dart(p.x+4, p.y + 15, xd, 0, false)
+	spawn_dart(p.x+4, p.y + 15, xd, -1, false)
 end
 
 function draw_player_weapon(p)
