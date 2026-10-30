@@ -1,13 +1,11 @@
 player_move = false
 
-init_jenn_x = 18
-init_chad_x = 44
+init_jenn_x = 40
+init_chad_x = 65
 init_player_y = 64
 
 camera_shake_offset = 0
 camera_shake_offset_amount = 1
-
-bot_nerf_multiplier = 1.5 
 
 bounce_delay = 18
 bounce_count = 0

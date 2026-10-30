@@ -5,7 +5,7 @@ enemey_spawn_stage_count = 0 -- stage cnt
 enemy_spawn_delay_count = 0 
 enemy_health = 20
 enemy_head_sprite_list = {132, 133, 148, 149, 164, 165, 180, 181}
-enemy_dead_frame = 40 -- how long before removing from table to avoid out of mem error
+enemy_dead_frame = 60 -- how long before removing from table to avoid out of mem error
 
 function spawn_enemy(speed)
 	enemy = {
@@ -13,11 +13,12 @@ function spawn_enemy(speed)
 		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
 		speed = speed, -- movement speed
 		flip_sprite = true,
+		rotate_sprite = false,
 		x = camera_x + screen_size + 16,
 		y = rnd(48) + 48,
 		w = 8,
 		h = 32,
-		death_animation_frame_delay = 7,
+		death_animation_frame_delay = 4,
 		death_animation_frame_count = 0, -- death animation frame count
 		dead = false,
 		hit = false,
@@ -60,12 +61,17 @@ function update_enemies()
 			else
 				enemy.dead_frames += 1
 				enemy.death_animation_frame_count += 1
-			
+
 				if enemy.death_animation_frame_count >= enemy.death_animation_frame_delay then
 					enemy.death_animation_frame_count = 0
-				
-					if enemy.sprite_number == 134 then
-						enemy.sprite_number = 186
+
+					sfx(0)
+					spawn_dart(enemy.x+18, enemy.y, rnd(4) - 2, -3, true)
+
+					if enemy.sprite_number == 170 then
+						enemy.sprite_number = 138
+					elseif enemy.sprite_number == 138 then
+						enemy.sprite_number = 170
 					end
 				end
 			end
@@ -84,7 +90,7 @@ function update_enemies()
 
 				if enemy.damage >= enemy.max_damage then
 					enemy.dead = true
-                	enemy.sprite_number = 134
+                	enemy.sprite_number = 170
 				end
 			else
 				-- walk and fire	
@@ -98,6 +104,7 @@ function update_enemies()
 						enemy.sprite_number = 146
 					elseif enemy.sprite_number == 146 then
 						enemy.sprite_number = 144
+						enemy.rotate_sprite = true
 					end
 				end 
 			end
@@ -152,9 +159,9 @@ function draw_enemies()
 	for enemy in all(enemies) do
 		if enemy.sprite_number == -1 then
 			-- shotgun death, don't draw
-		elseif enemy.sprite_number == 186 then
+		elseif enemy.sprite_number == 170 or enemy.sprite_number == 138 then
 			-- wide instead of tall sprite
-			spr(enemy.sprite_number, enemy.x, enemy.y+14, 4, 1, enemy.flip_sprite, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y+8, 4, 2, enemy.flip_sprite, false)
 		elseif enemy.sprite_number == 134 then
 			-- wide instead of tall sprite and need to lower it
 			spr(enemy.sprite_number, enemy.x, enemy.y-8, 4, 4, enemy.flip_sprite, false)
@@ -170,25 +177,5 @@ function draw_enemies()
 				spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, enemy.flip_sprite, false)
 			end
 		end
-	end
-end
-
-function enemy_die(enemy, weapon, flip, rotate)
- 	enemy.dead = true
-
-	if weapon == 1 or weapon == 7 or weapon == nil then
-		enemy.sprite_number = -1
-	else
-		enemy.sprite_number = 150
-	end
-
-	if weapon == nil then
-		return -- early exit, no particles
-	end
-   
-	local particle_count = 10
-
-	if weapon == 1 or weapon == 7 then
-		particle_count = 30
 	end
 end

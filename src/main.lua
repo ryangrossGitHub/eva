@@ -20,6 +20,7 @@ function _update()
  	if stage == 0 then
   		update_start()
 	else
+		center_camera_on_players()
 		-- Initial delay before spawning enemies for this stage
 		if stages[stage].enemy_spawn_initial_delay and 
 			stages[stage].enemy_spawn_initial_delay_count <  stages[stage].enemy_spawn_initial_delay then
@@ -49,7 +50,6 @@ function _update()
 	end
 
 	check_weapon_found()
-	center_camera_on_players()
 	update_darts(enemies)
 	update_enemies()
 	update_player_anims(p1)
