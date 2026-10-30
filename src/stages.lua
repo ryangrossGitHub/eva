@@ -11,12 +11,12 @@ snow = {}
 
 stages = {
   { 
-    enemy_spawn_count = 2, -- unlimited
+    enemy_spawn_count = 999, -- unlimited
     enemy_speed = 0.4,
-    enemy_spawn_delay = 14,
+    enemy_spawn_delay = 30,
     enemy_spawn_initial_delay = 0,
     enemy_spawn_initial_delay_count = 0,
-    music_track = 24,
+    music_track = 0,
     weapon_unlock = 1
   },
   { 
@@ -43,7 +43,7 @@ function load_stage(n)
   if n == 0 then
     load_start()
   elseif n == 1 then
-    music(24)
+    music(0)
     e_spawn = true
     player_move = true
   else

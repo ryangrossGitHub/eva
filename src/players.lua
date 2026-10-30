@@ -1,7 +1,7 @@
 player_move = false
 
-init_jenn_x = 43
-init_chad_x = 69
+init_jenn_x = 18
+init_chad_x = 44
 init_player_y = 64
 
 camera_shake_offset = 0
@@ -45,7 +45,8 @@ j = {
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
-	weapon_list_index = 1
+	weapon_list_index = 1,
+	enemy_collision = false
 }
 
 c = {
@@ -76,7 +77,8 @@ c = {
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
-	weapon_list_index = 1
+	weapon_list_index = 1,
+	enemy_collision = false
 }
 
 p1 = j
@@ -207,18 +209,15 @@ function check_weapon_found()
 			w.found = true
 			p1.weapon = w.id
 			p2.weapon = w.id
-			sfx(57)
 		end
 	end
 end
 
 function update_player_move(p, ctrl)
 	-- ctrl is the controller maping
-
 	if btn(0, ctrl) 
 		and p.x > 0 -- not out of bounds
-		and p.x > camera_x + 16 -- in camera frame
-		and not fget(mget(flr((p.x + 16 - p.speed) / 8), flr((p.y + 24) / 8)), 0) then -- not running into object
+		and p.x > camera_x then -- in camera frame
 		p.flip_sprite = true 
 		p.x -= p.speed
 
@@ -228,7 +227,7 @@ function update_player_move(p, ctrl)
 	elseif btn(1, ctrl) 
 		and p.x < screen_size * map_width - 16 -- not past the end of the map
 		and p.x < camera_x + screen_size - 16 -- both players in camera frame
-		and not fget(mget(flr((p.x + 8 + p.speed)/ 8), flr((p.y + 24) / 8)), 0) then -- not running into object
+		and not (not p.flip_sprite and p.enemy_collision) then -- can't move through enemies
 		p.flip_sprite = false
 		p.x += p.speed
 		
@@ -237,11 +236,9 @@ function update_player_move(p, ctrl)
 		end
 	end
  
-	if btn(2, ctrl) and p.y > 24 
-		and not fget(mget(flr((p.x + 8) / 8), flr((p.y - p.speed + 24) / 8)), 0) then -- not running into object
+	if btn(2, ctrl) and p.y > 24 then
 		p.y -= p.speed
-	elseif btn(3, ctrl) and p.y < screen_size - 33 
-		and not fget(mget(flr((p.x + 8) / 8), flr((p.y + p.speed + 24) / 8)), 0) then -- not running into object
+	elseif btn(3, ctrl) and p.y < screen_size - 33 then
 		p.y += p.speed
 	end
  
@@ -266,25 +263,10 @@ function update_player_move(p, ctrl)
 		-- 		end
 		-- 	end
 	end
-
-	if btn(❎, ctrl) and not displaying_weapons then
-		p.speed = 2
-
-		if not coop then
-			p2.speed = 2
-		end
-	else
-		p.speed = 1
-
-		if not coop then
-			p2.speed = 1
-		end
-	end
 end
 
 function center_camera_on_players()
-	-- local camera_center = flr(camera_x + screen_size/2)
-	local players_center = flr((p1.x + p2.x) / 2)
+	local players_center = flr((p1.x + p2.x + 64) / 2)
 
 	camera_x = players_center - screen_size/2
 end
@@ -305,7 +287,7 @@ function handle_player_fire(p)
 		xd = -xd
 	end
 	-- add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
-	spawn_dart(p.x+4, p.y + 15, xd, 0)
+	spawn_dart(p.x+4, p.y + 15, xd, 0, false)
 end
 
 function draw_player_weapon(p)

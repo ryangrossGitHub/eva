@@ -5,32 +5,33 @@ enemey_spawn_stage_count = 0 -- stage cnt
 enemy_spawn_delay_count = 0 
 enemy_health = 20
 enemy_head_sprite_list = {132, 133, 148, 149, 164, 165, 180, 181}
-enemy_dead_frame = 1000 -- how long before removing from table to avoid out of mem error
+enemy_dead_frame = 40 -- how long before removing from table to avoid out of mem error
 
 function spawn_enemy(speed)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
 		speed = speed, -- movement speed
-		sprite_flip = true,
+		flip_sprite = true,
 		x = camera_x + screen_size + 16,
 		y = rnd(48) + 48,
 		w = 8,
 		h = 32,
-		death_animation_frame_delay = 20,
+		death_animation_frame_delay = 7,
 		death_animation_frame_count = 0, -- death animation frame count
 		dead = false,
 		animation_frame_delay = 7, -- animation frame delay
 		animation_frame_count = 0,
 		destination = flr(rnd(2)) + 1, -- 1 = player 1, 2 = player 2
 		damage = 0,
+		max_damage = 10,
 		dead_frames = 0,
 		fire_delay = 10,
 		fire_delay_count = 0
 	}
 
 	if enemy.x > camera_x + screen_size/2 then
-		enemy.sprite_flip = false
+		enemy.flip_sprite = false
 	end
 	
 	-- if wall spawn support then 25% chance of wall spawn
@@ -47,6 +48,8 @@ function spawn_enemy(speed)
 end
 
 function update_enemies()
+	p1.enemy_collision = false
+	p2.enemy_collision = false
 	for enemy in all(enemies) do
 		if enemy.dead then
 			if enemy.dead_frames >= enemy_dead_frame then
@@ -58,18 +61,14 @@ function update_enemies()
 				if enemy.death_animation_frame_count >= enemy.death_animation_frame_delay then
 					enemy.death_animation_frame_count = 0
 				
-					if enemy.sprite_number == 150 then
-						enemy.sprite_number = 128
+					if enemy.sprite_number == 134 then
+						enemy.sprite_number = 186
 					end
 				end
 			end
 		else
 
-			if enemy.destination == 1 then
-				seek_player(enemy, p1)
-			elseif enemy.destination == 2 then
-				seek_player(enemy, p2)
-			end
+			seek_players(enemy)
 
 			enemy.animation_frame_count += 1
 		
@@ -87,20 +86,32 @@ function update_enemies()
 	end
 end
 
-function seek_player(enemy, p)
-	local distance = abs(p.x - enemy.x)
+function seek_players(enemy)
+	if p1.x < enemy.x - enemy.speed 
+		and p2.x < enemy.x - enemy.speed then
+		enemy.x -= enemy.speed
+		enemy.flip_sprite = false
 
-	if distance > 25 then
-		if p.x < enemy.x - enemy.speed then
-			enemy.x -= enemy.speed
-			enemy.sprite_flip = false
-		elseif p.x > enemy.x + enemy.speed then
-			enemy.x += enemy.speed
-			enemy.sprite_flip = true
+		-- pushing effect
+		if enemy.x - p1.x - p1.w < 8 -- x collision
+			and (abs(enemy.y - p1.y) < 32) then -- y collision
+			p1.enemy_collision = true
 		end
+
+		if enemy.x - p2.x - p2.w < 8 -- x collision
+			and (abs(enemy.y - p2.y) < 32) then -- y collision
+			p2.enemy_collision = true
+		end
+	elseif p1.x > enemy.x + enemy.speed 
+		and p2.x > enemy.x + enemy.speed then
+		enemy.x += enemy.speed
+		enemy.flip_sprite = true
 	end
 
-	handle_enemy_fire(enemy)
+	-- prevent firing from off screen
+	if abs(p1.x - enemy.x) < screen_size - 30 or abs(p2.x - enemy.x) < screen_size - 30 then
+		handle_enemy_fire(enemy)
+	end
 end
 
 function handle_enemy_fire(e)
@@ -110,11 +121,11 @@ function handle_enemy_fire(e)
 		e.fire_delay_count = 0
 
 		local xd = 15
-		if not e.sprite_flip then
+		if not e.flip_sprite then
 			xd = -xd
 		end
 		sfx(0)
-		spawn_dart(e.x+4, e.y+6, xd, 0)
+		spawn_dart(e.x+4, e.y+6, xd, 0, true)
 	end
 end
 
@@ -122,22 +133,22 @@ function draw_enemies()
 	for enemy in all(enemies) do
 		if enemy.sprite_number == -1 then
 			-- shotgun death, don't draw
-		elseif enemy.sprite_number == 136 then
+		elseif enemy.sprite_number == 186 then
 			-- wide instead of tall sprite
-			spr(enemy.sprite_number, enemy.x, enemy.y, 4, 2, enemy.sprite_flip, false)
-		elseif enemy.sprite_number == 128 then
+			spr(enemy.sprite_number, enemy.x, enemy.y+14, 4, 1, enemy.flip_sprite, false)
+		elseif enemy.sprite_number == 134 then
 			-- wide instead of tall sprite and need to lower it
-			spr(enemy.sprite_number, enemy.x, enemy.y + 16, 3, 1, enemy.sprite_flip, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y-8, 4, 4, enemy.flip_sprite, false)
 		elseif enemy.sprite_number == 150 then
-			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, enemy.sprite_flip, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, enemy.flip_sprite, false)
 		else
 			-- body
-			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, enemy.sprite_flip, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, enemy.flip_sprite, false)
 			-- head
-			if enemy.sprite_flip then
-				spr(enemy.sprite_number_face, enemy.x, enemy.y - 4, 1, 1, enemy.sprite_flip, false)
+			if enemy.flip_sprite then
+				spr(enemy.sprite_number_face, enemy.x, enemy.y - 4, 1, 1, enemy.flip_sprite, false)
 			else
-				spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, enemy.sprite_flip, false)
+				spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, enemy.flip_sprite, false)
 			end
 		end
 	end

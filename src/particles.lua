@@ -2,12 +2,13 @@
 
 darts = {}
 
-function spawn_dart(x, y, dx, dy)
+function spawn_dart(x, y, dx, dy, e)
     add(darts, {
         x = x,
         y = y,
         dx = dx,
         dy = dy,
+        enemy_fire = e,
         life = 90,
         bounces = 3,
         is_tumbling = false,
@@ -45,29 +46,45 @@ function update_darts(enemies)
         end
 
         -- 4. collision and ricochet
-        for e in all(enemies) do
-            dart_collision_detection(d, e)
+        -- avoid friendly fire
+        if d.enemy_fire then
+            dart_collision_detection(d, p1, 1)
+            dart_collision_detection(d, p2, 1)
+        else
+            local damage = 1
+            if p1.weapon == 1 then
+                damage = 0.5
+            end
+            for e in all(enemies) do
+                if not e.dead then
+                    dart_collision_detection(d, e, damage)
+                end
+            end
         end
-
-        dart_collision_detection(d, p1)
-        dart_collision_detection(d, p2)
-        dart_map_collision_detection(d)
-
     end
 end
 
-function dart_collision_detection(d, o)
+function dart_collision_detection(d, o, damage)
     if d.x >= o.x and d.x <= o.x + o.w and
         d.y >= o.y and d.y <= o.y + o.h then
         
         local return_dir = 1
         if d.dx > 0 then return_dir = -1 end
 
-        -- if return_dir == 1 then
-        --     o.x -= 1
-        -- else
-        --     o.x += 1
-        -- end
+        if return_dir == 1 then
+            o.x -= 1
+        else
+            o.x += 1
+        end
+
+        if o.max_damage then
+            o.damage += damage
+
+            if o.damage >= o.max_damage then
+                o.dead = true
+                o.sprite_number = 134
+            end
+        end
     
         d.life += 40 
         
@@ -83,48 +100,6 @@ function dart_collision_detection(d, o)
         else
             d.dx = (0.2 + rnd(1)) * return_dir
             d.dy = -0 - rnd(1)
-        end
-        
-        d.bounces = d.bounces - 1
-        if d.bounces <= 0 then
-            del(darts, d)
-        end
-    end
-end
-
-function dart_map_collision_detection(d)
-    -- Convert dart pixel coordinates to map tile coordinates
-    local tile_x = flr(d.x / 8)
-    local tile_y = flr(d.y / 8)
-    
-    -- Get the sprite ID at this tile and check for Flag 0
-    local sprite = mget(tile_x, tile_y)
-    
-    if fget(sprite, 0) then
-        local return_dir = 1
-        if d.dx > 0 then return_dir = -1 end
-
-        d.life += 40 
-        
-        -- activate visual spin on hits
-        if not d.is_tumbling then -- first hit
-            d.dx = (1.0 + rnd(2.0)) * return_dir
-            d.dy = -1.5 - rnd(3.0)
-            d.is_tumbling = true
-            -- random direction (clockwise/counter-clockwise) and faster speed
-            d.spin_speed = 0.15 + rnd(0.2)
-            if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
-        else
-            d.dx = (0.2 + rnd(1)) * return_dir
-            d.dy = -0 - rnd(1)
-        end
-        
-        -- Reset pixel positions using the 8x8 tile boundaries
-        -- (tile_x * 8) is the left edge, (+ 8) is the right edge
-        if d.dx > 0 then 
-            d.x = (tile_x * 8) + 8 + 1 
-        else 
-            d.x = (tile_x * 8) - 1 
         end
         
         d.bounces = d.bounces - 1
