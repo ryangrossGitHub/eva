@@ -123,8 +123,7 @@ function update_enemies()
 			end
 		end
 
-	if enemy.x > right_bound then enemy.x = right_bound - 1 end
-
+		if enemy.x < left_bound - 24 then game_over = true end
 	end
 end
 

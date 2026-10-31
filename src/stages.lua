@@ -6,8 +6,10 @@ camera_x = 0
 camera_y = 0
 wall_height = 56
 map_width = 8
+intro_camera_pause = 275
+intro_camera_pause_count = 0
 
-left_bound = 5 * 8
+left_bound = 7 * 8
 right_bound = 38 * 8
 
 snow = {}
@@ -16,9 +18,7 @@ stages = {
   { 
     enemy_spawn_count = 999, -- unlimited
     enemy_speed = 0.4,
-    enemy_spawn_delay = 100,
-    enemy_spawn_initial_delay = 0,
-    enemy_spawn_initial_delay_count = 0,
+    enemy_spawn_delay = 130,
     music_track = 0,
     weapon_unlock = 1
   },
@@ -26,7 +26,7 @@ stages = {
     enemy_spawn_count = 9999, -- unlimited
     enemy_speed = 0.4,
     enemy_spawn_delay = 14,
-    enemy_spawn_initial_delay = 30,
+    enemy_spawn_initial_delay = 0,
     enemy_spawn_initial_delay_count = 0,
     music_track = 24,
     weapon_unlock = 1
@@ -104,8 +104,25 @@ function update_start()
   if btnp(4) or btnp(5) then
     music(-1)
     printh("GAME START", log_file)
+    intro = true
     load_stage(1)
+    if not speaking() then
+      -- say("_/-1.67/_/g/-1.20/3/ih/-1.05/v/-1.04/m/-1.25/iy/y/-1.26/ao/-1.09/r/-1.69/-3/_/jh/1.46/-3/aa/-1.57/-3/_/b")
+    end
   end
+end
+
+-- camera pan
+function update_intro()
+    if intro_camera_pause_count < intro_camera_pause then
+      camera_x = right_bound - screen_size/1.5
+    elseif camera_x > 35 then
+      camera_x -= 2
+    else
+      intro = false
+    end
+
+    intro_camera_pause_count += 1
 end
 
 function draw_start()
@@ -171,6 +188,8 @@ function reset()
   stage_transfer_count = 0
   e_spawn = false
   player_move = false
+  game_over = false
+  intro = false
   progress_stage = 0
   stage = 0
   j.x = init_jenn_x

@@ -2,6 +2,10 @@ screen_size = 128
 user_data_memory_address = 0x8000
 log_file = "log.txt"
 progress_stage = 0
+intro = false
+game_over = false
+game_over_delay = 100
+game_over_delay_count = 0
 
 function _init()
 	printh("GAME INIT", log_file, true)
@@ -18,7 +22,7 @@ function _update()
 	speako8()  -- must appear once unconditionally in _update.
 
  	if stage == 0 then
-  		update_start()
+		update_start()
 	else
 		-- Initial delay before spawning enemies for this stage
 		if stages[stage].enemy_spawn_initial_delay and 
@@ -26,18 +30,22 @@ function _update()
 			
 			stages[stage].enemy_spawn_initial_delay_count += 1
 		elseif stages[stage].enemy_spawn_count > enemey_spawn_stage_count then
-			enemy_spawn_delay_count += 1
-				
-			if e_spawn and enemy_spawn_delay_count >= stages[stage].enemy_spawn_delay then
+			if e_spawn and enemy_spawn_delay_count == 0 then
 				-- spawn in rows
 				spawn_enemy(stages[stage].enemy_speed, 40)
 				spawn_enemy(stages[stage].enemy_speed, 55)
 				spawn_enemy(stages[stage].enemy_speed, 70)
 				spawn_enemy(stages[stage].enemy_speed, 85)
-				enemy_spawn_delay_count = 0
+				enemy_spawn_delay_count = stages[stage].enemy_spawn_delay
 				enemey_spawn_stage_count += 1
 			end
+
+			enemy_spawn_delay_count -= 1
 		end
+	end
+
+	if intro then
+		update_intro()
 	end
  
 	if player_move then
@@ -48,7 +56,9 @@ function _update()
 		if not coop and btn_pressed then coop = true end
 	end
 
-	center_camera_on_players()
+	if not intro then
+		center_camera_on_players()
+	end
  
 	if not coop then
 		update_p2()
@@ -67,6 +77,16 @@ function _update()
 	if p2.weapon_delay > 0 then
 		p2.weapon_delay -= 1
 	end
+
+	if game_over then
+		if game_over_delay_count >= game_over_delay then
+			game_over_delay_count = 0
+			reset()
+		else
+			game_over_delay_count += 1
+		end
+	end
+
 end
 
 function _draw()
@@ -75,7 +95,7 @@ function _draw()
 	map(0,0)
 	if stage == 0 then
 		draw_start()
-	elseif not coop then
+	elseif not coop and not intro then
 		print_dialog(55 + camera_x, 131, "p2 PRESS ❎/🅾️ TO JOIN", 0, true, false, 3, 0)
 	end
 
@@ -88,12 +108,18 @@ function _draw()
 	end
 
 	camera(camera_x,camera_y)
+
 	if camera_shake_offset < 0 then
 		camera_shake_offset += 1
 		camera_x += 1
 	elseif camera_shake_offset > 0 then
 		camera_shake_offset -= 1
 		camera_x -= 1
+	end
+
+	if intro and camera_x > 35 then
+		print("\^w\^tdefend the", camera_x + 20, 68, 8)
+		print("\^w\^tworkshop", camera_x + 28, 88, 8)
 	end
 
 	-- draw_weapons()
@@ -117,6 +143,11 @@ function _draw()
 	draw_player_weapon(p1)
 	draw_player(p1)
 	print("p1", p1.x - 3, p1.y - 7, 8)
+
+	if game_over then
+		print("\^w\^tgame over", camera_x + 24, 68, 8)
+		print("THE WORKSHOP HAS BEEN BREACHED", camera_x + 4, 88, 8)
+	end
 
 	draw_snow()
 end

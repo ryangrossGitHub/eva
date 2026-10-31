@@ -248,9 +248,6 @@ function update_player_move(p, ctrl)
 	
 	if btnp(❎, ctrl) then
 		btn_pressed = true
-		-- if not speaking() then
-		-- 	say("_/-1.67/_/g/-1.27/3/eh/-1.69/_/t/-1.12/dh/-1.33/ae/-1.69/_/t/-1.12/3/eh/-1.20/l/-1.20/f")
-		-- end
 		-- 	for i=1, #weapon_list do
 		-- 		p.weapon_list_index += 1
 		-- 		if p.weapon_list_index > #weapon_list then
@@ -289,7 +286,7 @@ function handle_player_fire(p)
 	if p.flip_sprite then
 		xd = -xd
 	end
-	-- add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
+
 	spawn_dart(p.x+4, p.y + 16, xd, -1, false)
 end
 
