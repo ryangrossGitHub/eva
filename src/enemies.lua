@@ -7,14 +7,14 @@ enemy_health = 20
 enemy_head_sprite_list = {132, 133, 148, 149, 164, 165, 180, 181}
 enemy_dead_frame = 60 -- how long before removing from table to avoid out of mem error
 
-function spawn_enemy(speed)
+function spawn_enemy(speed, y)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
 		speed = speed, -- movement speed
 		rotate_sprite = false,
 		x = 38 * 8,
-		y = rnd(40) + 48,
+		y = y,
 		w = 8,
 		h = 32,
 		death_animation_frame_delay = 4,
@@ -124,7 +124,7 @@ function update_enemies()
 		end
 
 	if enemy.x > right_bound then enemy.x = right_bound - 1 end
-	
+
 	end
 end
 
@@ -156,6 +156,14 @@ function draw_enemies()
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
 			-- head
 			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, false, false)
+		end
+	end
+end
+
+function draw_enemy_shadows()
+	for e in all(enemies) do
+		if not e.dead then
+			spr(68, e.x + 4, e.y + 16, 2, 2, false, false)
 		end
 	end
 end

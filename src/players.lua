@@ -411,3 +411,11 @@ function draw_player(p)
 	end
 	
 end
+
+function draw_player_shadow(p)
+	if p.flip_sprite then
+		spr(68, p.x + 3, p.y + 24, 2, 2, false, false)
+	else
+		spr(68, p.x - 3, p.y + 24, 2, 2, false, false)
+	end
+end

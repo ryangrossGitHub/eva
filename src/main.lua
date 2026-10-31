@@ -29,7 +29,11 @@ function _update()
 			enemy_spawn_delay_count += 1
 				
 			if e_spawn and enemy_spawn_delay_count >= stages[stage].enemy_spawn_delay then
-				spawn_enemy(stages[stage].enemy_speed)
+				-- spawn in rows
+				spawn_enemy(stages[stage].enemy_speed, 40)
+				spawn_enemy(stages[stage].enemy_speed, 55)
+				spawn_enemy(stages[stage].enemy_speed, 70)
+				spawn_enemy(stages[stage].enemy_speed, 85)
 				enemy_spawn_delay_count = 0
 				enemey_spawn_stage_count += 1
 			end
@@ -50,7 +54,7 @@ function _update()
 		update_p2()
 	end
 
-	check_weapon_found()
+	-- check_weapon_found()
 	update_enemies()
 	update_darts(enemies)
 	update_player_anims(p1)
@@ -92,7 +96,10 @@ function _draw()
 		camera_x -= 1
 	end
 
-	draw_weapons()
+	-- draw_weapons()
+	draw_player_shadow(p1)
+	draw_player_shadow(p2)
+	draw_enemy_shadows()
 
 	draw_darts()
 	
