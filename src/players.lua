@@ -1,7 +1,7 @@
 player_move = false
 
-init_jenn_x = 40
-init_chad_x = 65
+init_jenn_x = 7*8
+init_chad_x = 10*8
 init_player_y = 64
 
 camera_shake_offset = 0
@@ -26,7 +26,7 @@ j = {
 		arm_out = 38,
 		arm_up = 3
 	},
-	flip_sprite = true, 
+	flip_sprite = false, 
 	x = init_jenn_x, 
 	y = init_player_y, 
 	w = 8,
@@ -134,6 +134,8 @@ function update_p2()
 	elseif y and y > 0 then
 	 	p2.y += 1
 	end
+
+	if p2.x < left_bound then p2.x = left_bound + 1 end
 end
 
 function closest_enemy()
@@ -192,14 +194,6 @@ function update_player_anims(p)
  	end
 end
 
-function draw_boss(armed)
- 	if armed then
-	 	spr(36,boss.x,boss.y,2,2,false,false)
- 	else
-  		spr(38,boss.x,boss.y,2,2,false,false)
- 	end
-end
-
 function check_weapon_found()
 	for w in all(weapon_list) do
 		if not w.found and ((w.x > p1.x and w.x < p1.x + 16) and (w.y > p1.y and w.y < p1.y + 32)
@@ -214,7 +208,7 @@ end
 function update_player_move(p, ctrl)
 	-- ctrl is the controller maping
 	if btn(0, ctrl) 
-		and p.x > 0 -- not out of bounds
+		and p.x > left_bound -- not out of bounds
 		and p.x > camera_x then -- in camera frame
 		p.flip_sprite = true 
 		p.x -= p.speed
@@ -223,7 +217,7 @@ function update_player_move(p, ctrl)
 			camera_x -= p.speed
 		end
 	elseif btn(1, ctrl) 
-		and p.x < screen_size * map_width - 16 -- not past the end of the map
+		and p.x < right_bound -- not past the end of the map
 		and p.x < camera_x + screen_size - 16 -- both players in camera frame
 		and not (not p.flip_sprite and p.enemy_collision) then -- can't move through enemies
 		p.flip_sprite = false
@@ -234,9 +228,9 @@ function update_player_move(p, ctrl)
 		end
 	end
  
-	if btn(2, ctrl) and p.y > 24 then
+	if btn(2, ctrl) and p.y > 26 then
 		p.y -= p.speed
-	elseif btn(3, ctrl) and p.y < screen_size - 33 then
+	elseif btn(3, ctrl) and p.y < screen_size - 49 then
 		p.y += p.speed
 	end
  
@@ -261,6 +255,8 @@ function update_player_move(p, ctrl)
 		-- 		end
 		-- 	end
 	end
+
+	if p.x < left_bound then p.x = left_bound + 1 end
 end
 
 function center_camera_on_players()
@@ -285,7 +281,7 @@ function handle_player_fire(p)
 		xd = -xd
 	end
 	-- add(particles, particle(p.x+4, p.y + 15, xs, 0, 9, 7, nil, p.flip_sprite))
-	spawn_dart(p.x+4, p.y + 15, xd, -1, false)
+	spawn_dart(p.x+4, p.y + 16, xd, -1, false)
 end
 
 function draw_player_weapon(p)

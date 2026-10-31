@@ -2,6 +2,8 @@
 
 darts = {}
 
+bounce_cooldown = 10 -- frames to wait before checking another bounce, helps when dart stuck in obj and performance
+
 function spawn_dart(x, y, dx, dy, e)
     add(darts, {
         x = x,
@@ -13,7 +15,8 @@ function spawn_dart(x, y, dx, dy, e)
         bounces = 3,
         is_tumbling = false,
         spin_angle = 0,
-        spin_speed = 0
+        spin_speed = 0,
+        cooldown = 0
     })
 end
 
@@ -46,20 +49,30 @@ function update_darts(enemies)
         end
 
         -- 4. collision and ricochet
-        -- avoid friendly fire
-        if d.enemy_fire then
-            dart_collision_detection(d, p1, 1, 1)
-            dart_collision_detection(d, p2, 1, 1)
+
+        if d.cooldown > 0 then
+            d.cooldown -= 1 -- helps prevent getting stuck in objects
         else
-            local damage = 1
-            local force = 4
-            if p1.weapon == 1 then -- rifle
-                damage = 0.5
-                force = 2
-            end
-            for e in all(enemies) do
-                if not e.dead then
-                    dart_collision_detection(d, e, damage, force)
+            -- avoid friendly fire
+            if d.enemy_fire then
+                dart_collision_detection(d, p1, 1, 1)
+                dart_collision_detection(d, p2, 1, 1)
+            else
+                local damage = 1
+                local force = 4
+                if p1.weapon == 1 then -- rifle
+                    damage = 0.5
+                    force = 2
+                end
+
+                for e in all(enemies) do
+                    if not e.dead then
+                        dart_collision_detection(d, e, damage, force)
+                    end
+                end
+
+                if d.x - d.dx > right_bound then
+                    dart_collision_response(d, -1)
                 end
             end
         end
@@ -84,26 +97,31 @@ function dart_collision_detection(d, o, damage, force)
             o.x += force
         end
     
-        d.life += 40 
-        
-        -- activate visual spin on hits
-        if not d.is_tumbling then -- first hit
-            d.dx = (1.0 + rnd(2.0)) * return_dir
-            d.dy = -1.5 - rnd(3.0)
-            d.is_tumbling = true
-            -- random direction (clockwise/counter-clockwise) and faster speed
-            d.spin_speed = 0.15 + rnd(0.2)
-            if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
-            if d.dx > 0 then d.x = o.x + o.w + 1 else d.x = o.x - 1 end
-        else
-            d.dx = (0.2 + rnd(1)) * return_dir
-            d.dy = -0 - rnd(1)
-        end
-        
-        d.bounces = d.bounces - 1
-        if d.bounces <= 0 then
-            del(darts, d)
-        end
+        dart_collision_response(d, return_dir)
+    end
+end
+
+function dart_collision_response(d, dir)
+    d.life += 40 
+    d.cooldown = bounce_cooldown
+    
+    -- activate visual spin on hits
+    if not d.is_tumbling then -- first hit
+        d.dx = (1.0 + rnd(2.0)) * dir
+        d.dy = -1.5 - rnd(3.0)
+        d.is_tumbling = true
+        -- random direction (clockwise/counter-clockwise) and faster speed
+        d.spin_speed = 0.15 + rnd(0.2)
+        if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
+        -- if d.dx > 0 then d.x = o.x + o.w + 1 else d.x = o.x - 1 end
+    else
+        d.dx = (0.2 + rnd(1)) * dir
+        d.dy = -0 - rnd(1)
+    end
+    
+    d.bounces = d.bounces - 1
+    if d.bounces <= 0 then
+        del(darts, d)
     end
 end
 

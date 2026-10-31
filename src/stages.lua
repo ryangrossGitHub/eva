@@ -7,13 +7,16 @@ camera_y = 0
 wall_height = 56
 map_width = 8
 
+left_bound = 5 * 8
+right_bound = 38 * 8
+
 snow = {}
 
 stages = {
   { 
     enemy_spawn_count = 999, -- unlimited
     enemy_speed = 0.4,
-    enemy_spawn_delay = 100,
+    enemy_spawn_delay = 30,
     enemy_spawn_initial_delay = 0,
     enemy_spawn_initial_delay_count = 0,
     music_track = 0,
@@ -131,12 +134,12 @@ function draw_start()
 	  rect(p2.x - 3, p2.y - 1, p2.x + 16, p2.y + 32, 3)
   end
   
-  print_dialog(51,22,"\^w\^telves vs ai", 0, true, false, 7, 0)
-  print_dialog(54,36,"BATTLE FOR THE NORTH", 0, true, false, 8, 0)
-  print_dialog(54,110, "⬆️   ONE PLAYER", 0, true, false, 8, 7)
-  print_dialog(54,117, "⬇️   TWO PLAYERS", 0, true, false, 8, 7)  
-  print_dialog(54,124, "⬅️   CHOOSE ELF   ➡️", 0, true, false, 8, 7)
-  print_dialog(54,131, "PRESS ❎/🅾️ TO START", 0, true, false, 3, 7)
+  print_dialog(91,22,"\^w\^telves vs ai", 0, true, false, 7, 0)
+  print_dialog(94,36,"BATTLE FOR THE NORTH", 0, true, false, 8, 0)
+  print_dialog(94,110, "⬆️   ONE PLAYER", 0, true, false, 8, 7)
+  print_dialog(94,117, "⬇️   TWO PLAYERS", 0, true, false, 8, 7)  
+  print_dialog(94,124, "⬅️   CHOOSE ELF   ➡️", 0, true, false, 8, 7)
+  print_dialog(94,131, "PRESS ❎/🅾️ TO START", 0, true, false, 3, 7)
 end
 
 function draw_weapons()
@@ -146,41 +149,48 @@ function draw_weapons()
 end
 
 function init_snow()
-  for i = 1, 120 do -- slightly fewer particles for a cleaner snow look
-    add(snow, {
-      x = rnd(128),
-      y = rnd(128),
-      spd = 0.3 + rnd(0.5), -- significantly slower falling speed
-      sine_offset = rnd(100), -- unique offset for the swaying pattern
-      sine_spd = 0.02 + rnd(0.03) -- how fast each flake sways left and right
-    })
-  end
+ snow = {} -- ensure array is initialized
+ for i = 1, 120 do
+  add(snow, {
+   x = camera_x + rnd(128), -- spawn initially within the current camera view
+   y = rnd(128),
+   spd = 0.3 + rnd(0.5),
+   sine_offset = rnd(100),
+   sine_spd = 0.02 + rnd(0.03)
+  })
+ end
 end
 
 function draw_snow()
-  for flake in all(snow) do
-    -- fall down slowly
-    flake.y += flake.spd
-    
-    -- update the swaying angle
-    flake.sine_offset += flake.sine_spd
-    
-    -- calculate final horizontal position with a wind bias + wave motion
-    -- pset requires integers, so we use flr() when drawing
-    local drift_x = flake.x + sin(flake.sine_offset) * 4 - 2 -- 4 is the sway width, -2 shifts it slightly left for wind
-    
-    -- screen wrap thresholds
-    if (flake.y > 128) then
-      flake.y = -2
-      flake.x = rnd(128)
-    end
-    if (flake.x < -4) flake.x = 132
-    if (flake.x > 132) flake.x = -4
+ for flake in all(snow) do
+  -- fall down slowly
+  flake.y += flake.spd
 
-    -- draw flake as a single pixel (color 7 is white, color 6 is light gray for variety if desired)
-    pset(flr(drift_x), flr(flake.y), 7)
+  -- update the swaying angle
+  flake.sine_offset += flake.sine_spd
+
+  -- calculate horizontal position with a wind bias + wave motion
+  local drift_x = flake.x + sin(flake.sine_offset) * 4 - 2
+
+  -- screen wrap thresholds relative to the camera
+  if (flake.y > 128) then
+   flake.y = -2
+   flake.x = camera_x + rnd(128) -- respawn at the top, inside the current camera view
   end
+
+  -- if a flake goes off the left side of the camera, wrap to the right side
+  if (flake.x < camera_x - 4) then
+   flake.x += 136
+  -- if a flake goes off the right side of the camera, wrap to the left side
+  elseif (flake.x > camera_x + 132) then
+   flake.x -= 136
+  end
+
+  -- draw flake using its world coordinates
+  pset(flr(drift_x), flr(flake.y), 7)
+ end
 end
+
 
 function reset()
   stage_trans = false

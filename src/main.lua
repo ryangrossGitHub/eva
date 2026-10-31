@@ -8,7 +8,7 @@ function _init()
 	palt(13, true) -- Transparent Color Is Purple (13)
 	palt(0, false)
 	load_stage(0)
-	-- music(0)
+	music(63)
 	init_snow()
 	spk8_pitch,spk8_rate,spk8_volume,spk8_quality,spk8_intonation,spk8_if0,spk8_shift,spk8_bandwidth,spk8_whisper=
 	100,0.7,1.5,.5,10,10,1,1,1
@@ -20,7 +20,6 @@ function _update()
  	if stage == 0 then
   		update_start()
 	else
-		center_camera_on_players()
 		-- Initial delay before spawning enemies for this stage
 		if stages[stage].enemy_spawn_initial_delay and 
 			stages[stage].enemy_spawn_initial_delay_count <  stages[stage].enemy_spawn_initial_delay then
@@ -44,14 +43,16 @@ function _update()
 			update_player_move(p2,1)
 		end
 	end
+
+	center_camera_on_players()
  
 	if not coop then
 		update_p2()
 	end
 
 	check_weapon_found()
-	update_darts(enemies)
 	update_enemies()
+	update_darts(enemies)
 	update_player_anims(p1)
 	update_player_anims(p2)
 
@@ -72,7 +73,8 @@ function _draw()
 		draw_start()
 	end
 
-	print_dialog(20 * 8, 5 * 8, "santa's workshop", 1, false, false, 8, 3)
+	print_dialog((11 * 8) - 3, (6 * 8) + 2, "WORKSHOP", 0, false, false, 0, 4)
+	print_dialog(35 * 8, (6 * 8) - 3, "DATA CENTER", 1, false, false, 6, 5)
 
 	local s = stages[stage]
 	if not s then
@@ -108,36 +110,4 @@ function _draw()
 	print("p1", p1.x - 3, p1.y - 7, 8)
 
 	draw_snow()
-
-	if not stage_trans and stage > 1 then
-		local count = c.kill_count + j.kill_count
-		if progress_stage < 4 and count >= 1000 then 
-			progress_stage = 4
-			stage = 3
-			-- enemies = {} -- clear
-			music(56)
-			c.flip_sprite = false
-			j.flip_sprite = false
-			player_move = false
-		elseif progress_stage < 3 and count >= 500 then 
-			progress_stage = 3
-			music(32)
-			stages[2].enemy_spawn_delay = 7
-			stages[2].enemy_speed = 0.9
-		elseif progress_stage < 2 and count >= 250 then 
-			progress_stage = 2
-			music(8)
-			stages[2].enemy_spawn_delay = 12
-			stages[2].enemy_speed = 0.7
-		elseif progress_stage < 1 and count >= 100 then 
-			progress_stage = 1
-			music(0)
-			stages[2].enemy_spawn_delay = 13
-			stages[2].enemy_speed = 0.5
-		end
-	end
-
-	if stage == 3 then
-		run_ending()
-	end
 end
