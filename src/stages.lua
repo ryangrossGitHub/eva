@@ -52,23 +52,12 @@ function load_stage(n)
   else
     enemey_spawn_stage_count = 0
     
-    -- 8 to 9 is transition inside
-    if n == 9 then
-      j.y = screen_size + init_player_y
-      c.y = screen_size + init_player_y-16
-      j.x = 16
-      c.x = 16
-      camera_y = screen_size
-      camera_x = 0
-      e_spawn = true
-      player_move = true
-    else
-      stage_trans = true
-      e_spawn = false
-      player_move = false
-      j.flip_sprite = false
-      c.flip_sprite = false
-    end
+    stage_trans = true
+    e_spawn = false
+    player_move = false
+    j.flip_sprite = false
+    c.flip_sprite = false
+
   end
 end
 
@@ -95,8 +84,8 @@ function load_start()
   e_spawn = false
   camera_x = 0
   camera_y = 0
-  j.y = init_player_y
-  c.y = init_player_y
+  j.y = init_jenn_y
+  c.y = init_chad_y
   j.x = init_jenn_x
   c.x = init_chad_x
 end
@@ -128,18 +117,9 @@ function update_start()
 end
 
 function draw_start()
-  rect(p1.x - 3, p1.y - 1, p1.x + 16, p1.y + 32, 8)
-  
-  if coop then
-	  rect(p2.x - 3, p2.y - 1, p2.x + 16, p2.y + 32, 3)
-  end
-  
   print_dialog(91,22,"\^w\^telves vs ai", 0, true, false, 7, 0)
   print_dialog(94,36,"BATTLE FOR THE NORTH", 0, true, false, 8, 0)
-  print_dialog(94,110, "⬆️   ONE PLAYER", 0, true, false, 8, 7)
-  print_dialog(94,117, "⬇️   TWO PLAYERS", 0, true, false, 8, 7)  
-  print_dialog(94,124, "⬅️   CHOOSE ELF   ➡️", 0, true, false, 8, 7)
-  print_dialog(94,131, "PRESS ❎/🅾️ TO START", 0, true, false, 3, 7)
+  print_dialog(94,131, "PRESS ❎/🅾️ TO START", 0, true, false, 8, 0)
 end
 
 function draw_weapons()
@@ -202,10 +182,10 @@ function reset()
   progress_stage = 0
   stage = 0
   j.x = init_jenn_x
-	j.y = init_player_y
+	j.y = init_jenn_y
   j.kill_count = 0
   c.x = init_chad_x 
-	c.y = init_player_y
+	c.y = init_chad_y
   c.kill_count = 0
   music(0)  
 end

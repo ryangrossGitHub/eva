@@ -1,8 +1,9 @@
 player_move = false
 
-init_jenn_x = 7*8
-init_chad_x = 10*8
-init_player_y = 64
+init_jenn_x = 9*8
+init_jenn_y = 74
+init_chad_x = 7*8
+init_chad_y = 48
 
 camera_shake_offset = 0
 camera_shake_offset_amount = 1
@@ -28,11 +29,11 @@ j = {
 	},
 	flip_sprite = false, 
 	x = init_jenn_x, 
-	y = init_player_y, 
+	y = init_jenn_y, 
 	w = 8,
 	h = 32,
 	last_animation_frame_x = init_jenn_x, 
-	last_animation_frame_y = init_player_y, 
+	last_animation_frame_y = init_jenn_y, 
 	animation_frame_delay = 5, 
 	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
@@ -60,11 +61,11 @@ c = {
 	},
 	flip_sprite = false, 
 	x = init_chad_x,
-	y = init_player_y, 
+	y = init_chad_y, 
 	w = 8,
 	h = 32,
 	last_animation_frame_x = init_chad_x, 
-	last_animation_frame_y = init_player_y, 
+	last_animation_frame_y = init_chad_y, 
 	animation_frame_delay = 5, 
 	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
@@ -206,10 +207,13 @@ function check_weapon_found()
 end
 
 function update_player_move(p, ctrl)
+	local btn_pressed = false
+
 	-- ctrl is the controller maping
 	if btn(0, ctrl) 
 		and p.x > left_bound -- not out of bounds
 		and p.x > camera_x then -- in camera frame
+		
 		p.flip_sprite = true 
 		p.x -= p.speed
 
@@ -220,6 +224,7 @@ function update_player_move(p, ctrl)
 		and p.x < right_bound -- not past the end of the map
 		and p.x < camera_x + screen_size - 16 -- both players in camera frame
 		and not (not p.flip_sprite and p.enemy_collision) then -- can't move through enemies
+		
 		p.flip_sprite = false
 		p.x += p.speed
 		
@@ -235,12 +240,14 @@ function update_player_move(p, ctrl)
 	end
  
 	if btn(🅾️, ctrl) then
+		btn_pressed = true
 		handle_player_trigger(p)
  	else
   		p.trigger = false
  	end
 	
 	if btnp(❎, ctrl) then
+		btn_pressed = true
 		-- if not speaking() then
 		-- 	say("_/-1.67/_/g/-1.27/3/eh/-1.69/_/t/-1.12/dh/-1.33/ae/-1.69/_/t/-1.12/3/eh/-1.20/l/-1.20/f")
 		-- end
@@ -257,6 +264,8 @@ function update_player_move(p, ctrl)
 	end
 
 	if p.x < left_bound then p.x = left_bound + 1 end
+
+	return btn_pressed
 end
 
 function center_camera_on_players()

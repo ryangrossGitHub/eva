@@ -38,10 +38,10 @@ function _update()
  
 	if player_move then
 		update_player_move(p1,0)
-		
-		if coop then
-			update_player_move(p2,1)
-		end
+
+		local btn_pressed = update_player_move(p2,1)
+
+		if not coop and btn_pressed then coop = true end
 	end
 
 	center_camera_on_players()
@@ -71,6 +71,8 @@ function _draw()
 	map(0,0)
 	if stage == 0 then
 		draw_start()
+	elseif not coop then
+		print_dialog(55 + camera_x, 131, "p2 PRESS ❎/🅾️ TO JOIN", 0, true, false, 3, 0)
 	end
 
 	print_dialog((11 * 8) - 3, (6 * 8) + 2, "WORKSHOP", 0, false, false, 0, 4)
