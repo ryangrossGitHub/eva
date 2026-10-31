@@ -75,7 +75,7 @@ function _draw()
 		print_dialog(55 + camera_x, 131, "p2 PRESS ❎/🅾️ TO JOIN", 0, true, false, 3, 0)
 	end
 
-	print_dialog((11 * 8) - 3, (6 * 8) + 2, "WORKSHOP", 0, false, false, 0, 4)
+	print_dialog((11 * 8) - 3, (6 * 8) + 2, "\138WORKSHOP", 0, false, false, 0, 4)
 	print_dialog(35 * 8, (6 * 8) - 3, "DATA CENTER", 1, false, false, 6, 5)
 
 	local s = stages[stage]

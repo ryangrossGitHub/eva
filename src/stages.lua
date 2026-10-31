@@ -101,14 +101,6 @@ function update_start()
     end
   end
  
-  if btnp(2) or btnp(3) then
-      if coop then
-        coop = false
-      else 
-        coop = true
-      end
-  end
- 
   if btnp(4) or btnp(5) then
     music(-1)
     printh("GAME START", log_file)
