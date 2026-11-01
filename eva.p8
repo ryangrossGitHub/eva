@@ -1,7 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
--- Elves vs AI
+-- eLVES VS ai
 -- BY EAGLE & FALCON
 #include src/main.lua
 #include src/particles.lua

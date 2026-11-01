@@ -228,14 +228,14 @@ function update_player_move(p, ctrl)
 		p.y += p.speed
 	end
  
-	if btn(🅾️, ctrl) then
+	if btn(❎, ctrl) then
 		btn_pressed = true
 		handle_player_trigger(p)
  	else
   		p.trigger = false
  	end
 	
-	if btnp(❎, ctrl) then
+	if btnp(🅾️, ctrl) then
 		btn_pressed = true
 		-- 	for i=1, #weapon_list do
 		-- 		p.weapon_list_index += 1
