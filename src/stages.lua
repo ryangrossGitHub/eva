@@ -1,12 +1,12 @@
 stage = 0
 stage_trans = false
 stage_transfer_count = 0
-stage_transfer_total = 161 -- stage trans total 
+stage_transfer_total = 80 -- stage trans total 
 camera_x = 0
 camera_y = 0
 wall_height = 56
 map_width = 8
-intro_camera_pause = 275
+intro_camera_pause = 260
 intro_camera_pause_count = 0
 
 left_bound = 7 * 8
@@ -16,27 +16,24 @@ snow = {}
 
 stages = {
   { 
-    enemy_spawn_count = 999, -- unlimited
-    enemy_speed = 0.4,
-    enemy_spawn_delay = 130,
-    music_track = 0,
-    weapon_unlock = 1
+    enemy_spawn_count = 5, 
+    enemy_speed = 0.385,
+    enemy_spawn_delay = 130
   },
   { 
-    enemy_spawn_count = 9999, -- unlimited
+    enemy_spawn_count = 10, 
     enemy_speed = 0.4,
-    enemy_spawn_delay = 14,
-    enemy_spawn_initial_delay = 0,
-    enemy_spawn_initial_delay_count = 0,
-    music_track = 24,
-    weapon_unlock = 1
+    enemy_spawn_delay = 50
   },
   { 
-    enemy_spawn_count = 0,
+    enemy_spawn_count = 10, 
     enemy_speed = 0.4,
-    enemy_spawn_delay = 8,
-    music_track = 56,
-    weapon_unlock = 1
+    enemy_spawn_delay = 50
+  },
+  { 
+    enemy_spawn_count = 10, 
+    enemy_speed = 0.4,
+    enemy_spawn_delay = 50
   },
 }
 
@@ -48,34 +45,22 @@ function load_stage(n)
   elseif n == 1 then
     music(0)
     e_spawn = true
-    player_move = true
   else
+    enemy_kill_count = 0
     enemey_spawn_stage_count = 0
-    
     stage_trans = true
     e_spawn = false
-    player_move = false
-    j.flip_sprite = false
-    c.flip_sprite = false
-
   end
 end
 
 function update_stage_trans()
   if stage_transfer_count < stage_transfer_total then
     stage_transfer_count += 1
-    j.x += 0.8
-    c.x += 0.8
-    camera_x += 0.8
   else
+    stage_transfer_count = 0
+    enemy_spawn_delay_count = 0
     stage_trans = false
-    enemies = {} -- clear
-    particles = {} -- clear
-    if stage < 16 then
-      stage_transfer_count = 0
-      e_spawn = true
-      player_move = true
-    end
+    e_spawn = true
   end
 end
 
@@ -120,6 +105,7 @@ function update_intro()
       camera_x -= 2
     else
       intro = false
+      player_move = true
     end
 
     intro_camera_pause_count += 1
@@ -128,7 +114,7 @@ end
 function draw_start()
   print_dialog(91,22,"\^w\^telves vs ai", 0, true, false, 7, 0)
   print_dialog(94,36,"BATTLE FOR THE NORTH", 0, true, false, 8, 0)
-  print_dialog(94,131, "PRESS ❎/🅾️ TO START", 0, true, false, 8, 0)
+  print_dialog(94,131, "PRESS ❎ TO START", 0, true, false, 8, 0)
 end
 
 function draw_weapons()
@@ -137,9 +123,9 @@ function draw_weapons()
   end
 end
 
-function init_snow()
+function init_snow(n)
  snow = {} -- ensure array is initialized
- for i = 1, 120 do
+ for i = 1, n do
   add(snow, {
    x = camera_x + rnd(128), -- spawn initially within the current camera view
    y = rnd(128),
@@ -199,16 +185,4 @@ function reset()
 	c.y = init_chad_y
   c.kill_count = 0
   music(0)  
-end
-
-
-function run_ending()
-  if j.x >= screen_size * map_width + 16 or c.x >= screen_size * map_width + 16 then
-    -- walk in place
-    c.last_animation_frame_x -= 1
-    j.last_animation_frame_x -= 1
-  else
-    j.x += 1
-    c.x += 1
-  end
 end

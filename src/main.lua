@@ -6,6 +6,9 @@ intro = false
 game_over = false
 game_over_delay = 100
 game_over_delay_count = 0
+p2_join_blink_count = 0
+p2_join_blink_total = 30
+p2_join_hide = false
 
 function _init()
 	printh("GAME INIT", log_file, true)
@@ -13,7 +16,7 @@ function _init()
 	palt(0, false)
 	load_stage(0)
 	music(63)
-	init_snow()
+	init_snow(100)
 	spk8_pitch,spk8_rate,spk8_volume,spk8_quality,spk8_intonation,spk8_if0,spk8_shift,spk8_bandwidth,spk8_whisper=
 	100,0.7,1.5,.5,10,10,1,1,1
 end
@@ -24,23 +27,23 @@ function _update()
  	if stage == 0 then
 		update_start()
 	else
-		-- Initial delay before spawning enemies for this stage
-		if stages[stage].enemy_spawn_initial_delay and 
-			stages[stage].enemy_spawn_initial_delay_count <  stages[stage].enemy_spawn_initial_delay then
-			
-			stages[stage].enemy_spawn_initial_delay_count += 1
-		elseif stages[stage].enemy_spawn_count > enemey_spawn_stage_count then
+		if stages[stage].enemy_spawn_count > enemey_spawn_stage_count then
 			if e_spawn and enemy_spawn_delay_count == 0 then
 				-- spawn in rows
-				spawn_enemy(stages[stage].enemy_speed, 40)
-				spawn_enemy(stages[stage].enemy_speed, 55)
-				spawn_enemy(stages[stage].enemy_speed, 70)
-				spawn_enemy(stages[stage].enemy_speed, 85)
+				local spawn_point = 38 * 8
+				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40)
+				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55)
+				spawn_enemy(stages[stage].enemy_speed, spawn_point, 70)
+				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85)
 				enemy_spawn_delay_count = stages[stage].enemy_spawn_delay
 				enemey_spawn_stage_count += 1
 			end
 
 			enemy_spawn_delay_count -= 1
+		elseif #enemies == 0 then
+			stage += 1
+			init_snow(stage * 100)
+			load_stage(stage)
 		end
 	end
 
@@ -87,6 +90,24 @@ function _update()
 		end
 	end
 
+	if not coop then
+		p2_join_blink_count += 1
+
+		if p2_join_blink_count >= p2_join_blink_total then
+			p2_join_blink_count = 0
+
+			if p2_join_hide then
+				p2_join_hide = false
+			else 
+				p2_join_hide = true
+			end
+		end
+	else
+		p2_join_hide = true
+	end
+
+	if stage_trans then update_stage_trans() end
+
 end
 
 function _draw()
@@ -95,8 +116,15 @@ function _draw()
 	map(0,0)
 	if stage == 0 then
 		draw_start()
-	elseif not coop and not intro then
-		print_dialog(55 + camera_x, 131, "p2 PRESS ❎/🅾️ TO JOIN", 0, true, false, 3, 0)
+	elseif not intro then
+		print("❎ SHOOT", 85, 80, 6)
+		print("wave: "..stage.."/8", camera_x + 48, screen_size - 6, 8)
+		spr(132, camera_x + screen_size - 30, screen_size - 8)
+		print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 20, screen_size - 6, 7)
+
+		if not p2_join_hide then
+			print("p2 PRESS ❎ TO JOIN", camera_x + 30, 0, 3)
+		end
 	end
 
 	print_dialog((11 * 8) - 3, (6 * 8) + 2, "\138WORKSHOP", 0, false, false, 0, 4)
@@ -115,11 +143,6 @@ function _draw()
 	elseif camera_shake_offset > 0 then
 		camera_shake_offset -= 1
 		camera_x -= 1
-	end
-
-	if intro and camera_x > 35 then
-		print("\^w\^tdefend the", camera_x + 20, 68, 8)
-		print("\^w\^tworkshop", camera_x + 28, 88, 8)
 	end
 
 	-- draw_weapons()
@@ -147,6 +170,11 @@ function _draw()
 	if game_over then
 		print("\^w\^tgame over", camera_x + 24, 68, 8)
 		print("THE WORKSHOP HAS BEEN BREACHED", camera_x + 4, 88, 8)
+	elseif intro and camera_x > 35 then
+		print("\^w\^tdefend the", camera_x + 20, 68, 8)
+		print("\^w\^tworkshop", camera_x + 28, 88, 8)
+	elseif stage_trans then
+		print("\^w\^twave: "..stage, camera_x + 38, 62, 8)
 	end
 
 	draw_snow()
