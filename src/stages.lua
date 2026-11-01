@@ -1,7 +1,7 @@
 stage = 0
 stage_trans = false
 stage_transfer_count = 0
-stage_transfer_total = 80 -- stage trans total 
+stage_transfer_total = 120 -- stage trans total 
 camera_x = 0
 camera_y = 0
 wall_height = 56
@@ -22,18 +22,23 @@ stages = {
   },
   { 
     enemy_spawn_count = 10, 
-    enemy_speed = 0.4,
-    enemy_spawn_delay = 50
+    enemy_speed = 0.5,
+    enemy_spawn_delay = 20
+  },
+  { 
+    enemy_spawn_count = 12, 
+    enemy_speed = 0.6,
+    enemy_spawn_delay = 12
+  },
+  { 
+    enemy_spawn_count = 20, 
+    enemy_speed = 1,
+    enemy_spawn_delay = 20
   },
   { 
     enemy_spawn_count = 10, 
-    enemy_speed = 0.4,
-    enemy_spawn_delay = 50
-  },
-  { 
-    enemy_spawn_count = 10, 
-    enemy_speed = 0.4,
-    enemy_spawn_delay = 50
+    enemy_speed = 2,
+    enemy_spawn_delay = 80
   },
 }
 
@@ -46,10 +51,19 @@ function load_stage(n)
     music(0)
     e_spawn = true
   else
+    if not speaking() then
+      say("_/s/-1.39/3/ao/-1.22/f/-1.74/_/t/-1.10/w/-1.40/eh/-1.09/r/-1.60/ah/-1.56/_/p/-1.72/-3/_/d/-1.13/-3/ey/-1.64/-3/_/t/_/-1.67/_/k/-1.58/ah/-1.03/m/-1.64/-3/_/p/-1.07/-3/l/-1.14/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t")
+    end
     enemy_kill_count = 0
     enemey_spawn_stage_count = 0
     stage_trans = true
     e_spawn = false
+  end
+
+  if n == 4 then
+    p1.weapon = 1
+    p2.weapon = 1
+    sfx(1)
   end
 end
 
@@ -91,9 +105,6 @@ function update_start()
     printh("GAME START", log_file)
     intro = true
     load_stage(1)
-    if not speaking() then
-      -- say("_/-1.67/_/g/-1.20/3/ih/-1.05/v/-1.04/m/-1.25/iy/y/-1.26/ao/-1.09/r/-1.69/-3/_/jh/1.46/-3/aa/-1.57/-3/_/b")
-    end
   end
 end
 
@@ -115,12 +126,6 @@ function draw_start()
   print_dialog(91,22,"\^w\^telves vs ai", 0, true, false, 7, 0)
   print_dialog(94,36,"BATTLE FOR THE NORTH", 0, true, false, 8, 0)
   print_dialog(94,131, "PRESS ❎ TO START", 0, true, false, 8, 0)
-end
-
-function draw_weapons()
-  if not rifle.found then
-    spr(rifle.sprite, rifle.x, rifle.y, rifle.length, 1)
-  end
 end
 
 function init_snow(n)

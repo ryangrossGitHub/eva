@@ -18,7 +18,7 @@ function _init()
 	music(63)
 	init_snow(100)
 	spk8_pitch,spk8_rate,spk8_volume,spk8_quality,spk8_intonation,spk8_if0,spk8_shift,spk8_bandwidth,spk8_whisper=
-	100,0.7,1.5,.5,10,10,1,1,1
+	60,0.5,1.75,.5,10,10,1,1,1
 end
 
 function _update()
@@ -67,7 +67,6 @@ function _update()
 		update_p2()
 	end
 
-	-- check_weapon_found()
 	update_enemies()
 	update_darts(enemies)
 	update_player_anims(p1)
@@ -118,9 +117,9 @@ function _draw()
 		draw_start()
 	elseif not intro then
 		print("❎ SHOOT", 85, 80, 6)
-		print("wave: "..stage.."/8", camera_x + 48, screen_size - 6, 8)
-		spr(132, camera_x + screen_size - 30, screen_size - 8)
-		print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 20, screen_size - 6, 7)
+		print("wave: "..stage.."/8", camera_x + 2, screen_size - 6, 8)
+		spr(132, camera_x + screen_size - 40, screen_size - 8)
+		print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 30, screen_size - 6, 7)
 
 		if not p2_join_hide then
 			print("p2 PRESS ❎ TO JOIN", camera_x + 30, 0, 3)
@@ -145,7 +144,6 @@ function _draw()
 		camera_x -= 1
 	end
 
-	-- draw_weapons()
 	draw_player_shadow(p1)
 	draw_player_shadow(p2)
 	draw_enemy_shadows()

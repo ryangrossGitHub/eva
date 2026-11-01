@@ -100,8 +100,8 @@ rifle = {
 	sprite = 36,
 	length = 2,
 	found = false,
-	x = 30 * 8,
-	y = 11 * 8
+	x = 8 * 8,
+	y = 10 * 8
 }
 
 weapon_list = {pistol, rifle}
@@ -193,17 +193,6 @@ function update_player_anims(p)
 			p.stepping = true
 		end
  	end
-end
-
-function check_weapon_found()
-	for w in all(weapon_list) do
-		if not w.found and ((w.x > p1.x and w.x < p1.x + 16) and (w.y > p1.y and w.y < p1.y + 32)
-			or (w.x > p2.x and w.x < p2.x + 16) and (w.y > p2.y and w.y < p2.y + 32)) then
-			w.found = true
-			p1.weapon = w.id
-			p2.weapon = w.id
-		end
-	end
 end
 
 function update_player_move(p, ctrl)
