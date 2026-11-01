@@ -22,6 +22,10 @@ function _init()
 end
 
 function _update()
+	if stage == 6 then
+		return
+	end
+
 	speako8()  -- must appear once unconditionally in _update.
 
  	if stage == 0 then
@@ -111,6 +115,12 @@ end
 
 function _draw()
 	cls()
+
+	if stage == 6 then
+		print("ENDING UNDER CONSTRUCTION...", camera_x, 0)
+		print("ITS GUNA BE EPIC, I PROMISE ; )", camera_x, 20)
+		return
+	end
 
 	map(0,0)
 	if stage == 0 then
