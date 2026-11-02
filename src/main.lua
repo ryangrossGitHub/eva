@@ -9,6 +9,7 @@ game_over_delay_count = 0
 p2_join_blink_count = 0
 p2_join_blink_total = 30
 p2_join_hide = false
+camera_shake = 0
 
 function _init()
 	printh("GAME INIT", log_file, true)
@@ -72,9 +73,14 @@ function _update()
 	end
 
 	update_enemies()
+	update_enemy_trails()
 	update_darts(enemies)
 	update_player_anims(p1)
 	update_player_anims(p2)
+	update_player_force(p1)
+	update_player_force(p2)
+	update_player_trail(p1)
+	update_player_trail(p2)
 
 	if p1.weapon_delay > 0 then
 		p1.weapon_delay -= 1
@@ -110,6 +116,8 @@ function _update()
 	end
 
 	if stage_trans then update_stage_trans() end
+
+	update_screen_shake()
 
 end
 
@@ -160,8 +168,10 @@ function _draw()
 
 	draw_darts()
 	
+	draw_enemy_trails()
 	draw_enemies()
 	
+	draw_player_trail(p2)
 	draw_player_weapon(p2)
 	draw_player(p2)
 	local p2_disp = "cp"
@@ -171,6 +181,7 @@ function _draw()
 	print(p2_disp, p2.x - 3, p2.y - 7, 3)
 
 	-- Draw player 1 after player 2 so that player 1 is in front of player 2
+	draw_player_trail(p1)
 	draw_player_weapon(p1)
 	draw_player(p1)
 	print("p1", p1.x - 3, p1.y - 7, 8)
@@ -186,4 +197,6 @@ function _draw()
 	end
 
 	draw_snow()
+	draw_player_force(p1)
+	draw_player_force(p2)
 end

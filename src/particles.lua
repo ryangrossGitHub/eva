@@ -61,7 +61,6 @@ function update_darts(enemies)
                 local damage = 1
                 local force = 4
                 if p1.weapon == 1 then -- rifle
-                    damage = 0.5
                     force = 2
                 end
 

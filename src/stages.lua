@@ -6,7 +6,7 @@ camera_x = 0
 camera_y = 0
 wall_height = 56
 map_width = 8
-intro_camera_pause = 260
+intro_camera_pause = 0--260
 intro_camera_pause_count = 0
 
 left_bound = 7 * 8
@@ -31,9 +31,9 @@ stages = {
     enemy_spawn_delay = 12
   },
   { 
-    enemy_spawn_count = 20, 
+    enemy_spawn_count = 15, 
     enemy_speed = 1,
-    enemy_spawn_delay = 20
+    enemy_spawn_delay = 30
   },
   { 
     enemy_spawn_count = 10, 
@@ -190,4 +190,15 @@ function reset()
 	c.y = init_chad_y
   c.kill_count = 0
   music(0)  
+end
+
+function update_screen_shake()
+  if camera_shake < 0.5 then 
+    camera_shake = 0
+    camera_y = 0 
+  else
+    camera_shake *= 0.85
+    camera_x = camera_x + (rnd(camera_shake * 2) - camera_shake)
+    camera_y = camera_y + (rnd(camera_shake * 2) - camera_shake)
+  end
 end

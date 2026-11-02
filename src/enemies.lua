@@ -8,6 +8,8 @@ enemy_head_sprite_list = {132, 133, 148, 149, 164, 165, 180, 181}
 enemy_dead_frame = 60 -- how long before removing from table to avoid out of mem error
 enemy_kill_count = 0
 
+enemy_trails = {}
+
 function spawn_enemy(speed, x, y)
 	enemy = {
 		sprite_number = 144,
@@ -31,7 +33,8 @@ function spawn_enemy(speed, x, y)
 		max_damage = 10,
 		dead_frames = 0,
 		fire_delay = 10,
-		fire_delay_count = 0
+		fire_delay_count = 0,
+		trail = {}
 	}
 	
 	-- if wall spawn support then 25% chance of wall spawn
@@ -63,13 +66,16 @@ function update_enemies()
 				if enemy.death_animation_frame_count >= enemy.death_animation_frame_delay then
 					enemy.death_animation_frame_count = 0
 
-					sfx(0)
-					spawn_dart(enemy.x+18, enemy.y, rnd(4) - 2, -3, true)
+					if enemy.dead_frames % 20 == 0 then
+						sfx(0)
+						spawn_dart(enemy.x+18, enemy.y, rnd(4) - 2, -3, true)
+					end
 
 					if enemy.sprite_number == 170 then
 						enemy.sprite_number = 138
 					elseif enemy.sprite_number == 138 then
 						enemy.sprite_number = 170
+						
 					end
 				end
 			end
@@ -87,8 +93,7 @@ function update_enemies()
 				end
 
 				if enemy.damage >= enemy.max_damage then
-					enemy.dead = true
-                	enemy.sprite_number = 170
+					kill_enemy(enemy)
 				end
 			else
 				-- walk
@@ -128,6 +133,34 @@ function update_enemies()
 		if enemy.x < left_bound - 24 then game_over = true end
 		if enemy.x > right_bound then enemy.x = right_bound end
 	end
+end
+
+function update_enemy_trails()
+	if trail_capture_count == 0 then
+		for e in all(enemies) do
+			if not e.dead then
+				add(enemy_trails, {x = e.x + 8, y = e.y + 24})
+			end
+		end
+	end
+
+	if #enemy_trails > trail_capture_length then
+		del(enemy_trails, enemy_trails[1])
+	end
+end
+
+function draw_enemy_trails()
+	for t in all(enemy_trails) do
+		pset(t.x, t.y, 6)
+		pset(t.x, t.y + 1, 6)
+		pset(t.x + 1, t.y, 6)
+		pset(t.x + 1, t.y + 1, 6)
+	end
+end
+
+function kill_enemy(e)
+	e.dead = true
+	e.sprite_number = 170
 end
 
 function handle_enemy_fire(e)

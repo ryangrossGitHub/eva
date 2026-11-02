@@ -16,6 +16,10 @@ displaying_weapons = false
 displaying_weapons_delay = 10
 displaying_weapons_count = 0
 
+trail_capture_delay = 4
+trail_capture_count = 0
+trail_capture_length = 100
+
 j = {
 	name = "jenn",
 	sprites = {
@@ -45,7 +49,10 @@ j = {
 	recoil_count = 0,
 	speed = 1,
 	weapon_list_index = 1,
-	enemy_collision = false
+	enemy_collision = false,
+	force_special_active = false,
+	force_radius = 0,
+	trail = {}
 }
 
 c = {
@@ -77,7 +84,11 @@ c = {
 	recoil_count = 0,
 	speed = 1,
 	weapon_list_index = 1,
-	enemy_collision = false
+	enemy_collision = false,
+	force_special_active = false,
+	force_radius = 0,
+	trail = {},
+	trail_foot_to_capture = 0 -- 0 left foot, 1 right foot
 }
 
 p1 = j
@@ -195,6 +206,25 @@ function update_player_anims(p)
  	end
 end
 
+function update_player_trail(p)
+	if trail_capture_count < trail_capture_delay then
+		trail_capture_count += 1
+	else
+		trail_capture_count = 0
+		if p.trail_foot_to_capture == 0 then
+			p.trail_foot_to_capture = 1
+			add(p.trail, {x = p.x + 4, y = p.y + 30})
+		else
+			p.trail_foot_to_capture = 0
+			add(p.trail, {x = p.x + 4, y = p.y + 32})
+		end
+	end
+
+	if #p.trail > trail_capture_length then
+		del(p.trail, p.trail[1])
+	end
+end
+
 function update_player_move(p, ctrl)
 	local btn_pressed = false
 
@@ -216,7 +246,6 @@ function update_player_move(p, ctrl)
 		
 		p.flip_sprite = false
 		p.x += p.speed
-		
 		if p2.x > camera_x and p1.x > camera_x then
 			camera_x += p.speed
 		end
@@ -237,16 +266,8 @@ function update_player_move(p, ctrl)
 	
 	if btnp(🅾️, ctrl) then
 		btn_pressed = true
-		-- 	for i=1, #weapon_list do
-		-- 		p.weapon_list_index += 1
-		-- 		if p.weapon_list_index > #weapon_list then
-		-- 			p.weapon_list_index = 1
-		-- 		end
-		-- 		if weapon_list[p.weapon_list_index].found then
-		-- 			p.weapon = weapon_list[p.weapon_list_index].id
-		-- 			break
-		-- 		end
-		-- 	end
+		camera_shake = 3
+		p.force_special_active = true
 	end
 
 	if p.x < left_bound then p.x = left_bound + 1 end
@@ -306,6 +327,74 @@ function draw_player_weapon(p)
 	end
 end
 
+function draw_player_trail(p)
+	for t in all(p.trail) do
+		pset(t.x, t.y, 6)
+	end
+end
+
+function update_player_force(p)
+	if not p.force_special_active then return end
+
+	local rad_max = 120
+	if p.force_radius < rad_max - 20  then
+		p.force_radius = p.force_radius + (rad_max - p.force_radius) * 0.05
+	else
+		p.force_radius = 0
+		p.force_special_active = false
+	end 
+
+	for e in all(enemies) do
+		if is_in_circle(e.x, e.y, p.x + 4, p.y + 16, p.force_radius) then
+			kill_enemy(e)
+		end
+	end
+end
+
+function is_in_circle(spr_x, spr_y, circ_x, circ_y, circ_r)
+  local dx = spr_x - circ_x
+  local dy = spr_y - circ_y
+  local dist_sq = dx * dx + dy * dy
+  local rad_sq = circ_r * circ_r
+  
+  return dist_sq <= rad_sq
+end
+
+
+function draw_player_force(p)
+	if not p.force_special_active then return end
+	
+	local blast = {
+		x = p.x + 4,
+		y = p.y + 16,
+		r = p.force_radius      
+	}
+
+    for a = 0, 1, 0.005 do
+		local c = cos(a)
+		local s = sin(a)
+		
+		-- Loop 5 times to create a 5-pixel thick wave front
+		for w = 0, 4 do
+			-- Current radius layer we are drawing
+			local current_r = blast.r - w
+			
+			-- Target destination: Where we are drawing the warped pixel
+			local wave_x = flr(blast.x + c * current_r)
+			local wave_y = flr(blast.y + s * current_r)
+			
+			-- Source location: Grab a pixel from deeper inside the explosion
+			-- We subtract 4 more pixels to create a strong outward "refraction" pinch
+			local src_x = flr(blast.x + c * (current_r - 4))
+			local src_y = flr(blast.y + s * (current_r - 4))
+			
+			-- Grab and rewrite the pixel data
+			local col = pget(src_x, src_y)
+			pset(wave_x, wave_y, col)
+		end
+  	end
+end
+	
 function handle_player_trigger(p)
 	if not p.trigger then
 		p.trigger = true
