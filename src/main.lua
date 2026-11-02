@@ -23,7 +23,7 @@ function _init()
 end
 
 function _update()
-	if stage == 6 then
+	if stage == 7 then
 		return
 	end
 
@@ -124,7 +124,7 @@ end
 function _draw()
 	cls()
 
-	if stage == 6 then
+	if stage == 7 then
 		print("ENDING UNDER CONSTRUCTION...", camera_x, 0)
 		print("ITS GUNA BE EPIC, I PROMISE ; )", camera_x, 20)
 		return
@@ -135,6 +135,11 @@ function _draw()
 		draw_start()
 	elseif not intro then
 		print("❎ SHOOT", 85, 80, 6)
+
+		if stage > 3 then
+			print("🅾️ SPECIAL", 85, 90, 6)
+		end
+
 		print("wave: "..stage.."/8", camera_x + 2, screen_size - 6, 8)
 		spr(132, camera_x + screen_size - 40, screen_size - 8)
 		print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 30, screen_size - 6, 7)

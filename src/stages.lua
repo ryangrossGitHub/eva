@@ -6,7 +6,7 @@ camera_x = 0
 camera_y = 0
 wall_height = 56
 map_width = 8
-intro_camera_pause = 0--260
+intro_camera_pause = 260
 intro_camera_pause_count = 0
 
 left_bound = 7 * 8
@@ -26,19 +26,24 @@ stages = {
     enemy_spawn_delay = 20
   },
   { 
-    enemy_spawn_count = 12, 
-    enemy_speed = 0.6,
-    enemy_spawn_delay = 12
-  },
-  { 
     enemy_spawn_count = 15, 
-    enemy_speed = 1,
-    enemy_spawn_delay = 30
+    enemy_speed = 0.6,
+    enemy_spawn_delay = 15
   },
   { 
-    enemy_spawn_count = 10, 
+    enemy_spawn_count = 30, 
+    enemy_speed = 1,
+    enemy_spawn_delay = 15
+  },
+  { 
+    enemy_spawn_count = 50, 
+    enemy_speed = 1,
+    enemy_spawn_delay = 25
+  },
+  { 
+    enemy_spawn_count = 100, 
     enemy_speed = 2,
-    enemy_spawn_delay = 80
+    enemy_spawn_delay = 25
   },
 }
 
@@ -60,9 +65,13 @@ function load_stage(n)
     e_spawn = false
   end
 
-  if n == 4 then
+  if n == 6 then
     p1.weapon = 1
     p2.weapon = 1
+    sfx(1)
+  end
+
+  if n == 4 then
     sfx(1)
   end
 end

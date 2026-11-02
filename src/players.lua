@@ -18,7 +18,7 @@ displaying_weapons_count = 0
 
 trail_capture_delay = 4
 trail_capture_count = 0
-trail_capture_length = 100
+trail_capture_length = 200
 
 j = {
 	name = "jenn",
@@ -29,7 +29,7 @@ j = {
 		legs_standing = 48,
 		legs_moving = 50,
 		arm_out = 38,
-		arm_up = 3
+		arm_up = 6
 	},
 	flip_sprite = false, 
 	x = init_jenn_x, 
@@ -51,6 +51,8 @@ j = {
 	weapon_list_index = 1,
 	enemy_collision = false,
 	force_special_active = false,
+	force_special_anim_seq = 0,
+	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {}
 }
@@ -63,8 +65,8 @@ c = {
 		torso = 32,
 		legs_standing = 48,
 		legs_moving = 50,
-		arm_out = 22,
-		arm_up = 33
+		arm_out = 38,
+		arm_up = 6
 	},
 	flip_sprite = false, 
 	x = init_chad_x,
@@ -86,6 +88,8 @@ c = {
 	weapon_list_index = 1,
 	enemy_collision = false,
 	force_special_active = false,
+	force_special_anim_seq = 0,
+	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {},
 	trail_foot_to_capture = 0 -- 0 left foot, 1 right foot
@@ -265,9 +269,7 @@ function update_player_move(p, ctrl)
  	end
 	
 	if btnp(🅾️, ctrl) then
-		btn_pressed = true
-		camera_shake = 3
-		p.force_special_active = true
+		if stage > 3 then p.force_special_active = true end
 	end
 
 	if p.x < left_bound then p.x = left_bound + 1 end
@@ -312,7 +314,9 @@ function draw_player_weapon(p)
 		bounce_height = 1
 	end
 
-	if p.weapon == 0 then
+	if p.force_special_active then
+		return -- don't draw weapon when force special is active
+	elseif p.weapon == 0 then
 		if p.flip_sprite then
 			spr(4, p.x - 1 + recoil_mult, p.y + 12 + bounce_height, 1, 1, true, false)
 		else
@@ -334,19 +338,32 @@ function draw_player_trail(p)
 end
 
 function update_player_force(p)
-	if not p.force_special_active then return end
+	if p.force_special_active then
+		p.force_special_anim_count += 1
 
-	local rad_max = 120
-	if p.force_radius < rad_max - 20  then
-		p.force_radius = p.force_radius + (rad_max - p.force_radius) * 0.05
-	else
-		p.force_radius = 0
-		p.force_special_active = false
-	end 
+		if p.force_special_anim_count == 16 then
+			p.force_special_anim_seq = 1
+			camera_shake = 3
+			p.force_special_active = true
+		end
+	end
 
-	for e in all(enemies) do
-		if is_in_circle(e.x, e.y, p.x + 4, p.y + 16, p.force_radius) then
-			kill_enemy(e)
+	if p.force_special_active and p.force_special_anim_seq == 1 then
+		local rad_max = 120
+		if p.force_radius < rad_max - 20  then
+			p.force_radius = p.force_radius + (rad_max - p.force_radius) * 0.05
+			
+		else
+			p.force_radius = 0
+			p.force_special_anim_count = 0
+			p.force_special_anim_seq = 0
+			p.force_special_active = false
+		end 
+
+		for e in all(enemies) do
+			if is_in_circle(e.x, e.y, p.x + 4, p.y + 16, p.force_radius) then
+				kill_enemy(e)
+			end
 		end
 	end
 end
@@ -362,40 +379,48 @@ end
 
 
 function draw_player_force(p)
-	if not p.force_special_active then return end
+	if p.force_special_active  then
+		print_dialog(p.x, p.y, "YOU SHALL NOT PASS!", 1, false, false, 0, 7)
+	end
 	
-	local blast = {
-		x = p.x + 4,
-		y = p.y + 16,
-		r = p.force_radius      
-	}
+	if p.force_special_active and p.force_special_anim_seq == 1 then
+		local blast = {
+			x = p.x + 4,
+			y = p.y + 16,
+			r = p.force_radius      
+		}
 
-    for a = 0, 1, 0.005 do
-		local c = cos(a)
-		local s = sin(a)
-		
-		-- Loop 5 times to create a 5-pixel thick wave front
-		for w = 0, 4 do
-			-- Current radius layer we are drawing
-			local current_r = blast.r - w
+		for a = 0, 1, 0.005 do
+			local c = cos(a)
+			local s = sin(a)
 			
-			-- Target destination: Where we are drawing the warped pixel
-			local wave_x = flr(blast.x + c * current_r)
-			local wave_y = flr(blast.y + s * current_r)
-			
-			-- Source location: Grab a pixel from deeper inside the explosion
-			-- We subtract 4 more pixels to create a strong outward "refraction" pinch
-			local src_x = flr(blast.x + c * (current_r - 4))
-			local src_y = flr(blast.y + s * (current_r - 4))
-			
-			-- Grab and rewrite the pixel data
-			local col = pget(src_x, src_y)
-			pset(wave_x, wave_y, col)
+			-- Loop 5 times to create a 5-pixel thick wave front
+			for w = 0, 4 do
+				-- Current radius layer we are drawing
+				local current_r = blast.r - w
+				
+				-- Target destination: Where we are drawing the warped pixel
+				local wave_x = flr(blast.x + c * current_r)
+				local wave_y = flr(blast.y + s * current_r)
+				
+				-- Source location: Grab a pixel from deeper inside the explosion
+				-- We subtract 4 more pixels to create a strong outward "refraction" pinch
+				local src_x = flr(blast.x + c * (current_r - 4))
+				local src_y = flr(blast.y + s * (current_r - 4))
+				
+				-- Grab and rewrite the pixel data
+				local col = pget(src_x, src_y)
+				pset(wave_x, wave_y, col)
+			end
 		end
-  	end
+	end
 end
 	
 function handle_player_trigger(p)
+	if p.force_special_active then
+		return -- don't fire when force special is active
+	end
+
 	if not p.trigger then
 		p.trigger = true
 
@@ -432,20 +457,20 @@ function draw_player(p)
 			c_head_x = p.x + 8
 		end
 
-		if p.trigger then
+		if p.trigger or (p.force_special_active and p.force_special_anim_seq == 1) then
 			spr(p.sprites.head2, c_head_x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
 		else
 			spr(p.sprites.head, c_head_x, p.y + bounce_height, 2, 2, p.flip_sprite, false)
 		end
 	else
 		if p.flip_sprite then
-			if p.recoil then
+			if p.recoil or (p.force_special_active and p.force_special_anim_seq == 1) then
 				spr(p.sprites.head2, p.x + 8, p.y + bounce_height, 1, 2, p.flip_sprite, false)
 			else
 				spr(p.sprites.head, p.x + 8, p.y + bounce_height, 1, 2, p.flip_sprite, false)
 			end
 		else
-			if p.recoil then
+			if p.recoil or (p.force_special_active and p.force_special_anim_seq == 1) then
 				spr(p.sprites.head2, p.x, p.y + bounce_height, 1, 2, p.flip_sprite, false)
 			else
 				spr(p.sprites.head, p.x, p.y + bounce_height, 1, 2, p.flip_sprite, false)
@@ -469,10 +494,28 @@ function draw_player(p)
 	end
 
 	-- arm
-	if p.flip_sprite then
-		spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
+	if p.force_special_active and p.force_special_anim_seq == 0 then
+		if p.flip_sprite then
+			spr(p.sprites.arm_up, p.x + 10, p.y + bounce_height, 1, 2, p.flip_sprite, false)
+			spr(52, p.x, p.y - 2 + bounce_height, 4, 1, true, false)
+		else
+			spr(p.sprites.arm_up, p.x, p.y + bounce_height, 1, 2, p.flip_sprite, false)
+			spr(52, p.x - 13, p.y - 2 + bounce_height, 4, 1, false, false)
+		end
+	elseif p.force_special_active and p.force_special_anim_seq == 1 then
+		if p.flip_sprite then
+			spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
+			spr(11, p.x - 6, p.y - 2 + bounce_height, 1, 4, true, false)
+		else
+			spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
+			spr(11, p.x + 13, p.y - 2 + bounce_height, 1, 4, false, false)
+		end
 	else
-		spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
+		if p.flip_sprite then
+			spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
+		else
+			spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
+		end
 	end
 
 	if p.stepping then

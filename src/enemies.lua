@@ -33,8 +33,7 @@ function spawn_enemy(speed, x, y)
 		max_damage = 10,
 		dead_frames = 0,
 		fire_delay = 10,
-		fire_delay_count = 0,
-		trail = {}
+		fire_delay_count = 0
 	}
 	
 	-- if wall spawn support then 25% chance of wall spawn
@@ -144,7 +143,7 @@ function update_enemy_trails()
 		end
 	end
 
-	if #enemy_trails > trail_capture_length then
+	while #enemy_trails > trail_capture_length do
 		del(enemy_trails, enemy_trails[1])
 	end
 end
