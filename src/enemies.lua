@@ -10,7 +10,7 @@ enemy_kill_count = 0
 
 enemy_trails = {}
 
-function spawn_enemy(speed, x, y)
+function spawn_enemy(speed, x, y, melee)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
@@ -33,19 +33,13 @@ function spawn_enemy(speed, x, y)
 		max_damage = 10,
 		dead_frames = 0,
 		fire_delay = 10,
-		fire_delay_count = 0
+		fire_delay_count = 0,
+		melee = melee,
+		melee_arm_length = 1,
+		melee_deployed = false,
+		melee_glove_x = 0
 	}
-	
-	-- if wall spawn support then 25% chance of wall spawn
-	if stages[stage].enemy_wall_spawn_range and rnd() < 0.25 then
-	 	local r = 1 + flr(rnd(#stages[stage].enemy_wall_spawn_range)) -- which wall opening
-	 	local xr = stages[stage].enemy_wall_spawn_range[r] -- get range and index r
-	 	local xs = xr[1] + rnd(xr[2] - xr[1]) -- choose spawn point in range
 
-  		enemy.x = xs * 8 + camera_x
-  		enemy.y = 42
-	end
-	
 	add(enemies, enemy)
 end
 
@@ -98,21 +92,51 @@ function update_enemies()
 				-- walk
 				enemy.x -= enemy.speed
 
-				-- register pushing effect on player1 collision
-				if enemy.x - p1.x - p1.w < 8 -- x collision
-					and (abs(enemy.y - p1.y) < 32) then -- y collision
-					p1.enemy_collision = true
-				end
+				if enemy.melee then
+					if enemy.melee_deployed then
+						if enemy.melee_arm_length < 4 then
+						enemy.melee_arm_length += 1
+						else
+							enemy.melee_arm_length = 0
+							enemy.melee_deployed = false
+						end
+					else
+						if (enemy.x - p1.x - p1.w < 32 and (abs(enemy.y - p1.y) < 24))
+						or (enemy.x - p2.x - p2.w < 32 and (abs(enemy.y - p2.y) < 24)) then
+							enemy.melee_deployed = true
+						end
+					end
 
-				-- register pushing effect on player2 collision
-				if enemy.x - p2.x - p2.w < 8 -- x collision
-					and (abs(enemy.y - p2.y) < 32) then -- y collision
-					p2.enemy_collision = true
-				end
+					enemy.melee_glove_x = enemy.x - (enemy.melee_arm_length * 8) - 4
+					if (enemy.melee_glove_x - p1.x - p1.w < 0 and (abs(enemy.y - p1.y) < 24)) then
+						p1.enemy_melee_collision = true
+						p1.enemy_melee_collision_dist_count = p1.enemy_melee_collision_dist
+						sfx(2)
+					end
 
-				-- prevent firing from off screen
-				if abs(p1.x - enemy.x) < screen_size - 30 or abs(p2.x - enemy.x) < screen_size - 30 then
-					handle_enemy_fire(enemy)
+					if (enemy.melee_glove_x - p2.x - p2.w < 0 and (abs(enemy.y - p2.y) < 24)) then
+						p2.enemy_melee_collision = true
+						p2.enemy_melee_collision_dist_count = p2.enemy_melee_collision_dist
+						sfx(2)
+					end
+
+				else -- range enemy
+					-- register pushing effect on player1 collision
+					if enemy.x - p1.x - p1.w < 8 -- x collision
+						and (abs(enemy.y - p1.y) < 32) then -- y collision
+						p1.enemy_collision = true
+					end
+
+					-- register pushing effect on player2 collision
+					if enemy.x - p2.x - p2.w < 8 -- x collision
+						and (abs(enemy.y - p2.y) < 32) then -- y collision
+						p2.enemy_collision = true
+					end
+
+					-- prevent firing from off screen
+					if abs(p1.x - enemy.x) < screen_size - 30 or abs(p2.x - enemy.x) < screen_size - 30 then
+						handle_enemy_fire(enemy)
+					end
 				end
 
 				if enemy.animation_frame_count >= enemy.animation_frame_delay then
@@ -180,9 +204,6 @@ function draw_enemies()
 		elseif enemy.sprite_number == 170 or enemy.sprite_number == 138 then
 			-- wide instead of tall sprite
 			spr(enemy.sprite_number, enemy.x, enemy.y+8, 4, 2, false, false)
-		elseif enemy.sprite_number == 134 then
-			-- wide instead of tall sprite and need to lower it
-			spr(enemy.sprite_number, enemy.x, enemy.y-8, 4, 4, false, false)
 		elseif enemy.sprite_number == 150 then
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
 		else
@@ -190,6 +211,19 @@ function draw_enemies()
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
 			-- head
 			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, false, false)
+			-- arm
+
+			if not enemy.melee then
+				spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+			elseif not enemy.melee_deployed then
+				spr(130, enemy.x + 8, enemy.y + 5, 2, 1, false, false)
+				spr(142, enemy.x + 4, enemy.y + 4, 1, 1, false, false)
+			else
+				for i=0, enemy.melee_arm_length do
+					spr(134, enemy.x - (i * 8), enemy.y + 8, 2, 1, false, false)
+				end
+				spr(142, enemy.melee_glove_x, enemy.y + 4, 1, 1, false, false)
+			end
 		end
 	end
 end

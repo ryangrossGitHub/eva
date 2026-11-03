@@ -36,10 +36,21 @@ function _update()
 			if e_spawn and enemy_spawn_delay_count == 0 then
 				-- spawn in rows
 				local spawn_point = 38 * 8
-				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40)
-				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55)
-				spawn_enemy(stages[stage].enemy_speed, spawn_point, 70)
-				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85)
+				local melee = false
+				if stage < 3 then
+					spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, false)
+					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, false)
+					spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, false)
+					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, false)
+				else
+					-- 10% chance of melee enemies
+					spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, rnd(1) < 0.10)
+					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, rnd(1) < 0.10)
+					spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, rnd(1) < 0.10)
+					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, rnd(1) < 0.10)
+				end
+
+				
 				enemy_spawn_delay_count = stages[stage].enemy_spawn_delay
 				enemey_spawn_stage_count += 1
 			end

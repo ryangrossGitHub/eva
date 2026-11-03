@@ -50,6 +50,9 @@ j = {
 	speed = 1,
 	weapon_list_index = 1,
 	enemy_collision = false,
+	enemy_melee_collision = false,
+	enemy_melee_collision_dist = 30,
+	enemy_melee_collision_dist_count = 0,
 	force_special_active = false,
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
@@ -87,6 +90,9 @@ c = {
 	speed = 1,
 	weapon_list_index = 1,
 	enemy_collision = false,
+	enemy_melee_collision = false,
+	enemy_melee_collision_dist = 30,
+	enemy_melee_collision_dist_count = 0,
 	force_special_active = false,
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
@@ -270,6 +276,18 @@ function update_player_move(p, ctrl)
 	
 	if btnp(🅾️, ctrl) then
 		if stage > 3 then p.force_special_active = true end
+	end
+
+	if p.enemy_melee_collision then
+		p.x -= p.enemy_melee_collision_dist_count
+
+		p.enemy_melee_collision_dist_count *= 0.75
+
+		if p.enemy_melee_collision_dist_count < 0 or p.x < left_bound then
+			p.enemy_melee_collision = false
+		else
+			
+		end
 	end
 
 	if p.x < left_bound then p.x = left_bound + 1 end
