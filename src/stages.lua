@@ -6,7 +6,7 @@ camera_x = 0
 camera_y = 0
 wall_height = 56
 map_width = 8
-intro_camera_pause = 260
+intro_camera_pause = 0--260
 intro_camera_pause_count = 0
 
 left_bound = 7 * 8

@@ -24,12 +24,12 @@ j = {
 	name = "jenn",
 	sprites = {
 		head = 2,
-		head2 = 8,
+		head2 = 3,
 		torso = 34,
 		legs_standing = 48,
 		legs_moving = 50,
 		arm_out = 38,
-		arm_up = 6
+		arm_up = 33
 	},
 	flip_sprite = false, 
 	x = init_jenn_x, 
@@ -64,12 +64,12 @@ c = {
 	name = "chad",
 	sprites = {
 		head = 0,
-		head2 = 9,
+		head2 = 4,
 		torso = 32,
 		legs_standing = 48,
 		legs_moving = 50,
 		arm_out = 38,
-		arm_up = 6
+		arm_up = 33
 	},
 	flip_sprite = false, 
 	x = init_chad_x,
@@ -101,6 +101,11 @@ c = {
 	trail_foot_to_capture = 0 -- 0 left foot, 1 right foot
 }
 
+santa = {
+	x = 90,
+	y = 70
+}
+
 p1 = j
 p2 = c
 coop = false
@@ -109,7 +114,7 @@ pistol = {
 	id = 0,
 	delay = 4,
 	damage = 5,
-	sprite = 4,
+	sprite = 35,
 	length = 1,
 	found = true
 }
@@ -336,9 +341,9 @@ function draw_player_weapon(p)
 		return -- don't draw weapon when force special is active
 	elseif p.weapon == 0 then
 		if p.flip_sprite then
-			spr(4, p.x - 1 + recoil_mult, p.y + 12 + bounce_height, 1, 1, true, false)
+			spr(pistol.sprite, p.x - 1 + recoil_mult, p.y + 12 + bounce_height, 1, 1, true, false)
 		else
-			spr(4, p.x + 9 - recoil_mult, p.y + 12 + bounce_height, 1, 1, false, false)
+			spr(pistol.sprite, p.x + 9 - recoil_mult, p.y + 12 + bounce_height, 1, 1, false, false)
 		end
 	elseif p.weapon == 1 then
 		if p.flip_sprite then
@@ -523,10 +528,10 @@ function draw_player(p)
 	elseif p.force_special_active and p.force_special_anim_seq == 1 then
 		if p.flip_sprite then
 			spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
-			spr(11, p.x - 6, p.y - 2 + bounce_height, 1, 4, true, false)
+			spr(143, p.x - 6, p.y - 2 + bounce_height, 1, 4, true, false)
 		else
 			spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
-			spr(11, p.x + 13, p.y - 2 + bounce_height, 1, 4, false, false)
+			spr(143, p.x + 13, p.y - 2 + bounce_height, 1, 4, false, false)
 		end
 	else
 		if p.flip_sprite then
@@ -550,8 +555,16 @@ end
 
 function draw_player_shadow(p)
 	if p.flip_sprite then
-		spr(68, p.x + 3, p.y + 24, 2, 2, false, false)
+		spr(238, p.x + 3, p.y + 24, 2, 2, false, false)
 	else
-		spr(68, p.x - 3, p.y + 24, 2, 2, false, false)
+		spr(238, p.x - 3, p.y + 24, 2, 2, false, false)
 	end
+end
+
+function draw_santa()
+	spr(238, santa.x + 3, santa.y + 32, 4, 4, false, false) -- shadow
+	spr(96, santa.x - 2, santa.y, 2, 2, false, false) -- head
+	spr(98, santa.x, santa.y + 16, 2, 2, false, false) -- body
+	spr(105, santa.x + 5, santa.y + 32, 1, 1, false, false) -- feet
+	-- spr(106, santa.x + 5, santa.y + 32, 1, 1, false, false) -- feet walking
 end

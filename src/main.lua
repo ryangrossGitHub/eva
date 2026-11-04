@@ -206,4 +206,7 @@ function _draw()
 	draw_snow()
 	draw_player_force(p1)
 	draw_player_force(p2)
+
+	draw_boss()
+	draw_santa()
 end
