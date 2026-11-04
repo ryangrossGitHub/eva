@@ -85,15 +85,35 @@ function dart_collision_detection(d, o, damage, force)
         local return_dir = 1
         if d.dx > 0 then return_dir = -1 end
 
-        if o.damage then -- enemy
-            o.hit = true
-            o.damage += damage
+        local back_shot = false
+        if d.x > o.x + o.w / 2 then
+            back_shot = true
         end
 
-        if return_dir == 1 then
-            o.x -= force
-        else
-            o.x += force
+        if o.damage then -- enemy
+            if back_shot then
+                o.damage += damage
+                o.hit = true
+            elseif not o.shield then
+                o.damage += damage
+                o.hit = true
+            elseif o.shield and not o.shield_deployed then -- enemy
+                o.hit = true
+                o.damage += damage 
+
+                if o.shield then
+                    o.shield_deployed = true
+                end
+            end
+        end
+
+        -- prevent pushing towards workshop
+        if not back_shot then
+            if return_dir == 1 then
+                o.x -= force
+            else
+                o.x += force
+            end
         end
     
         dart_collision_response(d, return_dir)

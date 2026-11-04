@@ -275,7 +275,7 @@ function update_player_move(p, ctrl)
  	end
 	
 	if btnp(🅾️, ctrl) then
-		if stage > 3 then p.force_special_active = true end
+		if stage >= 5 then p.force_special_active = true end
 	end
 
 	if p.enemy_melee_collision then

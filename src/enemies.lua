@@ -10,7 +10,7 @@ enemy_kill_count = 0
 
 enemy_trails = {}
 
-function spawn_enemy(speed, x, y, melee)
+function spawn_enemy(speed, x, y, type)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
@@ -34,13 +34,44 @@ function spawn_enemy(speed, x, y, melee)
 		dead_frames = 0,
 		fire_delay = 10,
 		fire_delay_count = 0,
-		melee = melee,
+		melee = type == "melee",
 		melee_arm_length = 1,
 		melee_deployed = false,
-		melee_glove_x = 0
+		melee_glove_x = 0,
+		shield = type == "shield",
+		shield_deployed = false,
+		shield_timer = 0,
+		shield_timer_max = 40,
 	}
 
 	add(enemies, enemy)
+end
+
+function get_enemy_type()
+	local roll = rnd(1)
+	if stage == 2 then
+		if roll < 0.50 then
+			return "shield"
+		end
+	elseif stage == 3 then
+		if roll < 0.50 then
+			return "melee"
+		end
+	elseif stage >= 4 then
+		if roll < 0.30 then
+			return "melee"
+		elseif roll < 0.80 then
+			return "shield"
+		end
+	elseif stage >= 6 then
+		if roll < 0.40 then
+			return "melee"
+		elseif roll < 1 then
+			return "shield"
+		end
+	end
+
+	return nil
 end
 
 function update_enemies()
@@ -121,6 +152,15 @@ function update_enemies()
 					end
 
 				else -- range enemy
+					-- handle shield
+					if enemy.shield_deployed then
+						enemy.shield_timer += 1
+						if enemy.shield_timer >= enemy.shield_timer_max then
+							enemy.shield_deployed = false
+							enemy.shield_timer = 0
+						end
+					end
+
 					-- register pushing effect on player1 collision
 					if enemy.x - p1.x - p1.w < 8 -- x collision
 						and (abs(enemy.y - p1.y) < 32) then -- y collision
@@ -211,18 +251,23 @@ function draw_enemies()
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
 			-- head
 			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, false, false)
-			-- arm
 
-			if not enemy.melee then
-				spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
-			elseif not enemy.melee_deployed then
-				spr(130, enemy.x + 8, enemy.y + 5, 2, 1, false, false)
-				spr(142, enemy.x + 4, enemy.y + 4, 1, 1, false, false)
-			else
-				for i=0, enemy.melee_arm_length do
-					spr(134, enemy.x - (i * 8), enemy.y + 8, 2, 1, false, false)
+			-- arm
+			if enemy.melee then
+				if not enemy.melee_deployed then
+					spr(130, enemy.x + 8, enemy.y + 5, 2, 1, false, false)
+					spr(142, enemy.x + 4, enemy.y + 4, 1, 1, false, false)
+				else
+					for i=0, enemy.melee_arm_length do
+						spr(134, enemy.x - (i * 8), enemy.y + 8, 2, 1, false, false)
+					end
+					spr(142, enemy.melee_glove_x, enemy.y + 4, 1, 1, false, false)
 				end
-				spr(142, enemy.melee_glove_x, enemy.y + 4, 1, 1, false, false)
+			elseif enemy.shield and enemy.shield_deployed then
+				spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+				spr(158, enemy.x + 5, enemy.y - 2, 1, 2, false, false)
+			else 
+				spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
 			end
 		end
 	end

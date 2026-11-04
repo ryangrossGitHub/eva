@@ -15,36 +15,46 @@ right_bound = 38 * 8
 snow = {}
 
 stages = {
-  { 
+  { -- 1
     enemy_spawn_count = 5, 
     enemy_speed = 0.385,
     enemy_spawn_delay = 130
   },
-  { 
+  { -- 2
+    enemy_spawn_count = 20, 
+    enemy_speed = 0.5,
+    enemy_spawn_delay = 60
+  },
+  { -- 3
     enemy_spawn_count = 10, 
     enemy_speed = 0.5,
+    enemy_spawn_delay = 80
+  },
+  { -- 4
+    enemy_spawn_count = 10, 
+    enemy_speed = 0.7,
+    enemy_spawn_delay = 70
+  },
+  { -- 5
+    enemy_spawn_count = 20, 
+    enemy_speed = 1,
+    enemy_spawn_delay = 40
+  },
+  { -- 6
+    enemy_spawn_count = 60, 
+    enemy_speed = 1.5,
     enemy_spawn_delay = 20
   },
-  { 
-    enemy_spawn_count = 15, 
-    enemy_speed = 0.6,
-    enemy_spawn_delay = 15
-  },
-  { 
-    enemy_spawn_count = 30, 
-    enemy_speed = 1,
-    enemy_spawn_delay = 15
-  },
-  { 
-    enemy_spawn_count = 50, 
-    enemy_speed = 1,
-    enemy_spawn_delay = 25
-  },
-  { 
+  { -- 7
     enemy_spawn_count = 100, 
     enemy_speed = 2,
-    enemy_spawn_delay = 25
+    enemy_spawn_delay = 15
   },
+  { -- 8
+    enemy_spawn_count = 1, 
+    enemy_speed = 2,
+    enemy_spawn_delay = 15
+  }
 }
 
 function load_stage(n)
@@ -68,11 +78,11 @@ function load_stage(n)
   if n == 6 then
     p1.weapon = 1
     p2.weapon = 1
-    sfx(1)
+    sfx(1) -- rifle
   end
 
-  if n == 4 then
-    sfx(1)
+  if n == 5 then
+    sfx(1) -- special
   end
 end
 

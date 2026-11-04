@@ -23,7 +23,7 @@ function _init()
 end
 
 function _update()
-	if stage == 7 then
+	if stage == 8 then
 		return
 	end
 
@@ -36,21 +36,12 @@ function _update()
 			if e_spawn and enemy_spawn_delay_count == 0 then
 				-- spawn in rows
 				local spawn_point = 38 * 8
-				local melee = false
-				if stage < 3 then
-					spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, false)
-					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, false)
-					spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, false)
-					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, false)
-				else
-					-- 10% chance of melee enemies
-					spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, rnd(1) < 0.10)
-					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, rnd(1) < 0.10)
-					spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, rnd(1) < 0.10)
-					spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, rnd(1) < 0.10)
-				end
 
-				
+				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, get_enemy_type())
+				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, get_enemy_type())
+				spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, get_enemy_type())
+				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, get_enemy_type())
+
 				enemy_spawn_delay_count = stages[stage].enemy_spawn_delay
 				enemey_spawn_stage_count += 1
 			end
@@ -135,7 +126,7 @@ end
 function _draw()
 	cls()
 
-	if stage == 7 then
+	if stage == 8 then
 		print("ENDING UNDER CONSTRUCTION...", camera_x, 0)
 		print("ITS GUNA BE EPIC, I PROMISE ; )", camera_x, 20)
 		return
@@ -147,7 +138,7 @@ function _draw()
 	elseif not intro then
 		print("❎ SHOOT", 85, 80, 6)
 
-		if stage > 3 then
+		if stage >= 5 then
 			print("🅾️ SPECIAL", 85, 90, 6)
 		end
 
