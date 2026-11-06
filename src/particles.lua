@@ -122,6 +122,7 @@ function dart_collision_detection(d, o, damage, force)
 
         if o.boss_damage then -- boss
             o.boss_damage += damage
+            o.hit = true
             if return_dir == 1 then
                 o.x -= force
             else
