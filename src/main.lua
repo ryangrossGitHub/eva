@@ -1,7 +1,6 @@
 screen_size = 128
 user_data_memory_address = 0x8000
 log_file = "log.txt"
-progress_stage = 0
 intro = false
 game_over = false
 game_over_delay = 100
@@ -18,15 +17,14 @@ function _init()
 	load_stage(0)
 	music(63)
 	init_snow(100)
-	spk8_pitch,spk8_rate,spk8_volume,spk8_quality,spk8_intonation,spk8_if0,spk8_shift,spk8_bandwidth,spk8_whisper=
-	60,0.5,1.75,.5,10,10,1,1,1
+	init_speako8(80, 0.6)
+	stage = 8
+	player_move = true
+	p1.x = 180
+	p2.x = 160
 end
 
 function _update()
-	if stage == 8 then
-		return
-	end
-
 	speako8()  -- must appear once unconditionally in _update.
 
  	if stage == 0 then
@@ -66,7 +64,7 @@ function _update()
 		if not coop and btn_pressed then coop = true end
 	end
 
-	if not intro then
+	if not intro and stage < 8 then
 		center_camera_on_players()
 	end
  
@@ -75,6 +73,9 @@ function _update()
 	end
 
 	update_enemies()
+	update_boss()
+	snowball_collision_detection(p1)
+	snowball_collision_detection(p2)
 	update_enemy_trails()
 	update_darts(enemies)
 	update_player_anims(p1)
@@ -83,6 +84,8 @@ function _update()
 	update_player_force(p2)
 	update_player_trail(p1)
 	update_player_trail(p2)
+	detect_player_fall(p1)
+	detect_player_fall(p2)
 
 	if p1.weapon_delay > 0 then
 		p1.weapon_delay -= 1
@@ -117,7 +120,9 @@ function _update()
 		p2_join_hide = true
 	end
 
-	if stage_trans then update_stage_trans() end
+	if stage < 8 and stage_trans then update_stage_trans() end
+
+	-- if stage == 8 then update_final_stage_trans() end
 
 	update_screen_shake()
 
@@ -125,12 +130,6 @@ end
 
 function _draw()
 	cls()
-
-	if stage == 8 then
-		print("ENDING UNDER CONSTRUCTION...", camera_x, 0)
-		print("ITS GUNA BE EPIC, I PROMISE ; )", camera_x, 20)
-		return
-	end
 
 	map(0,0)
 	if stage == 0 then
@@ -159,6 +158,7 @@ function _draw()
 		s = stages[1]
 	end
 
+	camera_x = 138
 	camera(camera_x,camera_y)
 
 	if camera_shake_offset < 0 then
@@ -169,16 +169,17 @@ function _draw()
 		camera_x -= 1
 	end
 
+	draw_enemy_trails()
+	draw_player_trail(p2)
+	draw_player_trail(p1)
 	draw_player_shadow(p1)
 	draw_player_shadow(p2)
 	draw_enemy_shadows()
 
+	draw_boss()
 	draw_darts()
-	
-	draw_enemy_trails()
 	draw_enemies()
 	
-	draw_player_trail(p2)
 	draw_player_weapon(p2)
 	draw_player(p2)
 	local p2_disp = "cp"
@@ -188,7 +189,7 @@ function _draw()
 	print(p2_disp, p2.x - 3, p2.y - 7, 3)
 
 	-- Draw player 1 after player 2 so that player 1 is in front of player 2
-	draw_player_trail(p1)
+	
 	draw_player_weapon(p1)
 	draw_player(p1)
 	print("p1", p1.x - 3, p1.y - 7, 8)
@@ -207,6 +208,5 @@ function _draw()
 	draw_player_force(p1)
 	draw_player_force(p2)
 
-	draw_boss()
-	draw_santa()
+	-- draw_santa()
 end

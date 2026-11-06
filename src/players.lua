@@ -57,7 +57,11 @@ j = {
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
 	force_radius = 0,
-	trail = {}
+	trail = {},
+	trail_foot_to_capture = 0, -- 0 left foot, 1 right foot
+	shadow = true,
+	fall = false,
+	respawn = false
 }
 
 c = {
@@ -98,7 +102,10 @@ c = {
 	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {},
-	trail_foot_to_capture = 0 -- 0 left foot, 1 right foot
+	trail_foot_to_capture = 0, -- 0 left foot, 1 right foot
+	shadow = true,
+	fall = false,
+	respawn = false
 }
 
 santa = {
@@ -163,6 +170,21 @@ function update_p2()
 	end
 
 	if p2.x < left_bound then p2.x = left_bound + 1 end
+
+	local boss_delta_right = abs(boss.x + 58 - p2.x)
+	if  boss_delta_right <= 4 and boss.y > p2.y - 26 then
+		p2.x += boss_delta_right
+	end
+
+	local boss_delta_left = abs(boss.x - 24 - p2.x)
+	if  boss_delta_left <= 4 and boss.y > p2.y - 26 then
+		p2.x -= boss_delta_left
+	end
+
+	local boss_delta_up = abs(boss.y + 22 - p2.y)
+	if boss_delta_up <= 4 and boss.x + 58 > p2.x and boss.x - 28 < p2.x then
+		p2.y += boss_delta_up
+	end
 end
 
 function closest_enemy()
@@ -241,6 +263,12 @@ function update_player_trail(p)
 end
 
 function update_player_move(p, ctrl)
+
+	if p.fall then
+		p.y += 8
+		return 
+	end
+
 	local btn_pressed = false
 
 	-- ctrl is the controller maping
@@ -251,7 +279,7 @@ function update_player_move(p, ctrl)
 		p.flip_sprite = true 
 		p.x -= p.speed
 
-		if p2.x < camera_x + screen_size and p1.x < camera_x + screen_size then
+		if stage < 8 and p2.x < camera_x + screen_size and p1.x < camera_x + screen_size then
 			camera_x -= p.speed
 		end
 	elseif btn(1, ctrl) 
@@ -261,12 +289,13 @@ function update_player_move(p, ctrl)
 		
 		p.flip_sprite = false
 		p.x += p.speed
-		if p2.x > camera_x and p1.x > camera_x then
+
+		if stage < 8 and p2.x > camera_x and p1.x > camera_x then
 			camera_x += p.speed
 		end
 	end
  
-	if btn(2, ctrl) and p.y > 26 then
+	if btn(2, ctrl) and p.y > 28 then
 		p.y -= p.speed
 	elseif btn(3, ctrl) and p.y < screen_size - 49 then
 		p.y += p.speed
@@ -297,7 +326,42 @@ function update_player_move(p, ctrl)
 
 	if p.x < left_bound then p.x = left_bound + 1 end
 
+	local boss_delta_right = abs(boss.x + 43 - p.x)
+	if  boss_delta_right <= 4 and boss.y > p.y - 26 then
+		p.x += boss_delta_right
+	end
+
+	local boss_delta_left = abs(boss.x - 10 - p.x)
+	if  boss_delta_left <= 4 and boss.y > p.y - 26 then
+		p.x -= boss_delta_left
+	end
+
+	local boss_delta_up = abs(boss.y + 22 - p.y)
+	if boss_delta_up <= 4 and boss.x + 43 > p.x and boss.x - 10 < p.x then
+		p.y += boss_delta_up
+	end
+
 	return btn_pressed
+end
+
+function detect_player_fall(p)
+	if p.y > screen_size then
+		p.respawn = true
+		p.y = -40
+		p.x = camera_x + 16
+	elseif p.y > 10 * 8 then
+		p.shadow = false
+		p.fall = true
+	end
+
+	if p.respawn then
+		p.y += (p.y + 55) * 0.07
+
+		if p.y >= 55 then
+			p.respawn = false
+			p.fall = false
+		end
+	end
 end
 
 function center_camera_on_players()
@@ -554,6 +618,8 @@ function draw_player(p)
 end
 
 function draw_player_shadow(p)
+	if not p.shadow then return end
+
 	if p.flip_sprite then
 		spr(238, p.x + 3, p.y + 24, 2, 2, false, false)
 	else

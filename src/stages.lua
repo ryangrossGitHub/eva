@@ -1,4 +1,4 @@
-stage = 0
+stage = 8
 stage_trans = false
 stage_transfer_count = 0
 stage_transfer_total = 120 -- stage trans total 
@@ -67,17 +67,22 @@ function load_stage(n)
     e_spawn = true
   else
     if not speaking() then
-      say("_/s/-1.39/3/ao/-1.22/f/-1.74/_/t/-1.10/w/-1.40/eh/-1.09/r/-1.60/ah/-1.56/_/p/-1.72/-3/_/d/-1.13/-3/ey/-1.64/-3/_/t/_/-1.67/_/k/-1.58/ah/-1.03/m/-1.64/-3/_/p/-1.07/-3/l/-1.14/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t")
+      if n < 8 then
+        say("_/s/-1.39/3/ao/-1.22/f/-1.74/_/t/-1.10/w/-1.40/eh/-1.09/r/-1.60/ah/-1.56/_/p/-1.72/-3/_/d/-1.13/-3/ey/-1.64/-3/_/t/_/-1.67/_/k/-1.58/ah/-1.03/m/-1.64/-3/_/p/-1.07/-3/l/-1.14/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t")
+      end
     end
     enemy_kill_count = 0
     enemey_spawn_stage_count = 0
-    stage_trans = true
+    -- stage_trans = true
     e_spawn = false
   end
 
-  if n == 6 then
+  if n >= 6 then
     p1.weapon = 1
     p2.weapon = 1
+  end
+  
+  if n == 6 then
     sfx(1) -- rifle
   end
 
@@ -94,6 +99,12 @@ function update_stage_trans()
     enemy_spawn_delay_count = 0
     stage_trans = false
     e_spawn = true
+  end
+end
+
+function update_final_stage_trans()
+  if not speaking() then
+    say(boss.sayings[3])
   end
 end
 
@@ -123,7 +134,7 @@ function update_start()
     music(-1)
     printh("GAME START", log_file)
     intro = true
-    load_stage(1)
+    load_stage(stage)
   end
 end
 
@@ -200,7 +211,6 @@ function reset()
   player_move = false
   game_over = false
   intro = false
-  progress_stage = 0
   stage = 0
   j.x = init_jenn_x
 	j.y = init_jenn_y

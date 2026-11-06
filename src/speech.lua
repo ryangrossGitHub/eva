@@ -17,3 +17,8 @@ do d=split("aa=1320,1,500,4,2,0,1,2600,160,1220,70,700,130,-250,100;ae=1270,1,10
 	else d,𝘣=0,1end n+=1b-=1poke(m+k,d*spk8_volume*𝘣+128)if b<1then deli(c,1)if#c==0then serial(2056,m,k+1)return else w=c[1]end end end end serial(2056,m,128)end end end end
 
 --end of speako8_lib_min
+
+function init_speako8(pitch, speed)
+	spk8_pitch,spk8_rate,spk8_volume,spk8_quality,spk8_intonation,spk8_if0,spk8_shift,spk8_bandwidth,spk8_whisper=
+	pitch,speed,1.75,.5,10,10,1,1,1
+end

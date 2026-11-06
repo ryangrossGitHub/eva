@@ -10,13 +10,6 @@ enemy_kill_count = 0
 
 enemy_trails = {}
 
-boss = {
-	active = true,
-	arms_up = true,
-	x = 80,
-	y = 20
-}
-
 function spawn_enemy(speed, x, y, type)
 	enemy = {
 		sprite_number = 144,
@@ -285,34 +278,5 @@ function draw_enemy_shadows()
 		if not e.dead then
 			spr(238, e.x + 4, e.y + 16, 2, 2, false, false)
 		end
-	end
-end
-
-function draw_boss()
-	if boss.active then
-
-		spr(238, boss.x - 4, boss.y + 45, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 4, boss.y + 47, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 12, boss.y + 49, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 12, boss.y + 44, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 20, boss.y + 49, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 20, boss.y + 44, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 28, boss.y + 47, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 36, boss.y + 45, 4, 4, false, false) -- shadow
-
-		boss.arms_up = true
-		if boss.arms_up then
-			spr(13, boss.x, boss.y, 3, 6, false, false) -- arm left up
-			spr(13, boss.x + (3 * 8), boss.y, 3, 7, true, false) -- arm right up
-			spr(8, boss.x + 8, boss.y + 8, 4, 4, false, false) -- head
-			spr(22, boss.x + 16, boss.y + 29, 2, 1, false, false) -- mouth wide
-		else
-			spr(68, boss.x - 11, boss.y + 20, 5, 4, false, false) -- arm left down
-			spr(68, boss.x + 19, boss.y + 20, 5, 4, true, false) -- arm right down
-			spr(8, boss.x + 8, boss.y + 8, 4, 4, false, false) -- head
-		end
-
-		spr(73, boss.x - 4, boss.y + 40, 3, 2, false, false) -- leg left
-		spr(73, boss.x + 28, boss.y + 40, 3, 2, true, false) -- leg right
 	end
 end

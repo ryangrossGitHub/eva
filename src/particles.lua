@@ -64,10 +64,14 @@ function update_darts(enemies)
                     force = 2
                 end
 
-                for e in all(enemies) do
-                    if not e.dead then
-                        dart_collision_detection(d, e, damage, force)
+                if stage < 8 then
+                    for e in all(enemies) do
+                        if not e.dead then
+                            dart_collision_detection(d, e, damage, force)
+                        end
                     end
+                else
+                    dart_collision_detection(d, boss.head, damage, 1)
                 end
 
                 if d.x - d.dx > right_bound then
@@ -105,10 +109,19 @@ function dart_collision_detection(d, o, damage, force)
                     o.shield_deployed = true
                 end
             end
+
+            -- prevent pushing towards workshop
+            if not back_shot then
+                if return_dir == 1 then
+                    o.x -= force
+                else
+                    o.x += force
+                end
+            end
         end
 
-        -- prevent pushing towards workshop
-        if not back_shot then
+        if o.boss_damage then -- boss
+            o.boss_damage += damage
             if return_dir == 1 then
                 o.x -= force
             else
