@@ -114,13 +114,15 @@ function update_boss()
 	end
 
 	if boss.head.hp - boss.head.hp/4 < boss.head.boss_damage then
-		boss.charge_prob = 85
-		boss.charge_speed = 0.02
+		boss.charge_speed = 0.017
+		boss.x_speed = 1.5
 		snowball.speed = 8
+		boss.throw_delay = 15
 	elseif boss.head.hp/2 < boss.head.boss_damage then
-		boss.charge_prob = 65
-		boss.charge_speed = 0.015
+		boss.charge_speed = 0.013
+		boss.x_speed = 1
 		snowball.speed = 6
+		boss.throw_delay = 20
 	end
 
 	if boss.head.boss_damage >= boss.head.hp then boss.defeated = true end
@@ -153,7 +155,6 @@ end
 
 function update_boss_eyes()
 	if boss.head.hit then 
-
 		if boss.hit_eye_color_count < boss.hit_eye_color_delay then
 			boss.hit_eye_color_count += 1
 		else
@@ -161,20 +162,23 @@ function update_boss_eyes()
 			boss.head.hit = false
 		end
 
-		boss.eye_color = 7 -- green
+		boss.eye_color = 7
 	elseif boss.charge then
-		boss.eye_color = 8 -- red
+		boss.eye_color = 8
+	elseif boss.defeated then
+		boss.eye_color = 1
+	elseif boss.head.hp - boss.head.hp/4 < boss.head.boss_damage then
+		boss.eye_color = 8
 	else
-		boss.eye_color = -1 -- no overlay
+		boss.eye_color = -1
 	end
-
 end
 
 function boss_seek_closest_player()
 	local p1_delta = boss.head.x + boss.head.w/2 - p1.x + p1.w/2
 	local p2_delta = boss.head.x + boss.head.w/2 - p1.x + p1.w/2
 
-	if abs(p1_delta) < abs(p2_delta) then 
+	if abs(p1_delta) > abs(p2_delta) then 
 		boss_seek_player(p1_delta)
 	else
 		boss_seek_player(p2_delta)
@@ -213,29 +217,11 @@ function draw_boss()
 			spr(13, boss.x, boss.y, 3, 6, false, false) -- arm left up
 			spr(13, boss.x + (3 * 8), boss.y, 3, 7, true, false) -- arm right up
 			spr(107, boss.x + (2 * 8), boss.y - 5, 2, 2, false, false) -- snow ball
-			spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
 		else
 			spr(68, boss.x - 11, boss.y + 20, 5, 4, false, false) -- arm left down
 			spr(68, boss.x + 19, boss.y + 20, 5, 4, true, false) -- arm right down
-
-			if boss.defeated and boss.head.fall_cnt >= boss.head.fall_dist then
-				spr(238, boss.head.x + 6, boss.head.y + 22, 2, 2, false, false)
-				spr(238, boss.head.x + 10, boss.head.y + 22, 2, 2, false, false)
-				spr(8, boss.head.x, boss.head.y, 4, 4, false, true) -- head
-			else
-				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
-			end
-
-			
-
-			if not boss.defeated then
-				spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
-			end
 		end
 
-		draw_boss_eyes()
-
-		
 		if boss.feet.which == "left" then
 			spr(73, boss.x - 4, boss.y + 40 + boss.feet.y_offset, 3, 2, false, false) -- leg left
 			spr(73, boss.x + 28, boss.y + 40, 3, 2, true, false) -- leg right
@@ -254,6 +240,23 @@ function draw_boss()
 			end
 		end
 
+		if boss.arms_up then
+			spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
+		else
+			if boss.defeated and boss.head.fall_cnt >= boss.head.fall_dist then
+				spr(238, boss.head.x + 6, boss.head.y + 22, 2, 2, false, false)
+				spr(238, boss.head.x + 10, boss.head.y + 22, 2, 2, false, false)
+				spr(8, boss.head.x, boss.head.y, 4, 4, false, true) -- head
+			else
+				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
+			end
+
+			if not boss.defeated then
+				spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
+			end
+		end
+
+		draw_boss_eyes()
 		draw_boss_health()
 	end
 end
@@ -268,8 +271,10 @@ end
 function draw_boss_eyes()
 	if boss.eye_color == -1 then return end
 
-	rectfill(boss.head.x + 11, boss.head.y + 13, boss.head.x + 13, boss.head.y + 15, boss.eye_color)
-	rectfill(boss.head.x + 17, boss.head.y + 13, boss.head.x + 19, boss.head.y + 15, boss.eye_color)
+	local y_ofs = 0
+	if boss.defeated then y_ofs = 3 end
+	rectfill(boss.head.x + 11, boss.head.y + 13 + y_ofs, boss.head.x + 13, boss.head.y + 15 + y_ofs, boss.eye_color)
+	rectfill(boss.head.x + 17, boss.head.y + 13 + y_ofs, boss.head.x + 19, boss.head.y + 15 + y_ofs, boss.eye_color)
 
 	-- wide mouth anytime he has red enraged eyes
 	if boss.eye_color == 8 then

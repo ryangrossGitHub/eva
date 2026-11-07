@@ -70,7 +70,11 @@ function _update()
 	end
  
 	if not coop then
-		update_p2()
+		if stage < 8 then
+			update_p2()
+		else
+			update_p2_boss()
+		end
 	end
 
 	update_enemies()

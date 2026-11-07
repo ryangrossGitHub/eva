@@ -20,6 +20,8 @@ trail_capture_delay = 4
 trail_capture_count = 0
 trail_capture_length = 200
 
+p2_boss_dir = 0
+
 j = {
 	name = "jenn",
 	sprites = {
@@ -180,6 +182,30 @@ function update_p2()
 	local boss_delta_up = abs(boss.y + 22 - p2.y)
 	if boss_delta_up <= 4 and boss.x + 58 > p2.x and boss.x - 28 < p2.x then
 		p2.y += boss_delta_up
+	end
+end
+
+function update_p2_boss()
+	if boss.x + 58 > p2.x and boss.x - 28 < p2.x then
+		if p2_boss_dir == 0 then
+			p2.x += p2.speed
+			p2.flip_sprite = true
+
+			if p2.x > camera_x + screen_size - p2.w * 3 then
+				p2_boss_dir = 1
+			end
+		else 
+			p2.x -= p2.speed
+			p2.flip_sprite = false
+
+			if p2.x < camera_x + p2.w * 2 then
+				p2_boss_dir = 0
+			end
+		end
+	end
+
+	if boss.y > 8 then
+		handle_player_trigger(p2)
 	end
 end
 
