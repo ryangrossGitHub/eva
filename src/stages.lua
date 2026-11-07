@@ -73,7 +73,7 @@ function load_stage(n)
     end
     enemy_kill_count = 0
     enemey_spawn_stage_count = 0
-    -- stage_trans = true
+    stage_trans = true
     e_spawn = false
   end
 
@@ -88,6 +88,11 @@ function load_stage(n)
 
   if n == 5 then
     sfx(1) -- special
+  end
+
+  if n == 8 then
+    p1.x = 180
+	  p2.x = 160
   end
 end
 
@@ -208,7 +213,6 @@ function reset()
   particles = {} -- clear
   stage_transfer_count = 0
   e_spawn = false
-  player_move = false
   game_over = false
   intro = false
   stage = 0

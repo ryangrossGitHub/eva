@@ -18,11 +18,11 @@ function _init()
 	music(63)
 	init_snow(100)
 	init_speako8(80, 0.6)
-	stage = 8
+	load_stage(7)
 	player_move = true
-	p1.x = 180
-	p2.x = 160
-	p1.weapon = 1
+	
+	-- p2.weapon = 1
+	-- p1.weapon = 1
 end
 
 function _update()
@@ -74,11 +74,13 @@ function _update()
 			update_p2()
 		else
 			update_p2_boss()
+			update_boss()
+			detect_player_fall(p1)
+			detect_player_fall(p2)
 		end
 	end
 
 	update_enemies()
-	update_boss()
 	snowball_collision_detection(p1)
 	snowball_collision_detection(p2)
 	update_enemy_trails()
@@ -89,8 +91,7 @@ function _update()
 	update_player_force(p2)
 	update_player_trail(p1)
 	update_player_trail(p2)
-	detect_player_fall(p1)
-	detect_player_fall(p2)
+	
 
 	if p1.weapon_delay > 0 then
 		p1.weapon_delay -= 1
@@ -147,8 +148,11 @@ function _draw()
 		end
 
 		print("wave: "..stage.."/8", camera_x + 2, screen_size - 6, 8)
-		spr(132, camera_x + screen_size - 40, screen_size - 8)
-		print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 30, screen_size - 6, 7)
+
+		if stage < 8 then
+			spr(132, camera_x + screen_size - 40, screen_size - 8)
+			print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 30, screen_size - 6, 7)
+		end
 
 		if not p2_join_hide then
 			print("p2 PRESS ❎ TO JOIN", camera_x + 30, 0, 3)
@@ -163,7 +167,7 @@ function _draw()
 		s = stages[1]
 	end
 
-	camera_x = 138
+	if stage == 8 then camera_x = 138 end
 	camera(camera_x,camera_y)
 
 	if camera_shake_offset < 0 then
@@ -181,7 +185,10 @@ function _draw()
 	draw_player_shadow(p2)
 	draw_enemy_shadows()
 
-	draw_boss()
+	if stage == 8 then
+		draw_boss()
+	end
+
 	draw_darts()
 	draw_enemies()
 	

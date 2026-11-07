@@ -66,7 +66,10 @@ function update_boss()
 		boss.arms_up = true
 		boss.y += (boss.y + 55) * boss.charge_speed
 
-		if boss.y > 55 then
+		if boss.y > 55 or 
+			(p1.force_special_active and p1.force_special_anim_seq == 1) or 
+			(p2.force_special_anim_seq == 1 and p2.force_special_active) then
+			
 			boss.charge = false
 			boss.return_speed = 0
 			boss.charge_pause_count = 0
@@ -114,15 +117,17 @@ function update_boss()
 	end
 
 	if boss.head.hp - boss.head.hp/4 < boss.head.boss_damage then
-		boss.charge_speed = 0.017
+		boss.charge_speed = 0.02
 		boss.x_speed = 1.5
 		snowball.speed = 8
 		boss.throw_delay = 15
+		boss.charge_prob = 0.25
 	elseif boss.head.hp/2 < boss.head.boss_damage then
-		boss.charge_speed = 0.013
+		boss.charge_speed = 0.015
 		boss.x_speed = 1
 		snowball.speed = 6
 		boss.throw_delay = 20
+		boss.charge_prob = 0.40
 	end
 
 	if boss.head.boss_damage >= boss.head.hp then boss.defeated = true end
