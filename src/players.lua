@@ -119,22 +119,18 @@ coop = false
 
 pistol = {
 	id = 0,
-	delay = 4,
+	delay = 6,
 	damage = 5,
 	sprite = 35,
 	length = 1,
-	found = true
 }
 
 rifle = {
 	id = 1,
-	delay = 3,
+	delay = 2,
 	damage = 2,
 	sprite = 36,
-	length = 2,
-	found = false,
-	x = 8 * 8,
-	y = 10 * 8
+	length = 2
 }
 
 weapon_list = {pistol, rifle}
@@ -355,9 +351,9 @@ function detect_player_fall(p)
 	end
 
 	if p.respawn then
-		p.y += (p.y + 55) * 0.07
+		p.y += (p.y + 75) * 0.07
 
-		if p.y >= 55 then
+		if p.y >= 75 then
 			p.respawn = false
 			p.fall = false
 		end
@@ -508,17 +504,13 @@ function handle_player_trigger(p)
 		return -- don't fire when force special is active
 	end
 
-	if not p.trigger then
-		p.trigger = true
-
-		if p.weapon == 0 and p.weapon_delay == 0 then
-			p.weapon_delay = pistol.delay
-			handle_player_fire(p)
-		end
+	if p.weapon == 0 and p.weapon_delay == 0 then
+		p.weapon_delay = pistol.delay
+		handle_player_fire(p)
 	end
 
-	if p.weapon == 1 then
-		p.weapon_delay = 0
+	if p.weapon == 1 and p.weapon_delay == 0 then
+		p.weapon_delay = rifle.delay
 		handle_player_fire(p)
 	end
 end

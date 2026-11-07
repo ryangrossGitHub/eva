@@ -1,39 +1,3 @@
-end_dialog_delay = 120
-end_dialog_cnt = 0
-end_dt_cnt = 1
-end_dt = {
-  {"jenn", "YEEEEEEHAW!"},	
-  {"chad", "JUST ANOTHER DAY ON THE JOB"},
-  {"jenn", "YEP, LIVING THE DREAM"},	
-  {"jenn", "ONE CRIME SCENE AT A TIME"},	
-  {"chad", "WELL, GREAT JOB OUT THERE"},
-  {"chad", "I'LL PUT IN YOUR PROMOTION PACKAGE AGAIN"},
-  {"jenn", "WHY, SO BILL CAN REJECT IT AGAIN?"},
-  {"chad", "I'M A LOT OF THINGS"},
-  {"chad", "BUT A QUITTER AINT ONE OF THEM"},
-  {"chad", "I'LL GET IT THROUGH. I PROMISE."},
-  {"jenn", "THANKS CHAD."},
-  {"jenn", "ALRIGHT ENOUGH BLABBERING"},
-  {"jenn", "ON TO THE NEXT ONE"},
-  {"jenn", "BATTLE BOSS BABE AND GRANITE JAW LINE TO THE RESCUE!"},
-  {"chad", "HA HA. LET'S DO IT!"},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "},
-  {"", "to be continued... "}
-}
-
 function print_dialog(x, y, msg, border, wide, bounded, color, background, tail)    
   if not color then
     color = 0

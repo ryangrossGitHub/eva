@@ -1,5 +1,6 @@
 boss = {
 	active = true,
+	defeated = false,
 	arms_up = true,
 	x = 174,
 	y = 6,
@@ -26,10 +27,13 @@ boss = {
 	head = {
 		x = 174 + 8,
 		y = 6 + 8,
-		w = 2 * 8,
-		h = 4 * 8,
+		w = 4 * 8,
+		h = 3 * 8,
 		boss_damage = 0,
-		hit = false
+		hp = 6 * 8,
+		hit = false,
+		fall_cnt = 0,
+		fall_dist = 6
 	},
 	feet = {
 		which = "left", 
@@ -70,15 +74,14 @@ function update_boss()
 	elseif boss.y > 6 then -- return from charge
 		if boss.charge_pause_count < boss.charge_pause then
 			boss.charge_pause_count += 1
-			return
-		end
-		
-		boss.return_speed = min(boss.return_speed + 0.1, 3)
-		boss.y -= boss.return_speed
+		else
+			boss.return_speed = min(boss.return_speed + 0.1, 3)
+			boss.y -= boss.return_speed
 
-		if boss.y < 6 then boss.y = 6 end -- prevent overshooting
+			if boss.y < 6 then boss.y = 6 end -- prevent overshooting
+		end
 	else
-		if not boss.throwing then
+		if not boss.throwing and not boss.defeated then
 			boss_seek_closest_player()
 			snowball.x = boss.x + (2 * 8)
 
@@ -89,7 +92,7 @@ function update_boss()
 				boss.arms_up = false
 				boss.throwing = true
 			end
-		else
+		elseif not boss.defeated then
 			if snowball.y > 128 then
 				snowball_reset()
 			else 
@@ -99,14 +102,35 @@ function update_boss()
 	end
 
 	boss.head.x = boss.x + 8
-	boss.head.y = boss.y + 8
+
+	if not boss.defeated then
+		boss.head.y = boss.y + 8
+	else
+		boss.arms_up = false
+		if boss.head.fall_cnt < boss.head.fall_dist then
+			boss.head.fall_cnt += 1
+			boss.head.y += 1
+		end
+	end
+
+	if boss.head.hp - boss.head.hp/4 < boss.head.boss_damage then
+		boss.charge_prob = 85
+		boss.charge_speed = 0.02
+		snowball.speed = 8
+	elseif boss.head.hp/2 < boss.head.boss_damage then
+		boss.charge_prob = 65
+		boss.charge_speed = 0.015
+		snowball.speed = 6
+	end
+
+	if boss.head.boss_damage >= boss.head.hp then boss.defeated = true end
 
 	update_boss_feet()
 	update_boss_eyes()
 end
 
 function update_boss_feet()
-	if boss.throwing then return end
+	if boss.throwing or (boss.defeated and boss.y == 6) then return end
 		
 	if boss.charge then
 		if boss.feet.dir == "up" then
@@ -193,12 +217,25 @@ function draw_boss()
 		else
 			spr(68, boss.x - 11, boss.y + 20, 5, 4, false, false) -- arm left down
 			spr(68, boss.x + 19, boss.y + 20, 5, 4, true, false) -- arm right down
-			spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
-			spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
+
+			if boss.defeated and boss.head.fall_cnt >= boss.head.fall_dist then
+				spr(238, boss.head.x + 6, boss.head.y + 22, 2, 2, false, false)
+				spr(238, boss.head.x + 10, boss.head.y + 22, 2, 2, false, false)
+				spr(8, boss.head.x, boss.head.y, 4, 4, false, true) -- head
+			else
+				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
+			end
+
+			
+
+			if not boss.defeated then
+				spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
+			end
 		end
 
 		draw_boss_eyes()
 
+		
 		if boss.feet.which == "left" then
 			spr(73, boss.x - 4, boss.y + 40 + boss.feet.y_offset, 3, 2, false, false) -- leg left
 			spr(73, boss.x + 28, boss.y + 40, 3, 2, true, false) -- leg right
@@ -216,14 +253,23 @@ function draw_boss()
 				boss.feet.dir = "up"
 			end
 		end
+
+		draw_boss_health()
 	end
+end
+
+function draw_boss_health()
+	if boss.defeated then return end
+
+	rectfill(boss.x - 1, boss.y - 1, boss.x + boss.head.hp + 1, boss.y + 2, 0)
+	rectfill(boss.x + boss.head.boss_damage, boss.y, boss.x + boss.head.hp, boss.y + 1, 8)
 end
 
 function draw_boss_eyes()
 	if boss.eye_color == -1 then return end
 
-	rectfill(boss.head.x + 11, boss.y + 21, boss.head.x + 13, boss.y + 23, boss.eye_color)
-	rectfill(boss.head.x + 17, boss.y + 21, boss.head.x + 19, boss.y + 23, boss.eye_color)
+	rectfill(boss.head.x + 11, boss.head.y + 13, boss.head.x + 13, boss.head.y + 15, boss.eye_color)
+	rectfill(boss.head.x + 17, boss.head.y + 13, boss.head.x + 19, boss.head.y + 15, boss.eye_color)
 
 	-- wide mouth anytime he has red enraged eyes
 	if boss.eye_color == 8 then

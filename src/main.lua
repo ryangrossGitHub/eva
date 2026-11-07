@@ -22,6 +22,7 @@ function _init()
 	player_move = true
 	p1.x = 180
 	p2.x = 160
+	p1.weapon = 1
 end
 
 function _update()
