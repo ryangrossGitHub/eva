@@ -2,12 +2,11 @@ screen_size = 128
 log_file = "log.txt"
 intro = false
 game_over = false
-game_over_delay = 100
-game_over_delay_count = 0
 p2_join_blink_count = 0
 p2_join_blink_total = 30
 p2_join_hide = false
 camera_shake = 0
+credits_cnt = 0
 
 function _init()
 	printh("GAME INIT", log_file, true)
@@ -19,13 +18,15 @@ function _init()
 	init_speako8(80, 0.6)
 	
 	
-	music(0)
-	init_snow(7)	
+	-- music(0)
+	-- init_snow(7)	
 	load_stage(7)
 	player_move = true
 end
 
 function _update()
+	if credits_cnt > 200 then return end
+
 	speako8()  -- must appear once unconditionally in _update.
 
  	if stage == 0 then
@@ -70,14 +71,15 @@ function _update()
 	end
  
 	if not coop then
-		if stage < 8 then
-			update_p2()
-		else
-			update_p2_boss()
-		end
+		update_p2()
 	end
 
-	if stage == 8 then 
+	if stage == 8 and outro_transfer_count >= outro_transfer_total then 
+		stage_trans = false
+		if not coop then
+			update_p2_boss()
+		end
+		camera_x = 138
 		update_boss()
 		detect_player_fall(p1)
 		detect_player_fall(p2)
@@ -86,7 +88,6 @@ function _update()
 	update_enemies()
 	snowball_collision_detection(p1)
 	snowball_collision_detection(p2)
-	update_enemy_trails()
 	update_darts(enemies)
 	update_player_anims(p1)
 	update_player_anims(p2)
@@ -102,15 +103,6 @@ function _update()
 
 	if p2.weapon_delay > 0 then
 		p2.weapon_delay -= 1
-	end
-
-	if game_over then
-		if game_over_delay_count >= game_over_delay then
-			game_over_delay_count = 0
-			reset()
-		else
-			game_over_delay_count += 1
-		end
 	end
 
 	if not coop then
@@ -140,10 +132,34 @@ end
 function _draw()
 	cls()
 
+	if credits_cnt > 200 then
+		camera(0,0)
+
+		if credits_cnt > 1300 then
+			print("YOU: FOR PLAYING! HAPPY HOLIDAYS!", 0, 56, 7)
+		elseif credits_cnt > 1100 then
+			print("WIFE: PUTTING UP WITH ME", 14, 56, 11)
+		elseif credits_cnt > 9000 then
+			print("PLAY TESTERS: YOU ALL ROCK!", 10, 56, 7)
+		elseif credits_cnt > 700 then
+			print("rHYS wYNNE: SANTA CLAUDE NAME", 10, 56, 8)
+		elseif credits_cnt > 500 then
+			print("sUNJON: SANTA CLAUDE GFX", 14, 56, 7)
+		elseif credits_cnt > 300 then
+			print("BIKIBIRD: ROBOT VOICE (SPEAKO8)", 0, 56, 11)
+		else
+			print("\^w\^tthe end", 40, 36, 7)
+			print("special thanks to...", 30, 56, 8)
+		end
+
+		credits_cnt += 1
+		return
+	end
+
 	map(0,0)
 	if stage == 0 then
 		draw_start()
-	elseif not intro then
+	elseif not intro and not boss.defeated then
 		print("❎ SHOOT", 85, 80, 6)
 
 		if stage >= 5 then
@@ -172,7 +188,6 @@ function _draw()
 		s = stages[1]
 	end
 
-	if stage == 8 then camera_x = 138 end
 	camera(camera_x,camera_y)
 
 	if camera_shake_offset < 0 then
@@ -183,14 +198,13 @@ function _draw()
 		camera_x -= 1
 	end
 
-	draw_enemy_trails()
 	draw_player_trail(p2)
 	draw_player_trail(p1)
 	draw_player_shadow(p1)
 	draw_player_shadow(p2)
 	draw_enemy_shadows()
 
-	if stage == 8 then
+	if stage == 8 and boss.active then
 		draw_boss()
 	end
 
@@ -225,5 +239,13 @@ function _draw()
 	draw_player_force(p1)
 	draw_player_force(p2)
 
-	-- draw_santa()
+	if boss.defeated then
+		draw_santa()
+
+		if santa.x == 142 then
+			print_dialog(santa.x, santa.y, "HEY ELVES. ENJOYING THE THIRDY DAY FREE TRIAL OF SANTA CLAUDE!?", 1, true, true, 0, 7, true)
+
+			credits_cnt += 1
+		end
+	end
 end

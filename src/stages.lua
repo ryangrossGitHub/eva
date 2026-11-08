@@ -7,7 +7,7 @@ camera_y = 0
 intro_camera_pause = 0--260
 intro_camera_pause_count = 0
 outro_transfer_count = 0
-outro_transfer_total = 300
+outro_transfer_total = 210
 
 left_bound = 7 * 8
 right_bound = 38 * 8
@@ -91,6 +91,7 @@ function load_stage(n)
   end
 
   if n == 8 then
+    camera_x = right_bound - 80
     p1.x = 180
 	  p2.x = 160
   end
@@ -114,8 +115,16 @@ function update_final_stage_trans()
     end
 
     if outro_transfer_count == 75 and not speaking() then
-      init_speako8(50, 0.2)
+      init_speako8(50, 0.3)
       say(boss.sayings[2])
+    end
+
+    if outro_transfer_count >= 120 then
+      boss.active = true
+      boss.x -= 1
+      boss.head.x -= 1
+      camera_x = boss.x - 40 
+      update_boss_feet()
     end
 
     outro_transfer_count += 1
@@ -213,22 +222,6 @@ function draw_snow()
   -- draw flake using its world coordinates
   pset(flr(drift_x), flr(flake.y), 7)
  end
-end
-
-
-function reset()
-  stage_trans = false
-  enemies = {} -- clear
-  stage_transfer_count = 0
-  e_spawn = false
-  game_over = false
-  intro = false
-  stage = 0
-  j.x = init_jenn_x
-	j.y = init_jenn_y
-  c.x = init_chad_x 
-	c.y = init_chad_y
-  music(0)  
 end
 
 function update_screen_shake()

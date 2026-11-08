@@ -71,7 +71,11 @@ function update_darts(enemies)
                         end
                     end
                 else
-                    dart_collision_detection(d, boss.head, 0.1, 1)
+                    dart_collision_detection(d, boss.head, 1, 1)
+
+                    if boss.defeated then
+                        dart_collision_detection(d, santa, 1, 1)
+                    end
                 end
 
                 if d.x - d.dx > right_bound then

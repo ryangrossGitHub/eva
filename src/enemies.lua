@@ -6,22 +6,18 @@ enemy_spawn_delay_count = 0
 enemy_dead_frame = 60 -- how long before removing from table to avoid out of mem error
 enemy_kill_count = 0
 
-enemy_trails = {}
-
 function spawn_enemy(speed, x, y, type)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, 
 		speed = speed, -- movement speed
-		rotate_sprite = false,
+		rotate_sprite, dead, hit, melee_deployed, shield_deployed = false, false, false, false, false,
 		x = x,
 		y = y,
 		w = 8,
 		h = 32,
 		death_animation_frame_delay = 4,
 		death_animation_frame_count = 0, -- death animation frame count
-		dead = false,
-		hit = false,
 		hit_anim_delay = 30,
 		hit_anim_count = 0,
 		animation_frame_delay = 7, -- animation frame delay
@@ -33,12 +29,10 @@ function spawn_enemy(speed, x, y, type)
 		fire_delay_count = 0,
 		melee = type == "melee",
 		melee_arm_length = 1,
-		melee_deployed = false,
 		melee_glove_x = 0,
 		shield = type == "shield",
-		shield_deployed = false,
 		shield_timer = 0,
-		shield_timer_max = 40,
+		shield_timer_max = 40
 	}
 
 	add(enemies, enemy)
@@ -192,29 +186,6 @@ function update_enemies()
 
 		if enemy.x < left_bound - 24 then game_over = true end
 		if enemy.x > right_bound then enemy.x = right_bound end
-	end
-end
-
-function update_enemy_trails()
-	if trail_capture_count == 0 then
-		for e in all(enemies) do
-			if not e.dead then
-				add(enemy_trails, {x = e.x + 8, y = e.y + 24})
-			end
-		end
-	end
-
-	while #enemy_trails > trail_capture_length do
-		del(enemy_trails, enemy_trails[1])
-	end
-end
-
-function draw_enemy_trails()
-	for t in all(enemy_trails) do
-		pset(t.x, t.y, 6)
-		pset(t.x, t.y + 1, 6)
-		pset(t.x + 1, t.y, 6)
-		pset(t.x + 1, t.y + 1, 6)
 	end
 end
 

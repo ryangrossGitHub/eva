@@ -28,7 +28,7 @@ j = {
 		arm_out = 38,
 		arm_up = 33
 	},
-	flip_sprite = false, 
+	flip_sprite, trigger, recoil, enemy_collision, enemy_melee_collision, force_special_active, fall, respawn = false, false, false, false, false, false, false, false,
 	x = init_jenn_x, 
 	y = init_jenn_y, 
 	w = 8,
@@ -38,25 +38,18 @@ j = {
 	animation_frame_delay = 5, 
 	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
-	trigger = false, -- trigger pressed,
-	stepping = true, -- movement sprite
-	recoil = false, -- arm movement when firing
+	stepping = true, 
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
-	enemy_collision = false,
-	enemy_melee_collision = false,
 	enemy_melee_collision_dist = 30,
 	enemy_melee_collision_dist_count = 0,
-	force_special_active = false,
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {},
 	trail_foot_to_capture = 0, -- 0 left foot, 1 right foot
-	shadow = true,
-	fall = false,
-	respawn = false
+	shadow = true
 }
 
 c = {
@@ -70,7 +63,7 @@ c = {
 		arm_out = 38,
 		arm_up = 33
 	},
-	flip_sprite = false, 
+	flip_sprite, trigger, recoil, enemy_collision, enemy_melee_collision, force_special_active, fall, respawn = false, false, false, false, false, false, false, false,
 	x = init_chad_x,
 	y = init_chad_y, 
 	w = 8,
@@ -80,30 +73,25 @@ c = {
 	animation_frame_delay = 5, 
 	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
-	trigger = false, -- trigger pressed
-	stepping = true, -- movement sprite
-	recoil = false, -- arm movement when firing
+	stepping = true, 
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
-	enemy_collision = false,
-	enemy_melee_collision = false,
 	enemy_melee_collision_dist = 30,
 	enemy_melee_collision_dist_count = 0,
-	force_special_active = false,
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {},
 	trail_foot_to_capture = 0, -- 0 left foot, 1 right foot
-	shadow = true,
-	fall = false,
-	respawn = false
+	shadow = true
 }
 
 santa = {
 	x = 90,
-	y = 70
+	y = 70,
+	h = 32,
+	w = 16
 }
 
 p1 = j
@@ -193,10 +181,12 @@ function update_p2_boss()
 		end
 	end
 
-	if p2.y > 60 then
-		p2.y -= p2.speed
-	elseif p2.y < 40 then
-		p2.y += p2.speed
+	if not p2.fall then
+		if p2.y > 60 then
+			p2.y -= p2.speed
+		elseif p2.y < 40 then
+			p2.y += p2.speed
+		end
 	end
 
 	if boss.y > 8 then

@@ -1,29 +1,26 @@
 boss = {
-	active = true,
-	defeated = false,
+	active, defeated, charge, throwing = false, false, false, false,
 	arms_up = true,
-	x = 174,
+	x = right_bound - 40,
 	y = 6,
-	charge = false,
 	charge_prob = 0.50,
 	charge_pause = 20,
-	charge_pause_count = 0,
+	charge_pause_count = 0, 
+	return_speed = 0, 
+	throw_delay_count = 0, 
+	hit_eye_color_count = 0,
 	charge_speed = 0.01,
 	x_speed = 0.5,
-	return_speed = 0,
-	throw_delay_count = 0,
 	throw_delay = 25,
 	throw_speed = 50,
-	throwing = false,
 	eye_color = -1,
 	hit_eye_color_delay = 2,
-	hit_eye_color_count = 0,
 	sayings = {
 		"_/s/-1.43/3/ae/-1.21/n/-1.72/_/t/-1.54/ah/-1.69/_/k/-1.20/l/-1.16/3/ao/-1.69/_/d/-1.20/ih/-1.06/z/-1.69/_/k/-1.19/3/ah/-1.02/-3/m/-1.18/3/ih/1.08/3/ng",
 		"_/-1.67/_/t/-1.18/uw/-1.69/-3/_/t/1.29/-3/aw/1.09/-3/n"
 	},
 	head = {
-		x = 174 + 8,
+		x = right_bound - 40 + 8,
 		y = 6 + 8,
 		w = 4 * 8,
 		h = 3 * 8,
@@ -132,6 +129,10 @@ function update_boss()
 
 	update_boss_feet()
 	update_boss_eyes()
+
+	if boss.defeated and santa.x < 142 then
+		santa.x += 1
+	end
 end
 
 function update_boss_feet()
@@ -200,7 +201,7 @@ function snowball_collision_detection(p)
 	if not p.fall and snowball.x < p.x + p.w -- right bound
 		and snowball.x + snowball.diameter > p.x -- left bound
 		and snowball.y + snowball.diameter > p.y + 20 then-- bottom bound
-			p.y += 10
+			p.y += 30
 			sfx(2)
 			snowball_reset()
 	end
