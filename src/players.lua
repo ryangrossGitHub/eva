@@ -6,15 +6,10 @@ init_chad_x = 7*8
 init_chad_y = 48
 
 camera_shake_offset = 0
-camera_shake_offset_amount = 1
 
 bounce_delay = 18
 bounce_count = 0
 bounce = false
-
-displaying_weapons = false
-displaying_weapons_delay = 10
-displaying_weapons_count = 0
 
 trail_capture_delay = 4
 trail_capture_count = 0
@@ -44,13 +39,11 @@ j = {
 	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
 	trigger = false, -- trigger pressed,
-	kill_count = 0,
 	stepping = true, -- movement sprite
 	recoil = false, -- arm movement when firing
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
-	weapon_list_index = 1,
 	enemy_collision = false,
 	enemy_melee_collision = false,
 	enemy_melee_collision_dist = 30,
@@ -88,13 +81,11 @@ c = {
 	weapon = 0, -- weapon: 0 pistol, 1 rifle
 	weapon_delay = 0,
 	trigger = false, -- trigger pressed
-	kill_count = 0,
 	stepping = true, -- movement sprite
 	recoil = false, -- arm movement when firing
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
-	weapon_list_index = 1,
 	enemy_collision = false,
 	enemy_melee_collision = false,
 	enemy_melee_collision_dist = 30,
@@ -134,8 +125,6 @@ rifle = {
 	sprite = 36,
 	length = 2
 }
-
-weapon_list = {pistol, rifle}
 
 function update_p2()
 	local c,y = nil
@@ -202,6 +191,12 @@ function update_p2_boss()
 				p2_boss_dir = 0
 			end
 		end
+	end
+
+	if p2.y > 60 then
+		p2.y -= p2.speed
+	elseif p2.y < 40 then
+		p2.y += p2.speed
 	end
 
 	if boss.y > 8 then
@@ -351,16 +346,19 @@ function update_player_move(p, ctrl)
 	local boss_delta_right = abs(boss.x + 43 - p.x)
 	if  boss_delta_right <= 4 and boss.y > p.y - 26 then
 		p.x += boss_delta_right
+		sfx(2)
 	end
 
 	local boss_delta_left = abs(boss.x - 10 - p.x)
 	if  boss_delta_left <= 4 and boss.y > p.y - 26 then
 		p.x -= boss_delta_left
+		sfx(2)
 	end
 
 	local boss_delta_up = abs(boss.y + 22 - p.y)
 	if boss_delta_up <= 4 and boss.x + 43 > p.x and boss.x - 10 < p.x then
 		p.y += boss_delta_up
+		sfx(2)
 	end
 
 	return btn_pressed
@@ -450,7 +448,7 @@ function update_player_force(p)
 	if p.force_special_active then
 		p.force_special_anim_count += 1
 
-		if p.force_special_anim_count == 16 then
+		if p.force_special_anim_count == 10 then
 			p.force_special_anim_seq = 1
 			camera_shake = 3
 			p.force_special_active = true

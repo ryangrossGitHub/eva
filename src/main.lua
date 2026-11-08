@@ -1,5 +1,4 @@
 screen_size = 128
-user_data_memory_address = 0x8000
 log_file = "log.txt"
 intro = false
 game_over = false
@@ -15,14 +14,15 @@ function _init()
 	palt(13, true) -- Transparent Color Is Purple (13)
 	palt(0, false)
 	load_stage(0)
-	music(63)
-	init_snow(100)
+	--music(63)
+	--init_snow(100)
 	init_speako8(80, 0.6)
+	
+	
+	music(0)
+	init_snow(7)	
 	load_stage(7)
 	player_move = true
-	
-	-- p2.weapon = 1
-	-- p1.weapon = 1
 end
 
 function _update()
@@ -74,10 +74,13 @@ function _update()
 			update_p2()
 		else
 			update_p2_boss()
-			update_boss()
-			detect_player_fall(p1)
-			detect_player_fall(p2)
 		end
+	end
+
+	if stage == 8 then 
+		update_boss()
+		detect_player_fall(p1)
+		detect_player_fall(p2)
 	end
 
 	update_enemies()
@@ -128,7 +131,7 @@ function _update()
 
 	if stage < 8 and stage_trans then update_stage_trans() end
 
-	-- if stage == 8 then update_final_stage_trans() end
+	if stage == 8 then update_final_stage_trans() end
 
 	update_screen_shake()
 
@@ -152,6 +155,8 @@ function _draw()
 		if stage < 8 then
 			spr(132, camera_x + screen_size - 40, screen_size - 8)
 			print(stages[stage].enemy_spawn_count*4-enemy_kill_count.."/"..stages[stage].enemy_spawn_count*4, camera_x + screen_size - 30, screen_size - 6, 7)
+		else
+			print("santa claude!", camera_x + screen_size - 52, screen_size - 6, 11)
 		end
 
 		if not p2_join_hide then

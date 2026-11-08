@@ -4,10 +4,10 @@ stage_transfer_count = 0
 stage_transfer_total = 120 -- stage trans total 
 camera_x = 0
 camera_y = 0
-wall_height = 56
-map_width = 8
 intro_camera_pause = 0--260
 intro_camera_pause_count = 0
+outro_transfer_count = 0
+outro_transfer_total = 300
 
 left_bound = 7 * 8
 right_bound = 38 * 8
@@ -46,7 +46,7 @@ stages = {
     enemy_spawn_delay = 20
   },
   { -- 7
-    enemy_spawn_count = 100, 
+    enemy_spawn_count = 1,--100, 
     enemy_speed = 2,
     enemy_spawn_delay = 15
   },
@@ -108,8 +108,17 @@ function update_stage_trans()
 end
 
 function update_final_stage_trans()
-  if not speaking() then
-    say(boss.sayings[3])
+  if outro_transfer_count < outro_transfer_total then
+    if outro_transfer_count == 0 and not speaking() then
+      say(boss.sayings[1])
+    end
+
+    if outro_transfer_count == 75 and not speaking() then
+      init_speako8(50, 0.2)
+      say(boss.sayings[2])
+    end
+
+    outro_transfer_count += 1
   end
 end
 
@@ -210,7 +219,6 @@ end
 function reset()
   stage_trans = false
   enemies = {} -- clear
-  particles = {} -- clear
   stage_transfer_count = 0
   e_spawn = false
   game_over = false
@@ -218,10 +226,8 @@ function reset()
   stage = 0
   j.x = init_jenn_x
 	j.y = init_jenn_y
-  j.kill_count = 0
   c.x = init_chad_x 
 	c.y = init_chad_y
-  c.kill_count = 0
   music(0)  
 end
 

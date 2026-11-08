@@ -3,8 +3,6 @@ enemies = {}
 e_spawn = false
 enemey_spawn_stage_count = 0 -- stage cnt
 enemy_spawn_delay_count = 0 
-enemy_health = 20
-enemy_head_sprite_list = {132, 133, 148, 149, 164, 165, 180, 181}
 enemy_dead_frame = 60 -- how long before removing from table to avoid out of mem error
 enemy_kill_count = 0
 
@@ -13,7 +11,7 @@ enemy_trails = {}
 function spawn_enemy(speed, x, y, type)
 	enemy = {
 		sprite_number = 144,
-		sprite_number_face = 132, --rnd(enemy_head_sprite_list),
+		sprite_number_face = 132, 
 		speed = speed, -- movement speed
 		rotate_sprite = false,
 		x = x,
@@ -28,7 +26,6 @@ function spawn_enemy(speed, x, y, type)
 		hit_anim_count = 0,
 		animation_frame_delay = 7, -- animation frame delay
 		animation_frame_count = 0,
-		destination = flr(rnd(2)) + 1, -- 1 = player 1, 2 = player 2
 		damage = 0,
 		max_damage = 10,
 		dead_frames = 0,

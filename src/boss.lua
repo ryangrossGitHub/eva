@@ -19,10 +19,8 @@ boss = {
 	hit_eye_color_delay = 2,
 	hit_eye_color_count = 0,
 	sayings = {
-		-- hardward update
-		"_/hh/-1.39/3/aa/-1.15/r/-1.74/_/d/-1.10/w/-1.40/eh/-1.09/r/-1.60/ah/-1.56/_/p/-1.72/-3/_/d/-1.13/-3/ey/-1.64/-3/_/t",
-		-- complete eat eat eat
-		"_/-1.67/_/k/-1.58/ah/-1.03/m/-1.64/-3/_/p/-1.07/-3/l/-1.14/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t/1.15/-3/iy/-1.64/-3/_/t"
+		"_/s/-1.43/3/ae/-1.21/n/-1.72/_/t/-1.54/ah/-1.69/_/k/-1.20/l/-1.16/3/ao/-1.69/_/d/-1.20/ih/-1.06/z/-1.69/_/k/-1.19/3/ah/-1.02/-3/m/-1.18/3/ih/1.08/3/ng",
+		"_/-1.67/_/t/-1.18/uw/-1.69/-3/_/t/1.29/-3/aw/1.09/-3/n"
 	},
 	head = {
 		x = 174 + 8,
@@ -199,24 +197,26 @@ function boss_seek_player(delta)
 end
 
 function snowball_collision_detection(p)
-	if snowball.x < p.x + p.w -- right bound
+	if not p.fall and snowball.x < p.x + p.w -- right bound
 		and snowball.x + snowball.diameter > p.x -- left bound
 		and snowball.y + snowball.diameter > p.y + 20 then-- bottom bound
-			p.y += 5
+			p.y += 10
+			sfx(2)
 			snowball_reset()
 	end
 end
 
 function draw_boss()
 	if boss.active then
-		spr(238, boss.x - 4, boss.y + 45, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 4, boss.y + 47, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 12, boss.y + 49, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 12, boss.y + 44, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 20, boss.y + 49, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 20, boss.y + 44, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 28, boss.y + 47, 4, 4, false, false) -- shadow
-		spr(238, boss.x + 36, boss.y + 45, 4, 4, false, false) -- shadow
+		-- shadow
+		spr(238, boss.x - 4, boss.y + 45, 4, 4, false, false)
+		spr(238, boss.x + 4, boss.y + 47, 4, 4, false, false)
+		spr(238, boss.x + 12, boss.y + 49, 4, 4, false, false)
+		spr(238, boss.x + 12, boss.y + 44, 4, 4, false, false)
+		spr(238, boss.x + 20, boss.y + 49, 4, 4, false, false)
+		spr(238, boss.x + 20, boss.y + 44, 4, 4, false, false)
+		spr(238, boss.x + 28, boss.y + 47, 4, 4, false, false)
+		spr(238, boss.x + 36, boss.y + 45, 4, 4, false, false)
 
 		if boss.arms_up then
 			spr(13, boss.x, boss.y, 3, 6, false, false) -- arm left up
@@ -255,13 +255,14 @@ function draw_boss()
 			else
 				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
 			end
-
-			if not boss.defeated then
-				spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
-			end
 		end
 
 		draw_boss_eyes()
+
+		if not boss.arms_up and not boss.defeated then
+			spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
+		end
+
 		draw_boss_health()
 	end
 end

@@ -120,7 +120,7 @@ function dart_collision_detection(d, o, damage, force)
             end
         end
 
-        if o.boss_damage then -- boss
+        if o.boss_damage then 
             o.boss_damage += damage
             o.hit = true
             if return_dir == 1 then
