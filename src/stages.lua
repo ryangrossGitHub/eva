@@ -132,8 +132,7 @@ function update_final_stage_trans()
 end
 
 function load_start()
-  player_move = false
-  e_spawn = false
+  player_move, e_spawn = false, false
   camera_x = 0
   camera_y = 0
   j.y = init_jenn_y
@@ -168,8 +167,7 @@ function update_intro()
     elseif camera_x > 35 then
       camera_x -= 2
     else
-      intro = false
-      player_move = true
+      intro, player_move = false, false
     end
 
     intro_camera_pause_count += 1

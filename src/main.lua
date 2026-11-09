@@ -2,11 +2,13 @@ screen_size = 128
 log_file = "log.txt"
 intro = false
 game_over = false
+game_over_cnt = 0
 p2_join_blink_count = 0
 p2_join_blink_total = 30
 p2_join_hide = false
 camera_shake = 0
 credits_cnt = 0
+final_music = false
 
 function _init()
 	printh("GAME INIT", log_file, true)
@@ -25,7 +27,7 @@ function _init()
 end
 
 function _update()
-	if credits_cnt > 200 then return end
+	if credits_cnt > 200 or game_over then return end
 
 	speako8()  -- must appear once unconditionally in _update.
 
@@ -132,24 +134,37 @@ end
 function _draw()
 	cls()
 
+	if game_over then
+		music(-1)
+		print("\^w\^tgame over", camera_x + 24, 48, 8)
+		print("THE WORKSHOP HAS BEEN BREACHED", camera_x + 4, 68, 8)
+		print("RESTARTING...", camera_x + 34, 108, 7)
+		game_over_cnt += 1
+		if game_over_cnt > 10 then 
+			if game_over_cnt > 100 then
+				run()
+			end
+			return 
+		end
+	end
+
 	if credits_cnt > 200 then
 		camera(0,0)
+		if not final_music then
+			final_music = true
+			music(40)
+		end
 
-		if credits_cnt > 1300 then
-			print("YOU: FOR PLAYING! HAPPY HOLIDAYS!", 0, 56, 7)
-		elseif credits_cnt > 1100 then
-			print("WIFE: PUTTING UP WITH ME", 14, 56, 11)
-		elseif credits_cnt > 9000 then
-			print("PLAY TESTERS: YOU ALL ROCK!", 10, 56, 7)
-		elseif credits_cnt > 700 then
-			print("rHYS wYNNE: SANTA CLAUDE NAME", 10, 56, 8)
-		elseif credits_cnt > 500 then
-			print("sUNJON: SANTA CLAUDE GFX", 14, 56, 7)
-		elseif credits_cnt > 300 then
-			print("BIKIBIRD: ROBOT VOICE (SPEAKO8)", 0, 56, 11)
+		if credits_cnt > 564 then
+			run()
 		else
-			print("\^w\^tthe end", 40, 36, 7)
-			print("special thanks to...", 30, 56, 8)
+			print("\^w\^tthe end", 40, 20, 7)
+			print("special thanks to:", 33, 50, 7)
+			print(" BIKIBIRD: ROBOT VOICE (SPEAKO8)", 0, 58, 8)
+			print(" sUNJON:   SANTA CLAUDE GFX", 0, 66, 11)
+			print(" rHYS:     SANTA CLAUDE NAME", 0, 74, 8)
+			print(" TESTERS:  YOU ALL ROCK!", 0, 82, 11)
+			print("HAPPY HOLIDAYS!!!!!!!", 30, 108, 7)
 		end
 
 		credits_cnt += 1
@@ -206,6 +221,10 @@ function _draw()
 
 	if stage == 8 and boss.active then
 		draw_boss()
+		if not final_music then
+			final_music = true
+			music(40)
+		end
 	end
 
 	draw_darts()
@@ -225,10 +244,8 @@ function _draw()
 	draw_player(p1)
 	print("p1", p1.x - 3, p1.y - 7, 8)
 
-	if game_over then
-		print("\^w\^tgame over", camera_x + 24, 68, 8)
-		print("THE WORKSHOP HAS BEEN BREACHED", camera_x + 4, 88, 8)
-	elseif intro and camera_x > 35 then
+	
+	if intro and camera_x > 35 then
 		print("\^w\^tdefend the", camera_x + 20, 68, 8)
 		print("\^w\^tworkshop", camera_x + 28, 88, 8)
 	elseif stage_trans then
@@ -240,10 +257,15 @@ function _draw()
 	draw_player_force(p2)
 
 	if boss.defeated then
+		if final_music then 
+			final_music = false
+			music(-1) 
+		end
+		
 		draw_santa()
 
 		if santa.x == 142 then
-			print_dialog(santa.x, santa.y, "HEY ELVES. ENJOYING THE THIRDY DAY FREE TRIAL OF SANTA CLAUDE!?", 1, true, true, 0, 7, true)
+			print_dialog(santa.x, santa.y, "HEY ELVES! HOW IS THE THIRTY DAY FREE TRIAL OF SANTA CLAUDE!? PRETTY NEAT, RIGHT?", 1, true, true, 0, 7, true)
 
 			credits_cnt += 1
 		end
