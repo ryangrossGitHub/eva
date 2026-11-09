@@ -1,26 +1,26 @@
 enemies = {}
 
 e_spawn = false
-enemey_spawn_stage_count = 0 -- stage cnt
+enemey_spawn_stage_count = 0 
 enemy_spawn_delay_count = 0 
-enemy_dead_frame = 60 -- how long before removing from table to avoid out of mem error
+enemy_dead_frame = 60 
 enemy_kill_count = 0
 
 function spawn_enemy(speed, x, y, type)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, 
-		speed = speed, -- movement speed
+		speed = speed, 
 		rotate_sprite, dead, hit, melee_deployed, shield_deployed = false, false, false, false, false,
 		x = x,
 		y = y,
 		w = 8,
 		h = 32,
 		death_animation_frame_delay = 4,
-		death_animation_frame_count = 0, -- death animation frame count
+		death_animation_frame_count = 0, 
 		hit_anim_delay = 30,
 		hit_anim_count = 0,
-		animation_frame_delay = 7, -- animation frame delay
+		animation_frame_delay = 7, 
 		animation_frame_count = 0,
 		damage = 0,
 		max_damage = 10,
@@ -111,7 +111,6 @@ function update_enemies()
 					kill_enemy(enemy)
 				end
 			else
-				-- walk
 				enemy.x -= enemy.speed
 
 				if enemy.melee then
@@ -142,8 +141,7 @@ function update_enemies()
 						sfx(2)
 					end
 
-				else -- range enemy
-					-- handle shield
+				else 
 					if enemy.shield_deployed then
 						enemy.shield_timer += 1
 						if enemy.shield_timer >= enemy.shield_timer_max then
@@ -152,19 +150,16 @@ function update_enemies()
 						end
 					end
 
-					-- register pushing effect on player1 collision
-					if enemy.x - p1.x - p1.w < 8 -- x collision
-						and (abs(enemy.y - p1.y) < 32) then -- y collision
+					if enemy.x - p1.x - p1.w < 8 
+						and (abs(enemy.y - p1.y) < 32) then 
 						p1.enemy_collision = true
 					end
 
-					-- register pushing effect on player2 collision
-					if enemy.x - p2.x - p2.w < 8 -- x collision
-						and (abs(enemy.y - p2.y) < 32) then -- y collision
+					if enemy.x - p2.x - p2.w < 8 
+						and (abs(enemy.y - p2.y) < 32) then 
 						p2.enemy_collision = true
 					end
 
-					-- prevent firing from off screen
 					if abs(p1.x - enemy.x) < screen_size - 30 or abs(p2.x - enemy.x) < screen_size - 30 then
 						handle_enemy_fire(enemy)
 					end
@@ -173,7 +168,6 @@ function update_enemies()
 				if enemy.animation_frame_count >= enemy.animation_frame_delay then
 					enemy.animation_frame_count = 0
 					
-					-- enemy animation
 					if enemy.sprite_number == 144 then
 						enemy.sprite_number = 146
 					elseif enemy.sprite_number == 146 then
@@ -207,20 +201,14 @@ end
 
 function draw_enemies()
 	for enemy in all(enemies) do
-		if enemy.sprite_number == -1 then
-			-- shotgun death, don't draw
-		elseif enemy.sprite_number == 170 or enemy.sprite_number == 138 then
-			-- wide instead of tall sprite
+		if enemy.sprite_number == 170 or enemy.sprite_number == 138 then
 			spr(enemy.sprite_number, enemy.x, enemy.y+8, 4, 2, false, false)
 		elseif enemy.sprite_number == 150 then
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
 		else
-			-- body
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
-			-- head
 			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, false, false)
 
-			-- arm
 			if enemy.melee then
 				if not enemy.melee_deployed then
 					spr(130, enemy.x + 8, enemy.y + 5, 2, 1, false, false)

@@ -36,7 +36,7 @@ j = {
 	last_animation_frame_x = init_jenn_x, 
 	last_animation_frame_y = init_jenn_y, 
 	animation_frame_delay = 5, 
-	weapon = 0, -- weapon: 0 pistol, 1 rifle
+	weapon = 0,
 	weapon_delay = 0,
 	stepping = true, 
 	recoil_delay = 1,
@@ -48,7 +48,7 @@ j = {
 	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {},
-	trail_foot_to_capture = 0, -- 0 left foot, 1 right foot
+	trail_foot_to_capture = 0,
 	shadow = true
 }
 
@@ -71,7 +71,7 @@ c = {
 	last_animation_frame_x = init_chad_x, 
 	last_animation_frame_y = init_chad_y, 
 	animation_frame_delay = 5, 
-	weapon = 0, -- weapon: 0 pistol, 1 rifle
+	weapon = 0,
 	weapon_delay = 0,
 	stepping = true, 
 	recoil_delay = 1,
@@ -83,7 +83,7 @@ c = {
 	force_special_anim_count = 0,
 	force_radius = 0,
 	trail = {},
-	trail_foot_to_capture = 0, -- 0 left foot, 1 right foot
+	trail_foot_to_capture = 0,
 	shadow = true
 }
 
@@ -100,7 +100,7 @@ coop = false
 
 pistol = {
 	id = 0,
-	delay = 6,
+	delay = 4,
 	damage = 5,
 	sprite = 35,
 	length = 1,
@@ -195,23 +195,17 @@ function update_p2_boss()
 end
 
 function closest_enemy()
-	-- which direction to fire
 	local closest = 99
-	-- neg = left, pos = right
 	local c_xdir = 0
 
-	-- which direction to move
-	-- neg = up, pos = down
 	local e_ydir = 0
 
 	local player_weapon_offset = 12
 
-	local hbox = 8 -- hit box
+	local hbox = 8 
  
 	for e in all(enemies) do
 		if not e.dead and e.x > camera_x + 5 and e.x < camera_x + screen_size - 5 then
-			-- if left or right then fire at closest enemy
-			-- else calculate whether there are more enemies above or below to dictate y movement
 			if (e.y-4 > p2.y + player_weapon_offset - hbox and e.y-4 < p2.y + player_weapon_offset + hbox) then
 				local dir = e.x - p2.x
 				local dif = abs(dir)
@@ -227,21 +221,19 @@ function closest_enemy()
 		end
 	end
  
-	if closest == 99 then -- no enemies in range
+	if closest == 99 then 
 		return nil, e_ydir
 	else
-		if e_ydir == 0 then e_ydir = 1 end -- tie breaker so bot doesn't freeze
+		if e_ydir == 0 then e_ydir = 1 end 
 		return c_xdir, e_ydir
 	end
 end
 
 function update_player_anims(p)
-	-- leg movement
  	if abs(p.x - p.last_animation_frame_x) > p.animation_frame_delay or abs(p.y - p.last_animation_frame_y) > p.animation_frame_delay then
   		p.last_animation_frame_x = p.x
   		p.last_animation_frame_y = p.y
   
-  		-- get next animation frame
   		if p.stepping then
   			p.stepping = false
   		else
@@ -278,10 +270,9 @@ function update_player_move(p, ctrl)
 
 	local btn_pressed = false
 
-	-- ctrl is the controller maping
 	if btn(0, ctrl) 
-		and p.x > left_bound -- not out of bounds
-		and p.x > camera_x then -- in camera frame
+		and p.x > left_bound 
+		and p.x > camera_x then 
 		
 		p.flip_sprite = true 
 		p.x -= p.speed
@@ -290,9 +281,9 @@ function update_player_move(p, ctrl)
 			camera_x -= p.speed
 		end
 	elseif btn(1, ctrl) 
-		and p.x < right_bound -- not past the end of the map
-		and p.x < camera_x + screen_size - 16 -- both players in camera frame
-		and not (not p.flip_sprite and p.enemy_collision) then -- can't move through enemies
+		and p.x < right_bound 
+		and p.x < camera_x + screen_size - 16 
+		and not (not p.flip_sprite and p.enemy_collision) then 
 		
 		p.flip_sprite = false
 		p.x += p.speed
@@ -412,7 +403,7 @@ function draw_player_weapon(p)
 	end
 
 	if p.force_special_active then
-		return -- don't draw weapon when force special is active
+		return 
 	elseif p.weapon == 0 then
 		if p.flip_sprite then
 			spr(pistol.sprite, p.x - 1 + recoil_mult, p.y + 12 + bounce_height, 1, 1, true, false)
@@ -491,21 +482,15 @@ function draw_player_force(p)
 			local c = cos(a)
 			local s = sin(a)
 			
-			-- Loop 5 times to create a 5-pixel thick wave front
 			for w = 0, 4 do
-				-- Current radius layer we are drawing
 				local current_r = blast.r - w
 				
-				-- Target destination: Where we are drawing the warped pixel
 				local wave_x = flr(blast.x + c * current_r)
 				local wave_y = flr(blast.y + s * current_r)
 				
-				-- Source location: Grab a pixel from deeper inside the explosion
-				-- We subtract 4 more pixels to create a strong outward "refraction" pinch
 				local src_x = flr(blast.x + c * (current_r - 4))
 				local src_y = flr(blast.y + s * (current_r - 4))
 				
-				-- Grab and rewrite the pixel data
 				local col = pget(src_x, src_y)
 				pset(wave_x, wave_y, col)
 			end
@@ -515,12 +500,15 @@ end
 	
 function handle_player_trigger(p)
 	if p.force_special_active then
-		return -- don't fire when force special is active
+		return 
 	end
 
-	if p.weapon == 0 and p.weapon_delay == 0 then
-		p.weapon_delay = pistol.delay
-		handle_player_fire(p)
+	if not p.trigger then
+		p.trigger = true
+		if p.weapon == 0 and p.weapon_delay == 0 then
+			p.weapon_delay = pistol.delay
+			handle_player_fire(p)
+		end
 	end
 
 	if p.weapon == 1 and p.weapon_delay == 0 then
@@ -530,7 +518,6 @@ function handle_player_trigger(p)
 end
 
 function draw_player(p)
-	-- head
 	if bounce_count < bounce_delay then
 		bounce_count += 1
 	else
@@ -572,7 +559,6 @@ function draw_player(p)
 		end
 	end
 
-	--torso
 	if p.flip_sprite then
 		spr(p.sprites.torso, p.x + 7, p.y + 16 + bounce_height, 1, 1, p.flip_sprite, false)
 	else
@@ -586,7 +572,6 @@ function draw_player(p)
 		p.recoil = false
 	end
 
-	-- arm
 	if p.force_special_active and p.force_special_anim_seq == 0 then
 		if p.flip_sprite then
 			spr(p.sprites.arm_up, p.x + 10, p.y + bounce_height, 1, 2, p.flip_sprite, false)
@@ -634,9 +619,8 @@ function draw_player_shadow(p)
 end
 
 function draw_santa()
-	spr(238, santa.x + 3, santa.y + 32, 4, 4, false, false) -- shadow
-	spr(96, santa.x - 2, santa.y, 2, 2, false, false) -- head
-	spr(98, santa.x, santa.y + 16, 2, 2, false, false) -- body
-	spr(105, santa.x + 5, santa.y + 32, 1, 1, false, false) -- feet
-	-- spr(106, santa.x + 5, santa.y + 32, 1, 1, false, false) -- feet walking
+	spr(238, santa.x + 3, santa.y + 32, 4, 4, false, false) 
+	spr(96, santa.x - 2, santa.y, 2, 2, false, false) 
+	spr(98, santa.x, santa.y + 16, 2, 2, false, false) 
+	spr(105, santa.x + 5, santa.y + 32, 1, 1, false, false)
 end

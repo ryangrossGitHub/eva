@@ -1,10 +1,10 @@
 stage = 8
 stage_trans = false
 stage_transfer_count = 0
-stage_transfer_total = 120 -- stage trans total 
+stage_transfer_total = 120 
 camera_x = 0
 camera_y = 0
-intro_camera_pause = 0--260
+intro_camera_pause = 260
 intro_camera_pause_count = 0
 outro_transfer_count = 0
 outro_transfer_total = 210
@@ -15,42 +15,42 @@ right_bound = 38 * 8
 snow = {}
 
 stages = {
-  { -- 1
+  {
     enemy_spawn_count = 5, 
     enemy_speed = 0.385,
     enemy_spawn_delay = 130
   },
-  { -- 2
+  {
     enemy_spawn_count = 20, 
     enemy_speed = 0.5,
     enemy_spawn_delay = 60
   },
-  { -- 3
+  {
     enemy_spawn_count = 10, 
     enemy_speed = 0.5,
     enemy_spawn_delay = 80
   },
-  { -- 4
+  {
     enemy_spawn_count = 10, 
     enemy_speed = 0.7,
     enemy_spawn_delay = 70
   },
-  { -- 5
+  {
     enemy_spawn_count = 20, 
     enemy_speed = 1,
     enemy_spawn_delay = 40
   },
-  { -- 6
+  {
     enemy_spawn_count = 60, 
     enemy_speed = 1.5,
     enemy_spawn_delay = 20
   },
-  { -- 7
-    enemy_spawn_count = 1,--100, 
+  {
+    enemy_spawn_count = 100, 
     enemy_speed = 2,
     enemy_spawn_delay = 15
   },
-  { -- 8
+  {
     enemy_spawn_count = 1, 
     enemy_speed = 2,
     enemy_spawn_delay = 15
@@ -83,11 +83,11 @@ function load_stage(n)
   end
   
   if n == 6 then
-    sfx(1) -- rifle
+    sfx(1)
   end
 
   if n == 5 then
-    sfx(1) -- special
+    sfx(1)
   end
 
   if n == 8 then
@@ -152,22 +152,20 @@ function update_start()
     end
   end
  
-  if btnp(4) or btnp(5) then
+  if btnp(5) then
     music(-1)
-    printh("GAME START", log_file)
     intro = true
-    load_stage(stage)
+    load_stage(1)
   end
 end
 
--- camera pan
 function update_intro()
     if intro_camera_pause_count < intro_camera_pause then
       camera_x = right_bound - screen_size/1.5
     elseif camera_x > 35 then
       camera_x -= 2
     else
-      intro, player_move = false, false
+      intro, player_move = false, true
     end
 
     intro_camera_pause_count += 1
@@ -180,10 +178,10 @@ function draw_start()
 end
 
 function init_snow(n)
- snow = {} -- ensure array is initialized
+ snow = {} 
  for i = 1, n do
   add(snow, {
-   x = camera_x + rnd(128), -- spawn initially within the current camera view
+   x = camera_x + rnd(128), 
    y = rnd(128),
    spd = 0.3 + rnd(0.5),
    sine_offset = rnd(100),
@@ -194,30 +192,22 @@ end
 
 function draw_snow()
  for flake in all(snow) do
-  -- fall down slowly
   flake.y += flake.spd
-
-  -- update the swaying angle
   flake.sine_offset += flake.sine_spd
 
-  -- calculate horizontal position with a wind bias + wave motion
   local drift_x = flake.x + sin(flake.sine_offset) * 4 - 2
 
-  -- screen wrap thresholds relative to the camera
   if (flake.y > 128) then
    flake.y = -2
-   flake.x = camera_x + rnd(128) -- respawn at the top, inside the current camera view
+   flake.x = camera_x + rnd(128) 
   end
 
-  -- if a flake goes off the left side of the camera, wrap to the right side
   if (flake.x < camera_x - 4) then
    flake.x += 136
-  -- if a flake goes off the right side of the camera, wrap to the left side
   elseif (flake.x > camera_x + 132) then
    flake.x -= 136
   end
 
-  -- draw flake using its world coordinates
   pset(flr(drift_x), flr(flake.y), 7)
  end
 end

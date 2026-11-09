@@ -69,14 +69,14 @@ function update_boss()
 			boss.return_speed = 0
 			boss.charge_pause_count = 0
 		end
-	elseif boss.y > 6 then -- return from charge
+	elseif boss.y > 6 then 
 		if boss.charge_pause_count < boss.charge_pause then
 			boss.charge_pause_count += 1
 		else
 			boss.return_speed = min(boss.return_speed + 0.1, 3)
 			boss.y -= boss.return_speed
 
-			if boss.y < 6 then boss.y = 6 end -- prevent overshooting
+			if boss.y < 6 then boss.y = 6 end 
 		end
 	else
 		if not boss.throwing and not boss.defeated then
@@ -198,9 +198,9 @@ function boss_seek_player(delta)
 end
 
 function snowball_collision_detection(p)
-	if not p.fall and snowball.x < p.x + p.w -- right bound
-		and snowball.x + snowball.diameter > p.x -- left bound
-		and snowball.y + snowball.diameter > p.y + 20 then-- bottom bound
+	if not p.fall and snowball.x < p.x + p.w 
+		and snowball.x + snowball.diameter > p.x 
+		and snowball.y + snowball.diameter > p.y + 20 then
 			p.y += 30
 			sfx(2)
 			snowball_reset()
@@ -209,7 +209,6 @@ end
 
 function draw_boss()
 	if boss.active then
-		-- shadow
 		spr(238, boss.x - 4, boss.y + 45, 4, 4, false, false)
 		spr(238, boss.x + 4, boss.y + 47, 4, 4, false, false)
 		spr(238, boss.x + 12, boss.y + 49, 4, 4, false, false)
@@ -220,25 +219,25 @@ function draw_boss()
 		spr(238, boss.x + 36, boss.y + 45, 4, 4, false, false)
 
 		if boss.arms_up then
-			spr(13, boss.x, boss.y, 3, 6, false, false) -- arm left up
-			spr(13, boss.x + (3 * 8), boss.y, 3, 7, true, false) -- arm right up
-			spr(107, boss.x + (2 * 8), boss.y - 5, 2, 2, false, false) -- snow ball
+			spr(13, boss.x, boss.y, 3, 6, false, false) 
+			spr(13, boss.x + (3 * 8), boss.y, 3, 7, true, false) 
+			spr(107, boss.x + (2 * 8), boss.y - 5, 2, 2, false, false) 
 		else
-			spr(68, boss.x - 11, boss.y + 20, 5, 4, false, false) -- arm left down
-			spr(68, boss.x + 19, boss.y + 20, 5, 4, true, false) -- arm right down
+			spr(68, boss.x - 11, boss.y + 20, 5, 4, false, false) 
+			spr(68, boss.x + 19, boss.y + 20, 5, 4, true, false) 
 		end
 
 		if boss.feet.which == "left" then
-			spr(73, boss.x - 4, boss.y + 40 + boss.feet.y_offset, 3, 2, false, false) -- leg left
-			spr(73, boss.x + 28, boss.y + 40, 3, 2, true, false) -- leg right
+			spr(73, boss.x - 4, boss.y + 40 + boss.feet.y_offset, 3, 2, false, false) 
+			spr(73, boss.x + 28, boss.y + 40, 3, 2, true, false) 
 
 			if boss.feet.y_offset <= 0 then
 				boss.feet.which = "right"
 				boss.feet.dir = "up"
 			end
 		else
-			spr(73, boss.x - 4, boss.y + 40, 3, 2, false, false) -- leg left
-			spr(73, boss.x + 28, boss.y + 40 + boss.feet.y_offset, 3, 2, true, false) -- leg right
+			spr(73, boss.x - 4, boss.y + 40, 3, 2, false, false) 
+			spr(73, boss.x + 28, boss.y + 40 + boss.feet.y_offset, 3, 2, true, false) 
 
 			if boss.feet.y_offset <= 0 then
 				boss.feet.which = "left"
@@ -247,21 +246,21 @@ function draw_boss()
 		end
 
 		if boss.arms_up then
-			spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
+			spr(8, boss.head.x, boss.head.y, 4, 4, false, false) 
 		else
 			if boss.defeated and boss.head.fall_cnt >= boss.head.fall_dist then
 				spr(238, boss.head.x + 6, boss.head.y + 22, 2, 2, false, false)
 				spr(238, boss.head.x + 10, boss.head.y + 22, 2, 2, false, false)
-				spr(8, boss.head.x, boss.head.y, 4, 4, false, true) -- head
+				spr(8, boss.head.x, boss.head.y, 4, 4, false, true) 
 			else
-				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) -- head
+				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) 
 			end
 		end
 
 		draw_boss_eyes()
 
 		if not boss.arms_up and not boss.defeated then
-			spr(107, snowball.x, snowball.y, 2, 2, false, false) -- snow ball
+			spr(107, snowball.x, snowball.y, 2, 2, false, false) 
 		end
 
 		draw_boss_health()
@@ -283,8 +282,7 @@ function draw_boss_eyes()
 	rectfill(boss.head.x + 11, boss.head.y + 13 + y_ofs, boss.head.x + 13, boss.head.y + 15 + y_ofs, boss.eye_color)
 	rectfill(boss.head.x + 17, boss.head.y + 13 + y_ofs, boss.head.x + 19, boss.head.y + 15 + y_ofs, boss.eye_color)
 
-	-- wide mouth anytime he has red enraged eyes
 	if boss.eye_color == 8 then
-		spr(22, boss.x + 16, boss.y + 29, 2, 1, false, false) -- mouth wide
+		spr(22, boss.x + 16, boss.y + 29, 2, 1, false, false) 
 	end
 end

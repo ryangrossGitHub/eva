@@ -1,8 +1,6 @@
--- nerf bullet particle system
-
 darts = {}
 
-bounce_cooldown = 10 -- frames to wait before checking another bounce, helps when dart stuck in obj and performance
+bounce_cooldown = 10 
 
 function spawn_dart(x, y, dx, dy, e)
     add(darts, {
@@ -22,22 +20,17 @@ end
 
 function update_darts(enemies)
     for d in all(darts) do
-        -- 1. physics & drag
         d.dy = d.dy + 0.15   
         d.dx = d.dx * 0.98   
         d.dy = d.dy * 0.98
 
-        -- 2. movement
         d.x = d.x + d.dx
         d.y = d.y + d.dy
 
-        -- 3. update visual tumble/spin rotation
         if d.is_tumbling then
             d.spin_angle = d.spin_angle + d.spin_speed
-            -- slowly slow down the spin due to air friction
             d.spin_speed = d.spin_speed * 0.95 
             
-            -- stop tumbling if the spin becomes a crawl
             if abs(d.spin_speed) < 0.02 then
                 d.is_tumbling = false
             end
@@ -48,19 +41,17 @@ function update_darts(enemies)
             del(darts, d) 
         end
 
-        -- 4. collision and ricochet
 
         if d.cooldown > 0 then
-            d.cooldown -= 1 -- helps prevent getting stuck in objects
+            d.cooldown -= 1 
         else
-            -- avoid friendly fire
             if d.enemy_fire then
                 dart_collision_detection(d, p1, 1, 1)
                 dart_collision_detection(d, p2, 1, 1)
             else
                 local damage = 1
                 local force = 4
-                if p1.weapon == 1 then -- rifle
+                if p1.weapon == 1 then 
                     force = 2
                 end
 
@@ -71,7 +62,7 @@ function update_darts(enemies)
                         end
                     end
                 else
-                    dart_collision_detection(d, boss.head, 1, 1)
+                    dart_collision_detection(d, boss.head, 0.1, 1)
 
                     if boss.defeated then
                         dart_collision_detection(d, santa, 1, 1)
@@ -98,14 +89,14 @@ function dart_collision_detection(d, o, damage, force)
             back_shot = true
         end
 
-        if o.damage then -- enemy
+        if o.damage then 
             if back_shot then
                 o.damage += damage
                 o.hit = true
             elseif not o.shield then
                 o.damage += damage
                 o.hit = true
-            elseif o.shield and not o.shield_deployed then -- enemy
+            elseif o.shield and not o.shield_deployed then
                 o.hit = true
                 o.damage += damage 
 
@@ -114,7 +105,6 @@ function dart_collision_detection(d, o, damage, force)
                 end
             end
 
-            -- prevent pushing towards workshop
             if not back_shot then
                 if return_dir == 1 then
                     o.x -= force
@@ -122,11 +112,12 @@ function dart_collision_detection(d, o, damage, force)
                     o.x += force
                 end
             end
-        end
+        else 
+            if o.boss_damage then 
+                o.boss_damage += damage
+                o.hit = true
+            end
 
-        if o.boss_damage then 
-            o.boss_damage += damage
-            o.hit = true
             if return_dir == 1 then
                 o.x -= force
             else
@@ -142,15 +133,12 @@ function dart_collision_response(d, dir)
     d.life += 40 
     d.cooldown = bounce_cooldown
     
-    -- activate visual spin on hits
-    if not d.is_tumbling then -- first hit
+    if not d.is_tumbling then 
         d.dx = (1.0 + rnd(2.0)) * dir
         d.dy = -1.5 - rnd(3.0)
         d.is_tumbling = true
-        -- random direction (clockwise/counter-clockwise) and faster speed
         d.spin_speed = 0.15 + rnd(0.2)
         if rnd(1) > 0.5 then d.spin_speed = -d.spin_speed end
-        -- if d.dx > 0 then d.x = o.x + o.w + 1 else d.x = o.x - 1 end
     else
         d.dx = (0.2 + rnd(1)) * dir
         d.dy = -0 - rnd(1)
@@ -168,12 +156,9 @@ function draw_darts()
         local step_y = 0
         
         if d.is_tumbling then
-            -- if tumbling, calculate steps using the dedicated spin angle
-            -- (using standard sin/cos coordinates for the custom angle)
             step_x = cos(d.spin_angle)
             step_y = sin(d.spin_angle)
         else
-            -- standard flight path alignment
             local speed = sqrt(d.dx*d.dx + d.dy*d.dy)
             if speed > 0 then
                 step_x = d.dx / speed
@@ -183,20 +168,17 @@ function draw_darts()
             end
         end
         
-        -- leading pixel (blue tip)
         local x0 = d.x + step_x
         local y0 = d.y + step_y
         
-        -- middle pixel (orange body)
         local x1 = d.x
         local y1 = d.y
         
-        -- trailing pixel (orange tail)
         local x2 = d.x - step_x
         local y2 = d.y - step_y
         
-        pset(x0, y0, 1) -- blue
-        pset(x1, y1, 9)  -- orange
-        pset(x2, y2, 9)  -- orange
+        pset(x0, y0, 1)
+        pset(x1, y1, 9)
+        pset(x2, y2, 9)
     end
 end

@@ -1,5 +1,4 @@
 screen_size = 128
-log_file = "log.txt"
 intro = false
 game_over = false
 game_over_cnt = 0
@@ -11,32 +10,24 @@ credits_cnt = 0
 final_music = false
 
 function _init()
-	printh("GAME INIT", log_file, true)
-	palt(13, true) -- Transparent Color Is Purple (13)
+	palt(13, true) 
 	palt(0, false)
 	load_stage(0)
-	--music(63)
-	--init_snow(100)
+	music(63)
+	init_snow(100)
 	init_speako8(80, 0.6)
-	
-	
-	-- music(0)
-	-- init_snow(7)	
-	load_stage(7)
-	player_move = true
 end
 
 function _update()
 	if credits_cnt > 200 or game_over then return end
 
-	speako8()  -- must appear once unconditionally in _update.
+	speako8() 
 
  	if stage == 0 then
 		update_start()
 	else
 		if stages[stage].enemy_spawn_count > enemey_spawn_stage_count then
 			if e_spawn and enemy_spawn_delay_count == 0 then
-				-- spawn in rows
 				local spawn_point = 38 * 8
 
 				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, get_enemy_type())
@@ -150,12 +141,13 @@ function _draw()
 
 	if credits_cnt > 200 then
 		camera(0,0)
-		if not final_music then
-			final_music = true
-			music(40)
+
+		if final_music then
+			music(29)
+			final_music = false
 		end
 
-		if credits_cnt > 564 then
+		if credits_cnt > 566 then
 			run()
 		else
 			print("\^w\^tthe end", 40, 20, 7)
@@ -164,6 +156,7 @@ function _draw()
 			print(" sUNJON:   SANTA CLAUDE GFX", 0, 66, 11)
 			print(" rHYS:     SANTA CLAUDE NAME", 0, 74, 8)
 			print(" TESTERS:  YOU ALL ROCK!", 0, 82, 11)
+			print(" WIFE:     LOCAL COOP TESTER", 0, 90, 8)
 			print("HAPPY HOLIDAYS!!!!!!!", 30, 108, 7)
 		end
 
@@ -221,10 +214,6 @@ function _draw()
 
 	if stage == 8 and boss.active then
 		draw_boss()
-		if not final_music then
-			final_music = true
-			music(40)
-		end
 	end
 
 	draw_darts()
@@ -238,8 +227,6 @@ function _draw()
 	end
 	print(p2_disp, p2.x - 3, p2.y - 7, 3)
 
-	-- Draw player 1 after player 2 so that player 1 is in front of player 2
-	
 	draw_player_weapon(p1)
 	draw_player(p1)
 	print("p1", p1.x - 3, p1.y - 7, 8)
@@ -257,16 +244,14 @@ function _draw()
 	draw_player_force(p2)
 
 	if boss.defeated then
-		if final_music then 
-			final_music = false
-			music(-1) 
-		end
-		
 		draw_santa()
 
 		if santa.x == 142 then
-			print_dialog(santa.x, santa.y, "HEY ELVES! HOW IS THE THIRTY DAY FREE TRIAL OF SANTA CLAUDE!? PRETTY NEAT, RIGHT?", 1, true, true, 0, 7, true)
-
+			print_dialog(santa.x, santa.y, "HOW IS THE THIRTY DAY FREE TRIAL OF SANTA CLAUDE!? PRETTY NEAT, RIGHT?", 1, true, true, 0, 7, true)
+			if not final_music then
+				final_music = true
+				music(40)
+			end
 			credits_cnt += 1
 		end
 	end
