@@ -156,7 +156,7 @@ function _draw()
 			print(" sUNJON:   SANTA CLAUDE GFX", 0, 66, 11)
 			print(" rHYS:     SANTA CLAUDE NAME", 0, 74, 8)
 			print(" TESTERS:  YOU ALL ROCK!", 0, 82, 11)
-			print(" WIFE:     LOCAL COOP TESTER", 0, 90, 8)
+			print(" WIFE:     LOCAL CO OP TESTER", 0, 90, 8)
 			print("HAPPY HOLIDAYS!!!!!!!", 30, 108, 7)
 		end
 

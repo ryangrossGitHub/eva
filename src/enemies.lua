@@ -3,7 +3,7 @@ enemies = {}
 e_spawn = false
 enemey_spawn_stage_count = 0 
 enemy_spawn_delay_count = 0 
-enemy_dead_frame = 60 
+enemy_dead_frame = 10 
 enemy_kill_count = 0
 
 function spawn_enemy(speed, x, y, type)
