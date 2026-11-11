@@ -182,7 +182,7 @@ function init_snow(n)
  for i = 1, n do
   add(snow, {
    x = camera_x + rnd(128), 
-   y = rnd(128),
+   y = rnd(112),
    spd = 0.3 + rnd(0.5),
    sine_offset = rnd(100),
    sine_spd = 0.02 + rnd(0.03)
@@ -197,7 +197,7 @@ function draw_snow()
 
   local drift_x = flake.x + sin(flake.sine_offset) * 4 - 2
 
-  if (flake.y > 128) then
+  if (flake.y > 112) then
    flake.y = -2
    flake.x = camera_x + rnd(128) 
   end

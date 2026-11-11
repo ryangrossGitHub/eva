@@ -247,12 +247,15 @@ function _draw()
 		draw_santa()
 
 		if santa.x == 142 then
-			print_dialog(santa.x, santa.y, "HOW IS THE THIRTY DAY FREE TRIAL OF SANTA CLAUDE!? PRETTY NEAT, RIGHT?", 1, true, true, 0, 7, true)
 			if not final_music then
 				final_music = true
 				music(40)
 			end
 			credits_cnt += 1
+		end
+
+		if final_music then
+			print_dialog(santa.x, santa.y, "HOW IS THE THIRTY DAY FREE TRIAL OF SANTA CLAUDE!? PRETTY NEAT, RIGHT?", 1, true, true, 0, 7, true)
 		end
 	end
 end
