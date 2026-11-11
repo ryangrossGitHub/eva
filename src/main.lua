@@ -170,7 +170,7 @@ function _draw()
 	elseif not intro and not boss.defeated then
 		print("❎ SHOOT", 85, 80, 6)
 
-		if stage >= 5 then
+		if stage >= 4 then
 			print("🅾️ SPECIAL", 85, 90, 6)
 		end
 

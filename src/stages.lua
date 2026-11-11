@@ -22,18 +22,18 @@ stages = {
   },
   {
     enemy_spawn_count = 20, 
-    enemy_speed = 0.5,
-    enemy_spawn_delay = 60
+    enemy_speed = 0.8,
+    enemy_spawn_delay = 30
   },
   {
-    enemy_spawn_count = 10, 
-    enemy_speed = 0.5,
-    enemy_spawn_delay = 80
+    enemy_spawn_count = 30, 
+    enemy_speed = 1,
+    enemy_spawn_delay = 20
   },
   {
-    enemy_spawn_count = 10, 
-    enemy_speed = 0.7,
-    enemy_spawn_delay = 70
+    enemy_spawn_count = 60, 
+    enemy_speed = 1.5,
+    enemy_spawn_delay = 15
   },
   {
     enemy_spawn_count = 20, 
@@ -77,16 +77,16 @@ function load_stage(n)
     e_spawn = false
   end
 
-  if n >= 6 then
+  if n >= 2 then
     p1.weapon = 1
     p2.weapon = 1
   end
   
-  if n == 6 then
+  if n == 2 then
     sfx(1)
   end
 
-  if n == 5 then
+  if n == 4 then
     sfx(1)
   end
 

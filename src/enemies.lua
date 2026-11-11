@@ -40,29 +40,25 @@ end
 
 function get_enemy_type()
 	local roll = rnd(1)
-	if stage == 2 then
+	if stage == 1 then 
+		return nil
+	elseif stage == 2 then
 		if roll < 0.50 then
 			return "shield"
 		end
-	elseif stage == 3 then
-		if roll < 0.50 then
-			return "melee"
-		end
-	elseif stage >= 4 then
+	elseif stage <= 4 then
 		if roll < 0.30 then
 			return "melee"
-		elseif roll < 0.80 then
+		elseif roll < 0.70 then
 			return "shield"
 		end
-	elseif stage >= 6 then
+	elseif stage <= 8 then
 		if roll < 0.40 then
 			return "melee"
 		elseif roll < 1 then
 			return "shield"
 		end
 	end
-
-	return nil
 end
 
 function update_enemies()

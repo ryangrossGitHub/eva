@@ -307,7 +307,7 @@ function update_player_move(p, ctrl)
  	end
 	
 	if btnp(🅾️, ctrl) then
-		if stage >= 5 then 
+		if stage >= 4 then 
 			sfx(3)
 			p.force_special_active = true 
 		end
