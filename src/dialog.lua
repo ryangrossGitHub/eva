@@ -7,9 +7,9 @@ function print_dialog(x, y, msg, border, wide, bounded, color, background, tail)
     background = 7
   end
 
-  local max_w = 42 
+  local max_w = 44 
   if wide then
-   max_w = 86
+   max_w = 88
   end
 
   local words = split(msg, " ")
@@ -54,6 +54,6 @@ function print_dialog(x, y, msg, border, wide, bounded, color, background, tail)
   end
 
   for i=1,#lines do
-    print(lines[i], bx+2, by+2 + (i-1)*line_h, color)
+    print(lines[i], bx+4, by+2 + (i-1)*line_h, color)
   end
 end

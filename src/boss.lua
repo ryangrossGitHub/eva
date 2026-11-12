@@ -25,7 +25,7 @@ boss = {
 		w = 4 * 8,
 		h = 3 * 8,
 		boss_damage = 0,
-		hp = 9 * 8,
+		hp = 10 * 8,
 		hit = false,
 		fall_cnt = 0,
 		fall_dist = 6
@@ -210,35 +210,35 @@ end
 
 function draw_boss()
 	if boss.active then
-		spr(238, boss.x - 4, boss.y + 45, 4, 4, false, false)
-		spr(238, boss.x + 4, boss.y + 47, 4, 4, false, false)
-		spr(238, boss.x + 12, boss.y + 49, 4, 4, false, false)
-		spr(238, boss.x + 12, boss.y + 44, 4, 4, false, false)
-		spr(238, boss.x + 20, boss.y + 49, 4, 4, false, false)
-		spr(238, boss.x + 20, boss.y + 44, 4, 4, false, false)
-		spr(238, boss.x + 28, boss.y + 47, 4, 4, false, false)
-		spr(238, boss.x + 36, boss.y + 45, 4, 4, false, false)
+		spr(238, boss.x - 4, boss.y + 45, 4, 4)
+		spr(238, boss.x + 4, boss.y + 47, 4, 4)
+		spr(238, boss.x + 12, boss.y + 49, 4, 4)
+		spr(238, boss.x + 12, boss.y + 44, 4, 4)
+		spr(238, boss.x + 20, boss.y + 49, 4, 4)
+		spr(238, boss.x + 20, boss.y + 44, 4, 4)
+		spr(238, boss.x + 28, boss.y + 47, 4, 4)
+		spr(238, boss.x + 36, boss.y + 45, 4, 4)
 
 		if boss.arms_up then
-			spr(13, boss.x, boss.y, 3, 6, false, false) 
-			spr(13, boss.x + (3 * 8), boss.y, 3, 7, true, false) 
-			spr(107, boss.x + (2 * 8), boss.y - 5, 2, 2, false, false) 
+			spr(13, boss.x, boss.y, 3, 6) 
+			spr(13, boss.x + (3 * 8), boss.y, 3, 7, true) 
+			spr(107, boss.x + (2 * 8), boss.y - 5, 2, 2) 
 		else
-			spr(68, boss.x - 11, boss.y + 20, 5, 4, false, false) 
-			spr(68, boss.x + 19, boss.y + 20, 5, 4, true, false) 
+			spr(68, boss.x - 11, boss.y + 20, 5, 4) 
+			spr(68, boss.x + 19, boss.y + 20, 5, 4, true) 
 		end
 
 		if boss.feet.which == "left" then
-			spr(73, boss.x - 4, boss.y + 40 + boss.feet.y_offset, 3, 2, false, false) 
-			spr(73, boss.x + 28, boss.y + 40, 3, 2, true, false) 
+			spr(73, boss.x - 4, boss.y + 40 + boss.feet.y_offset, 3, 2) 
+			spr(73, boss.x + 28, boss.y + 40, 3, 2, true) 
 
 			if boss.feet.y_offset <= 0 then
 				boss.feet.which = "right"
 				boss.feet.dir = "up"
 			end
 		else
-			spr(73, boss.x - 4, boss.y + 40, 3, 2, false, false) 
-			spr(73, boss.x + 28, boss.y + 40 + boss.feet.y_offset, 3, 2, true, false) 
+			spr(73, boss.x - 4, boss.y + 40, 3, 2) 
+			spr(73, boss.x + 28, boss.y + 40 + boss.feet.y_offset, 3, 2, true) 
 
 			if boss.feet.y_offset <= 0 then
 				boss.feet.which = "left"
@@ -247,21 +247,21 @@ function draw_boss()
 		end
 
 		if boss.arms_up then
-			spr(8, boss.head.x, boss.head.y, 4, 4, false, false) 
+			spr(8, boss.head.x, boss.head.y, 4, 4) 
 		else
 			if boss.defeated and boss.head.fall_cnt >= boss.head.fall_dist then
-				spr(238, boss.head.x + 6, boss.head.y + 22, 2, 2, false, false)
-				spr(238, boss.head.x + 10, boss.head.y + 22, 2, 2, false, false)
+				spr(238, boss.head.x + 6, boss.head.y + 22, 2, 2)
+				spr(238, boss.head.x + 10, boss.head.y + 22, 2, 2)
 				spr(8, boss.head.x, boss.head.y, 4, 4, false, true) 
 			else
-				spr(8, boss.head.x, boss.head.y, 4, 4, false, false) 
+				spr(8, boss.head.x, boss.head.y, 4, 4) 
 			end
 		end
 
 		draw_boss_eyes()
 
 		if not boss.arms_up and not boss.defeated then
-			spr(107, snowball.x, snowball.y, 2, 2, false, false) 
+			spr(107, snowball.x, snowball.y, 2, 2) 
 		end
 
 		draw_boss_health()
@@ -276,7 +276,8 @@ function draw_boss_health()
 		color = boss.eye_color
 	end
 
-	rectfill(159, 0, 161 + boss.head.hp, 6, 0)
+	rectfill(159, 0, 161 + boss.head.hp, 6, 6)
+	rectfill(160, 1, 160 + boss.head.hp, 5, 5)
 	rectfill(160 + boss.head.boss_damage, 1, 160 + boss.head.hp, 5, color)
 end
 
@@ -289,6 +290,6 @@ function draw_boss_eyes()
 	rectfill(boss.head.x + 17, boss.head.y + 13 + y_ofs, boss.head.x + 19, boss.head.y + 15 + y_ofs, boss.eye_color)
 
 	if boss.eye_color == 8 then
-		spr(22, boss.x + 16, boss.y + 29, 2, 1, false, false) 
+		spr(22, boss.x + 16, boss.y + 29, 2, 1) 
 	end
 end

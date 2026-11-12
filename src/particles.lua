@@ -9,7 +9,7 @@ function spawn_dart(x, y, dx, dy, e)
         dx = dx,
         dy = dy,
         enemy_fire = e,
-        life = 90,
+        life = 30,
         bounces = 3,
         is_tumbling = false,
         spin_angle = 0,

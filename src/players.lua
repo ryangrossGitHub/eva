@@ -390,18 +390,18 @@ function draw_player_weapon(p)
 	if p.force_special_active then
 		return 
 	elseif stage == 5 and upgrade_item_fall then
-		spr(143, p.x, weapon_y, 1, 4, false, false)
+		spr(143, p.x, weapon_y, 1, 4)
 	elseif p.weapon == 0 then
 		if p.flip_sprite then
-			spr(pistol.sprite, p.x - 1 + recoil_mult, weapon_y + 1, 1, 1, true, false)
+			spr(pistol.sprite, p.x - 1 + recoil_mult, weapon_y + 1, 1, 1, true)
 		else
-			spr(pistol.sprite, p.x + 9 - recoil_mult, weapon_y + 1, 1, 1, false, false)
+			spr(pistol.sprite, p.x + 9 - recoil_mult, weapon_y + 1, 1, 1)
 		end
 	elseif p.weapon == 1 then
 		if p.flip_sprite then
-			spr(rifle.sprite, p.x - 8 + recoil_mult, weapon_y, rifle.length, 1, true, false)
+			spr(rifle.sprite, p.x - 8 + recoil_mult, weapon_y, rifle.length, 1, true)
 		else
-			spr(rifle.sprite, p.x + 8 - recoil_mult, weapon_y, rifle.length, 1, false, false)
+			spr(rifle.sprite, p.x + 8 - recoil_mult, weapon_y, rifle.length, 1)
 		end
 	end
 end
@@ -445,7 +445,6 @@ function is_in_circle(spr_x, spr_y, circ_x, circ_y, circ_r)
   
   return dist_sq <= rad_sq
 end
-
 
 function draw_player_force(p)
 	if p.force_special_active  then
@@ -556,18 +555,18 @@ function draw_player(p)
 	if p.force_special_active and p.force_special_anim_seq == 0 then
 		if p.flip_sprite then
 			spr(p.sprites.arm_up, p.x + 10, p.y + bounce_height, 1, 2, p.flip_sprite, false)
-			spr(52, p.x, p.y - 2 + bounce_height, 4, 1, true, false)
+			spr(52, p.x, p.y - 2 + bounce_height, 4, 1, true)
 		else
 			spr(p.sprites.arm_up, p.x, p.y + bounce_height, 1, 2, p.flip_sprite, false)
-			spr(52, p.x - 13, p.y - 2 + bounce_height, 4, 1, false, false)
+			spr(52, p.x - 13, p.y - 2 + bounce_height, 4, 1)
 		end
 	elseif p.force_special_active and p.force_special_anim_seq == 1 then
 		if p.flip_sprite then
 			spr(p.sprites.arm_out, p.x - 3 + recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
-			spr(143, p.x - 6, p.y - 2 + bounce_height, 1, 4, true, false)
+			spr(143, p.x - 6, p.y - 2 + bounce_height, 1, 4, true)
 		else
 			spr(p.sprites.arm_out, p.x + 3 - recoil_mult, p.y + 16 + bounce_height, 2, 1, p.flip_sprite, false)
-			spr(143, p.x + 13, p.y - 2 + bounce_height, 1, 4, false, false)
+			spr(143, p.x + 13, p.y - 2 + bounce_height, 1, 4)
 		end
 	else
 		if p.flip_sprite then
@@ -593,15 +592,15 @@ function draw_player_shadow(p)
 	if not p.shadow then return end
 
 	if p.flip_sprite then
-		spr(238, p.x + 3, p.y + 24, 2, 2, false, false)
+		spr(238, p.x + 3, p.y + 24, 2, 2)
 	else
-		spr(238, p.x - 3, p.y + 24, 2, 2, false, false)
+		spr(238, p.x - 3, p.y + 24, 2, 2)
 	end
 end
 
 function draw_santa()
-	spr(238, santa.x + 3, santa.y + 32, 4, 4, false, false) 
-	spr(96, santa.x - 2, santa.y, 2, 2, false, false) 
-	spr(98, santa.x, santa.y + 16, 2, 2, false, false) 
-	spr(105, santa.x + 5, santa.y + 32, 1, 1, false, false)
+	spr(238, santa.x + 3, santa.y + 32, 4, 4) 
+	spr(96, santa.x - 2, santa.y, 2, 2) 
+	spr(98, santa.x, santa.y + 16, 2, 2) 
+	spr(105, santa.x + 5, santa.y + 32, 1, 1)
 end

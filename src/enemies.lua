@@ -202,37 +202,37 @@ end
 function draw_enemies()
 	for enemy in all(enemies) do
 		if enemy.sprite_number == 170 then
-			spr(enemy.sprite_number, enemy.x, enemy.y+8, 4, 2, false, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y+8, 4, 2)
 		elseif enemy.sprite_number == 150 then
-			spr(enemy.sprite_number, enemy.x, enemy.y, 4, 3, false, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y, 4, 3)
 		else
-			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
-			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, false, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3)
+			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1)
 
 			if enemy.melee then
 				if not enemy.melee_deployed then
-					spr(130, enemy.x + 8, enemy.y + 5, 2, 1, false, false)
-					spr(142, enemy.x + 4, enemy.y + 4, 1, 1, false, false)
+					spr(130, enemy.x + 8, enemy.y + 5, 2, 1)
+					spr(142, enemy.x + 4, enemy.y + 4, 1, 1)
 				else
 					for i=0, enemy.melee_arm_length do
-						spr(134, enemy.x - (i * 8), enemy.y + 8, 2, 1, false, false)
+						spr(134, enemy.x - (i * 8), enemy.y + 8, 2, 1)
 					end
-					spr(142, enemy.melee_glove_x, enemy.y + 4, 1, 1, false, false)
+					spr(142, enemy.melee_glove_x, enemy.y + 4, 1, 1)
 				end
 			elseif enemy.shield and enemy.shield_deployed then
 				local sprite = 128
 				if stage >= 6 then
-					spr(139, enemy.x - 8, enemy.y + 3, 3, 1, false, false)
+					spr(139, enemy.x - 8, enemy.y + 3, 3, 1)
 				else
-					spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+					spr(128, enemy.x, enemy.y + 5, 2, 1)
 				end
 
-				spr(158, enemy.x + 5, enemy.y - 2, 1, 2, false, false)
+				spr(158, enemy.x + 5, enemy.y - 2, 1, 2)
 			else 
 				if stage >= 6 then
-					spr(139, enemy.x - 8, enemy.y + 3, 3, 1, false, false)
+					spr(139, enemy.x - 8, enemy.y + 3, 3, 1)
 				else
-					spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+					spr(128, enemy.x, enemy.y + 5, 2, 1)
 				end
 			end
 		end
@@ -242,7 +242,7 @@ end
 function draw_enemy_shadows()
 	for e in all(enemies) do
 		if not e.dead then
-			spr(238, e.x + 4, e.y + 16, 2, 2, false, false)
+			spr(238, e.x + 4, e.y + 16, 2, 2)
 		end
 	end
 end
