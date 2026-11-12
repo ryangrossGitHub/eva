@@ -9,7 +9,7 @@ function spawn_dart(x, y, dx, dy, e)
         dx = dx,
         dy = dy,
         enemy_fire = e,
-        life = 30,
+        life = 50,
         bounces = 3,
         is_tumbling = false,
         spin_angle = 0,
@@ -37,7 +37,7 @@ function update_darts(enemies)
         end
 
         d.life = d.life - 1
-        if d.life <= 0 then 
+        if d.life <= 0 or d.y > 128 or d.x < camera_x - 8 or d.x > camera_x + screen_size + 8 then
             del(darts, d) 
         end
 
