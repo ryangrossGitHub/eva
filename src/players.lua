@@ -1,4 +1,4 @@
-player_move = false
+player_move, bounce, coop, upgrade_item_fall, first_o_press = false, false, false, false, false
 
 init_jenn_x = 9*8
 init_jenn_y = 74
@@ -9,13 +9,10 @@ camera_shake_offset = 0
 
 bounce_delay = 18
 bounce_count = 0
-bounce = false
-
-trail_capture_delay = 4
-trail_capture_count = 0
-trail_capture_length = 200
 
 p2_boss_dir = 0
+
+upgrade_item_y = 0
 
 j = {
 	name = "jenn",
@@ -38,7 +35,7 @@ j = {
 	animation_frame_delay = 5, 
 	weapon = 0,
 	weapon_delay = 0,
-	stepping = true, 
+	stepping, shadow = true, true, 
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
@@ -47,9 +44,6 @@ j = {
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
 	force_radius = 0,
-	trail = {},
-	trail_foot_to_capture = 0,
-	shadow = true
 }
 
 c = {
@@ -73,7 +67,7 @@ c = {
 	animation_frame_delay = 5, 
 	weapon = 0,
 	weapon_delay = 0,
-	stepping = true, 
+	stepping, shadow = true, true, 
 	recoil_delay = 1,
 	recoil_count = 0,
 	speed = 1,
@@ -82,9 +76,6 @@ c = {
 	force_special_anim_seq = 0,
 	force_special_anim_count = 0,
 	force_radius = 0,
-	trail = {},
-	trail_foot_to_capture = 0,
-	shadow = true
 }
 
 santa = {
@@ -96,7 +87,6 @@ santa = {
 
 p1 = j
 p2 = c
-coop = false
 
 pistol = {
 	id = 0,
@@ -242,25 +232,6 @@ function update_player_anims(p)
  	end
 end
 
-function update_player_trail(p)
-	if trail_capture_count < trail_capture_delay then
-		trail_capture_count += 1
-	else
-		trail_capture_count = 0
-		if p.trail_foot_to_capture == 0 then
-			p.trail_foot_to_capture = 1
-			add(p.trail, {x = p.x + 4, y = p.y + 30})
-		else
-			p.trail_foot_to_capture = 0
-			add(p.trail, {x = p.x + 4, y = p.y + 32})
-		end
-	end
-
-	if #p.trail > trail_capture_length then
-		del(p.trail, p.trail[1])
-	end
-end
-
 function update_player_move(p, ctrl)
 
 	if p.fall then
@@ -307,7 +278,8 @@ function update_player_move(p, ctrl)
  	end
 	
 	if btnp(🅾️, ctrl) then
-		if stage >= 4 then 
+		if stage >= 5 then 
+			first_o_press = true
 			sfx(3)
 			p.force_special_active = true 
 		end
@@ -354,16 +326,14 @@ function detect_player_fall(p)
 		p.y = -40
 		p.x = camera_x + 16
 	elseif p.y > 10 * 8 then
-		p.shadow = false
-		p.fall = true
+		p.shadow, p.fall = false, true
 	end
 
 	if p.respawn then
 		p.y += (p.y + 75) * 0.07
 
 		if p.y >= 75 then
-			p.respawn = false
-			p.fall = false
+			p.respawn, p.fall = false, false
 		end
 	end
 end
@@ -405,26 +375,34 @@ function draw_player_weapon(p)
 		bounce_height = 1
 	end
 
+	local weapon_y = p.y + 11 + bounce_height
+	if upgrade_item_fall then
+		weapon_y = upgrade_item_y
+		upgrade_item_y += 1.5
+
+		if upgrade_item_y > p.y + 8 then
+			upgrade_item_fall = false
+			upgrade_item_y = 0
+			sfx(1)
+		end
+	end
+
 	if p.force_special_active then
 		return 
+	elseif stage == 5 and upgrade_item_fall then
+		spr(143, p.x, weapon_y, 1, 4, false, false)
 	elseif p.weapon == 0 then
 		if p.flip_sprite then
-			spr(pistol.sprite, p.x - 1 + recoil_mult, p.y + 12 + bounce_height, 1, 1, true, false)
+			spr(pistol.sprite, p.x - 1 + recoil_mult, weapon_y + 1, 1, 1, true, false)
 		else
-			spr(pistol.sprite, p.x + 9 - recoil_mult, p.y + 12 + bounce_height, 1, 1, false, false)
+			spr(pistol.sprite, p.x + 9 - recoil_mult, weapon_y + 1, 1, 1, false, false)
 		end
 	elseif p.weapon == 1 then
 		if p.flip_sprite then
-			spr(rifle.sprite, p.x - 8 + recoil_mult, p.y + 11 + bounce_height, rifle.length, 1, true, false)
+			spr(rifle.sprite, p.x - 8 + recoil_mult, weapon_y, rifle.length, 1, true, false)
 		else
-			spr(rifle.sprite, p.x + 8 - recoil_mult, p.y + 11 + bounce_height, rifle.length, 1, false, false)
+			spr(rifle.sprite, p.x + 8 - recoil_mult, weapon_y, rifle.length, 1, false, false)
 		end
-	end
-end
-
-function draw_player_trail(p)
-	for t in all(p.trail) do
-		pset(t.x, t.y, 6)
 	end
 end
 
@@ -453,7 +431,7 @@ function update_player_force(p)
 
 		for e in all(enemies) do
 			if is_in_circle(e.x, e.y, p.x + 4, p.y + 16, p.force_radius) then
-				kill_enemy(e)
+				kill_enemy(e, 170)
 			end
 		end
 	end

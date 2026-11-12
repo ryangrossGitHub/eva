@@ -1,10 +1,11 @@
 stage = 8
-stage_trans = false
+stage_trans, pre_text = false, false
 stage_transfer_count = 0
 stage_transfer_total = 120 
 camera_x = 0
 camera_y = 0
-intro_camera_pause = 260
+intro_pre_text = 80
+intro_camera_pause = 340
 intro_camera_pause_count = 0
 outro_transfer_count = 0
 outro_transfer_total = 210
@@ -19,6 +20,11 @@ stages = {
     enemy_spawn_count = 5, 
     enemy_speed = 0.385,
     enemy_spawn_delay = 130
+  },
+  {
+    enemy_spawn_count = 10, 
+    enemy_speed = 0.5,
+    enemy_spawn_delay = 50
   },
   {
     enemy_spawn_count = 20, 
@@ -36,19 +42,14 @@ stages = {
     enemy_spawn_delay = 15
   },
   {
-    enemy_spawn_count = 20, 
-    enemy_speed = 1,
-    enemy_spawn_delay = 40
-  },
-  {
     enemy_spawn_count = 60, 
     enemy_speed = 1.5,
-    enemy_spawn_delay = 20
+    enemy_spawn_delay = 15
   },
   {
-    enemy_spawn_count = 100, 
-    enemy_speed = 2,
-    enemy_spawn_delay = 15
+    enemy_spawn_count = 20, 
+    enemy_speed = 3,
+    enemy_spawn_delay = 30
   },
   {
     enemy_spawn_count = 1, 
@@ -73,21 +74,16 @@ function load_stage(n)
     end
     enemy_kill_count = 0
     enemey_spawn_stage_count = 0
-    stage_trans = true
-    e_spawn = false
+    stage_trans, e_spawn = true, false
   end
 
-  if n >= 2 then
+  if n >= 3 then
     p1.weapon = 1
     p2.weapon = 1
   end
   
-  if n == 2 then
-    sfx(1)
-  end
-
-  if n == 4 then
-    sfx(1)
+  if n == 3 or n == 5 then
+    upgrade_item_fall = true
   end
 
   if n == 8 then
@@ -103,8 +99,7 @@ function update_stage_trans()
   else
     stage_transfer_count = 0
     enemy_spawn_delay_count = 0
-    stage_trans = false
-    e_spawn = true
+    stage_trans, e_spawn = false, true
   end
 end
 
@@ -154,7 +149,16 @@ function update_start()
  
   if btnp(5) then
     music(-1)
-    intro = true
+    intro, pre_text = true, true
+    run_pre_intro()
+  end
+end
+
+function run_pre_intro()
+  if intro_camera_pause_count < intro_pre_text then
+    intro_camera_pause_count += 1
+  else
+    pre_text = false
     load_stage(1)
   end
 end

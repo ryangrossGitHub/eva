@@ -25,7 +25,7 @@ boss = {
 		w = 4 * 8,
 		h = 3 * 8,
 		boss_damage = 0,
-		hp = 6 * 8,
+		hp = 9 * 8,
 		hit = false,
 		fall_cnt = 0,
 		fall_dist = 6
@@ -200,7 +200,8 @@ end
 function snowball_collision_detection(p)
 	if not p.fall and snowball.x < p.x + p.w 
 		and snowball.x + snowball.diameter > p.x 
-		and snowball.y + snowball.diameter > p.y + 20 then
+		and snowball.y + snowball.diameter > p.y + 20 
+		and snowball.y < p.y + 20 then
 			p.y += 30
 			sfx(2)
 			snowball_reset()
@@ -270,8 +271,13 @@ end
 function draw_boss_health()
 	if boss.defeated then return end
 
-	rectfill(boss.x - 1, boss.y - 1, boss.x + boss.head.hp + 1, boss.y + 2, 0)
-	rectfill(boss.x + boss.head.boss_damage, boss.y, boss.x + boss.head.hp, boss.y + 1, 8)
+	local color = 9
+	if boss.eye_color != -1 then
+		color = boss.eye_color
+	end
+
+	rectfill(159, 0, 161 + boss.head.hp, 6, 0)
+	rectfill(160 + boss.head.boss_damage, 1, 160 + boss.head.hp, 5, color)
 end
 
 function draw_boss_eyes()

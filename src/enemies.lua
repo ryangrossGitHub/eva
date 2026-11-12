@@ -6,7 +6,7 @@ enemy_spawn_delay_count = 0
 enemy_dead_frame = 10 
 enemy_kill_count = 0
 
-function spawn_enemy(speed, x, y, type)
+function spawn_enemy(speed, x, y, type, fire_delay)
 	enemy = {
 		sprite_number = 144,
 		sprite_number_face = 132, 
@@ -16,7 +16,7 @@ function spawn_enemy(speed, x, y, type)
 		y = y,
 		w = 8,
 		h = 32,
-		death_animation_frame_delay = 4,
+		death_animation_frame_delay = 5,
 		death_animation_frame_count = 0, 
 		hit_anim_delay = 30,
 		hit_anim_count = 0,
@@ -25,14 +25,15 @@ function spawn_enemy(speed, x, y, type)
 		damage = 0,
 		max_damage = 10,
 		dead_frames = 0,
-		fire_delay = 10,
+		fire_delay = fire_delay,
 		fire_delay_count = 0,
 		melee = type == "melee",
 		melee_arm_length = 1,
 		melee_glove_x = 0,
 		shield = type == "shield",
 		shield_timer = 0,
-		shield_timer_max = 40
+		shield_timer_max = 40,
+		y_dir = 1
 	}
 
 	add(enemies, enemy)
@@ -40,13 +41,13 @@ end
 
 function get_enemy_type()
 	local roll = rnd(1)
-	if stage == 1 then 
+	if stage <= 2 then 
 		return nil
-	elseif stage == 2 then
+	elseif stage == 3 then
 		if roll < 0.50 then
 			return "shield"
 		end
-	elseif stage <= 4 then
+	elseif stage <= 5 then
 		if roll < 0.30 then
 			return "melee"
 		elseif roll < 0.70 then
@@ -62,8 +63,7 @@ function get_enemy_type()
 end
 
 function update_enemies()
-	p1.enemy_collision = false
-	p2.enemy_collision = false
+	p1.enemy_collision, p2.enemy_collision = false, false
 
 	for enemy in all(enemies) do
 		if enemy.dead then
@@ -75,19 +75,7 @@ function update_enemies()
 				enemy.death_animation_frame_count += 1
 
 				if enemy.death_animation_frame_count >= enemy.death_animation_frame_delay then
-					enemy.death_animation_frame_count = 0
-
-					if enemy.dead_frames % 20 == 0 then
-						sfx(0)
-						spawn_dart(enemy.x+18, enemy.y, rnd(4) - 2, -3, true)
-					end
-
-					if enemy.sprite_number == 170 then
-						enemy.sprite_number = 138
-					elseif enemy.sprite_number == 138 then
-						enemy.sprite_number = 170
-						
-					end
+					enemy.sprite_number = 170
 				end
 			end
 		else
@@ -104,9 +92,25 @@ function update_enemies()
 				end
 
 				if enemy.damage >= enemy.max_damage then
-					kill_enemy(enemy)
+					kill_enemy(enemy, 150)
 				end
 			else
+				if stage > 6 then
+					if enemy.y_dir == 0 then
+						enemy.y += 1
+						
+						if enemy.y >= 88 then
+							enemy.y_dir = 1
+						end
+					else
+						enemy.y -= 1
+
+						if enemy.y <= 40 then
+							enemy.y_dir = 0
+						end
+					end
+				end
+
 				enemy.x -= enemy.speed
 
 				if enemy.melee then
@@ -179,9 +183,9 @@ function update_enemies()
 	end
 end
 
-function kill_enemy(e)
+function kill_enemy(e, s)
 	e.dead = true
-	e.sprite_number = 170
+	e.sprite_number = s
 end
 
 function handle_enemy_fire(e)
@@ -197,10 +201,10 @@ end
 
 function draw_enemies()
 	for enemy in all(enemies) do
-		if enemy.sprite_number == 170 or enemy.sprite_number == 138 then
+		if enemy.sprite_number == 170 then
 			spr(enemy.sprite_number, enemy.x, enemy.y+8, 4, 2, false, false)
 		elseif enemy.sprite_number == 150 then
-			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
+			spr(enemy.sprite_number, enemy.x, enemy.y, 4, 3, false, false)
 		else
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3, false, false)
 			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1, false, false)
@@ -216,10 +220,20 @@ function draw_enemies()
 					spr(142, enemy.melee_glove_x, enemy.y + 4, 1, 1, false, false)
 				end
 			elseif enemy.shield and enemy.shield_deployed then
-				spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+				local sprite = 128
+				if stage >= 6 then
+					spr(139, enemy.x - 8, enemy.y + 3, 3, 1, false, false)
+				else
+					spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+				end
+
 				spr(158, enemy.x + 5, enemy.y - 2, 1, 2, false, false)
 			else 
-				spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+				if stage >= 6 then
+					spr(139, enemy.x - 8, enemy.y + 3, 3, 1, false, false)
+				else
+					spr(128, enemy.x, enemy.y + 5, 2, 1, false, false)
+				end
 			end
 		end
 	end

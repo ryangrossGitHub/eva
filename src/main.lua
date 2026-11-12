@@ -1,13 +1,10 @@
 screen_size = 128
-intro = false
-game_over = false
+intro, game_over, p2_join_hide, final_music = false, false, false, false
 game_over_cnt = 0
 p2_join_blink_count = 0
 p2_join_blink_total = 30
-p2_join_hide = false
 camera_shake = 0
 credits_cnt = 0
-final_music = false
 
 function _init()
 	palt(13, true) 
@@ -28,12 +25,17 @@ function _update()
 	else
 		if stages[stage].enemy_spawn_count > enemey_spawn_stage_count then
 			if e_spawn and enemy_spawn_delay_count == 0 then
-				local spawn_point = 38 * 8
+				local spawn_point = 37 * 8
+				local fire_delay = 10
 
-				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, get_enemy_type())
-				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, get_enemy_type())
-				spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, get_enemy_type())
-				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, get_enemy_type())
+				if stage >= 6 then
+					fire_delay = 1
+				end
+
+				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, get_enemy_type(), fire_delay)
 
 				enemy_spawn_delay_count = stages[stage].enemy_spawn_delay
 				enemey_spawn_stage_count += 1
@@ -86,8 +88,6 @@ function _update()
 	update_player_anims(p2)
 	update_player_force(p1)
 	update_player_force(p2)
-	update_player_trail(p1)
-	update_player_trail(p2)
 	
 
 	if p1.weapon_delay > 0 then
@@ -139,6 +139,12 @@ function _draw()
 		end
 	end
 
+	if pre_text then
+		print("based on a true story", 54, 48, 7)
+		run_pre_intro()
+		return
+	end
+
 	if credits_cnt > 200 then
 		camera(0,0)
 
@@ -170,7 +176,7 @@ function _draw()
 	elseif not intro and not boss.defeated then
 		print("❎ SHOOT", 85, 80, 6)
 
-		if stage >= 4 then
+		if stage >= 5 then
 			print("🅾️ SPECIAL", 85, 90, 6)
 		end
 
@@ -206,8 +212,6 @@ function _draw()
 		camera_x -= 1
 	end
 
-	draw_player_trail(p2)
-	draw_player_trail(p1)
 	draw_player_shadow(p1)
 	draw_player_shadow(p2)
 	draw_enemy_shadows()
@@ -237,6 +241,8 @@ function _draw()
 		print("\^w\^tworkshop", camera_x + 28, 88, 8)
 	elseif stage_trans then
 		print("\^w\^twave: "..stage, camera_x + 38, 62, 8)
+	elseif stage == 5 and not first_o_press then
+		print("PRESS 🅾️", camera_x + 42, 68, 0)
 	end
 
 	draw_snow()
@@ -246,7 +252,7 @@ function _draw()
 	if boss.defeated then
 		draw_santa()
 
-		if santa.x == 142 then
+		if santa.x >= 142 then
 			if not final_music then
 				final_music = true
 				music(40)
