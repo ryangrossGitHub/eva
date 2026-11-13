@@ -17,6 +17,7 @@ function print_dialog(x, y, msg, border, wide, bounded, color, background, tail)
   local curr = ""
   
   for w in all(words) do
+    w = replace_char(w, "_", " ")
     if #curr * 4 + #w * 4 + 6 
      > max_w then
       add(lines, curr)
@@ -56,4 +57,16 @@ function print_dialog(x, y, msg, border, wide, bounded, color, background, tail)
   for i=1,#lines do
     print(lines[i], bx+4, by+2 + (i-1)*line_h, color)
   end
+end
+
+function replace_char(str, target, rep)
+  local res = ""
+  for ch in all(str) do
+    if ch == target then
+      res ..= rep
+    else
+      res ..= ch
+    end
+  end
+  return res
 end

@@ -195,7 +195,7 @@ function _draw()
 	end
 
 	print_dialog((11 * 8) - 3, (6 * 8) + 2, "\138WORKSHOP", 0, false, false, 0, 4)
-	print_dialog(35 * 8, (6 * 8) - 3, "DATA CENTER", 1, false, false, 6, 5)
+	print_dialog(280, 45, "___DATA __CENTER", 1, false, false, 6, 5)
 
 	local s = stages[stage]
 	if not s then

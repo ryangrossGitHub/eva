@@ -180,13 +180,7 @@ end
 
 function boss_seek_closest_player()
 	local p1_delta = boss.head.x + boss.head.w/2 - p1.x + p1.w/2
-	local p2_delta = boss.head.x + boss.head.w/2 - p2.x + p2.w/2
-
-	if abs(p1_delta) > abs(p2_delta) then 
-		boss_seek_player(p1_delta)
-	else
-		boss_seek_player(p2_delta)
-	end
+	boss_seek_player(p1_delta)
 end
 
 function boss_seek_player(delta)
