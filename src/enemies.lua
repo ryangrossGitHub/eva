@@ -216,7 +216,7 @@ function draw_enemies()
 
 			if enemy.melee then
 				if not enemy.melee_deployed then
-					spr(130, enemy.x + 8, enemy.y + 5, 2, 1)
+					spr(130, enemy.x + 8, enemy.y + 5, 1, 1)
 					spr(142, enemy.x + 4, enemy.y + 4, 1, 1)
 				else
 					for i=0, enemy.melee_arm_length do

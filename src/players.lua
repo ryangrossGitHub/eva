@@ -360,7 +360,7 @@ function handle_player_fire(p)
 		xd = -xd
 	end
 
-	spawn_dart(p.x+4, p.y + 16, xd, -1, false)
+	spawn_dart(p.x+4, p.y + 17, xd, -1, false)
 end
 
 function draw_player_weapon(p)
