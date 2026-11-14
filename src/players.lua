@@ -393,9 +393,9 @@ function draw_player_weapon(p)
 		spr(143, p.x, weapon_y, 1, 4)
 	elseif p.weapon == 0 then
 		if p.flip_sprite then
-			spr(pistol.sprite, p.x - 1 + recoil_mult, weapon_y + 1, 1, 1, true)
+			spr(pistol.sprite, p.x - 3 + recoil_mult, weapon_y + 2, 1, 1, true)
 		else
-			spr(pistol.sprite, p.x + 9 - recoil_mult, weapon_y + 1, 1, 1)
+			spr(pistol.sprite, p.x + 11 - recoil_mult, weapon_y + 2, 1, 1)
 		end
 	elseif p.weapon == 1 then
 		if p.flip_sprite then

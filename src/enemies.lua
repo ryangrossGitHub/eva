@@ -207,7 +207,12 @@ function draw_enemies()
 			spr(enemy.sprite_number, enemy.x, enemy.y, 4, 3)
 		else
 			spr(enemy.sprite_number, enemy.x, enemy.y, 2, 3)
-			spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1)
+			
+			if enemy.sprite_number_face == 132 then
+				spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 2, 1, 1)
+			else
+				spr(enemy.sprite_number_face, enemy.x + 8, enemy.y - 4, 1, 1)
+			end
 
 			if enemy.melee then
 				if not enemy.melee_deployed then
