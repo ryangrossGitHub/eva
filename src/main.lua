@@ -190,12 +190,13 @@ function _draw()
 		end
 
 		if not p2_join_hide then
-			print("p2 PRESS ❎ TO JOIN", camera_x + 30, 0, 3)
+			print("\fb\^o3ffp2 PRESS ❎ TO JOIN", camera_x + 30, 2)
 		end
 	end
 
-	print_dialog((11 * 8) - 3, (6 * 8) + 2, "\138WORKSHOP", 0, false, false, 0, 4)
-	print_dialog(280, 45, "___DATA __CENTER", 1, false, false, 6, 5)
+	print_dialog((11 * 8) - 3, (6 * 8) + 2, "\138WORKSHOP", 0, false, false, 15, 4)
+	print("\f6\^w\^o040data", 269, 21)
+	print("\f6\^w\^o040center", 262, 30)
 
 	local s = stages[stage]
 	if not s then
@@ -229,20 +230,20 @@ function _draw()
 	if coop then
 		p2_disp = "p2"
 	end
-	print(p2_disp, p2.x - 3, p2.y - 7, 3)
+	print("\fc\^o0ff"..p2_disp, p2.x - 3, p2.y - 7)
 
 	draw_player_weapon(p1)
 	draw_player(p1)
-	print("p1", p1.x - 3, p1.y - 7, 8)
+	print("\f8\^o0ffp1", p1.x - 3, p1.y - 7)
 
 	
 	if intro and camera_x > 35 then
-		print("\^w\^tdefend the", camera_x + 20, 68, 8)
-		print("\^w\^tworkshop", camera_x + 28, 88, 8)
+		print("\f8\^w\^t\^o0ffdefend the", camera_x + 20, 68)
+		print("\f8\^w\^t\^o0ffworkshop", camera_x + 28, 88, 8)
 	elseif stage_trans then
-		print("\^w\^twave: "..stage, camera_x + 38, 62, 8)
+		print("\f8\^w\^t\^o0ffwave: "..stage, camera_x + 38, 62)
 	elseif stage == 5 and not first_o_press then
-		print("PRESS 🅾️", camera_x + 42, 68, 0)
+		print("\f8\^o0ffPRESS 🅾️", camera_x + 42, 68)
 	end
 
 	draw_snow()

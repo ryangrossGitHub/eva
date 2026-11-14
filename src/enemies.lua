@@ -224,7 +224,7 @@ function draw_enemies()
 				if stage >= 6 then
 					spr(139, enemy.x - 8, enemy.y + 3, 3, 1)
 				else
-					spr(128, enemy.x, enemy.y + 5, 2, 1)
+					spr(128, enemy.x+1, enemy.y + 5, 2, 1)
 				end
 
 				spr(158, enemy.x + 5, enemy.y - 2, 1, 2)
@@ -232,7 +232,7 @@ function draw_enemies()
 				if stage >= 6 then
 					spr(139, enemy.x - 8, enemy.y + 3, 3, 1)
 				else
-					spr(128, enemy.x, enemy.y + 5, 2, 1)
+					spr(128, enemy.x+1, enemy.y + 5, 2, 1)
 				end
 			end
 		end

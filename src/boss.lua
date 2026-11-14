@@ -25,7 +25,7 @@ boss = {
 		w = 4 * 8,
 		h = 3 * 8,
 		boss_damage = 0,
-		hp = 10 * 8,
+		hp = 88,
 		hit = false,
 		fall_cnt = 0,
 		fall_dist = 6
@@ -270,9 +270,9 @@ function draw_boss_health()
 		color = boss.eye_color
 	end
 
-	rectfill(159, 0, 161 + boss.head.hp, 6, 6)
-	rectfill(160, 1, 160 + boss.head.hp, 5, 5)
-	rectfill(160 + boss.head.boss_damage, 1, 160 + boss.head.hp, 5, color)
+	rectfill(159, 0, 161 + boss.head.hp, 7, 6)
+	rectfill(160, 1, 160 + boss.head.hp, 6, 5)
+	rectfill(160 + boss.head.boss_damage, 1, 160 + boss.head.hp, 6, color)
 end
 
 function draw_boss_eyes()
