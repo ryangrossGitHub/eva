@@ -11,7 +11,7 @@ outro_transfer_count = 0
 outro_transfer_total = 210
 
 left_bound = 7 * 8
-right_bound = 38 * 8
+right_bound = 286
 
 snow = {}
 
@@ -165,7 +165,7 @@ end
 
 function update_intro()
     if intro_camera_pause_count < intro_camera_pause then
-      camera_x = right_bound - screen_size/1.5
+      camera_x = right_bound - screen_size/1.7
     elseif camera_x > 35 then
       camera_x -= 2
     else

@@ -511,10 +511,10 @@ function draw_player(p)
 	end
 
 	if p.name == "chad" then
-		local c_head_x = p.x - 8
+		local c_head_x = p.x - 7
 
 		if p.flip_sprite then
-			c_head_x = p.x + 8
+			c_head_x = p.x + 7
 		end
 
 		if p.trigger or (p.force_special_active and p.force_special_anim_seq == 1) then

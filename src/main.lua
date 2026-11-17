@@ -25,17 +25,16 @@ function _update()
 	else
 		if stages[stage].enemy_spawn_count > enemey_spawn_stage_count then
 			if e_spawn and enemy_spawn_delay_count == 0 then
-				local spawn_point = 37 * 8
 				local fire_delay = 10
 
 				if stage >= 6 then
 					fire_delay = 1
 				end
 
-				spawn_enemy(stages[stage].enemy_speed, spawn_point, 40, get_enemy_type(), fire_delay)
-				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 55, get_enemy_type(), fire_delay)
-				spawn_enemy(stages[stage].enemy_speed, spawn_point, 70, get_enemy_type(), fire_delay)
-				spawn_enemy(stages[stage].enemy_speed, spawn_point - 12, 85, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, right_bound, 40, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, right_bound - 12, 55, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, right_bound, 70, get_enemy_type(), fire_delay)
+				spawn_enemy(stages[stage].enemy_speed, right_bound - 12, 85, get_enemy_type(), fire_delay)
 
 				enemy_spawn_delay_count = stages[stage].enemy_spawn_delay
 				enemey_spawn_stage_count += 1

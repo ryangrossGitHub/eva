@@ -69,7 +69,7 @@ function update_darts(enemies)
                     end
                 end
 
-                if d.x - d.dx > right_bound then
+                if d.x - d.dx > right_bound + 22 then
                     dart_collision_response(d, -1)
                 end
             end

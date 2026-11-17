@@ -195,7 +195,7 @@ function handle_enemy_fire(e)
 		e.fire_delay_count = 0
 
 		sfx(0)
-		spawn_dart(e.x+4, e.y+6, -8, -1, true)
+		spawn_dart(e.x+4, e.y+7, -8, -1, true)
 	end
 end
 
