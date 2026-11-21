@@ -16,7 +16,7 @@ function _init()
 end
 
 function _update()
-	if credits_cnt > 200 or game_over then return end
+	if credits_cnt > 275 or game_over then return end
 
 	speako8() 
 
@@ -144,7 +144,7 @@ function _draw()
 		return
 	end
 
-	if credits_cnt > 200 then
+	if credits_cnt > 275 then
 		camera(0,0)
 
 		if final_music then
@@ -152,7 +152,7 @@ function _draw()
 			final_music = false
 		end
 
-		if credits_cnt > 566 then
+		if credits_cnt > 600 then
 			run()
 		else
 			print("\^w\^tthe end", 40, 20, 7)

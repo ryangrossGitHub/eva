@@ -106,6 +106,7 @@ end
 function update_final_stage_trans()
   if outro_transfer_count < outro_transfer_total then
     if outro_transfer_count == 0 and not speaking() then
+      music(-1)
       say(boss.sayings[1])
     end
 
@@ -114,6 +115,10 @@ function update_final_stage_trans()
       say(boss.sayings[2])
     end
 
+    if outro_transfer_count == 120 then 
+      music(48)
+    end
+    
     if outro_transfer_count >= 120 then
       boss.active = true
       boss.x -= 1
